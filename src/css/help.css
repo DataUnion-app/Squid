@@ -1,0 +1,25 @@
+#photoprism-help h3 {
+    margin: 1em 0 1em 0;
+    padding: 0;
+}
+
+#photoprism-help p {
+    margin: 0 0 1em 0;
+    padding: 0;
+}
+
+#photoprism p a.highlight,
+#photoprism #photoprism-help p a{
+    text-decoration: none;
+    color: #4a148c;
+}
+
+#photoprism p a.highlight:hover,
+#photoprism #photoprism-help p a:hover{
+    text-decoration: underline !important;
+}
+
+#photoprism .v-alert a {
+    color: inherit;
+    text-decoration: none;
+}
