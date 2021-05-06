@@ -87,6 +87,9 @@ export default {
         }
       ).catch(() => this.loading = false);
     },
+  },
+  mounted() {
+    console.log(process.env);
   }
 };
 </script>

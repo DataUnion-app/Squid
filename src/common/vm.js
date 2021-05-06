@@ -20,4 +20,8 @@ export function Mount(Vue, app, router) {
     router,
     render: (h) => h(app),
   }).$mount("#photoprism");
+
+  vm.$on('login', () => {
+    vm.$router.push({name: 'home'});
+  })
 }

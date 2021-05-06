@@ -90,7 +90,7 @@ export default class Session {
     }
 
     this.session_id = id;
-    Api.defaults.headers.common["X-Session-ID"] = id;
+    // Api.defaults.headers.common["X-Session-ID"] = id;
 
     return true;
   }
@@ -115,7 +115,7 @@ export default class Session {
   deleteId() {
     this.session_id = null;
     this.storage.removeItem("session_id");
-    delete Api.defaults.headers.common["X-Session-ID"];
+    // delete Api.defaults.headers.common["X-Session-ID"];
     this.deleteData();
   }
 

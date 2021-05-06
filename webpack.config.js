@@ -77,6 +77,8 @@ const config = {
       filename: "[name].css",
     }),
     new OfflinePlugin(),
+    new webpack.EnvironmentPlugin([
+    ]),
   ],
   node: {
     fs: "empty",
@@ -88,16 +90,16 @@ const config = {
   },
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        include: PATHS.app,
-        exclude: /node_modules/,
-        enforce: "pre",
-        loader: "eslint-loader",
-        options: {
-          formatter: require("eslint-formatter-pretty"),
-        },
-      },
+      // {
+      //   test: /\.js$/,
+      //   include: PATHS.app,
+      //   exclude: /node_modules/,
+      //   enforce: "pre",
+      //   loader: "eslint-loader",
+      //   options: {
+      //     // formatter: require("eslint-formatter-pretty"),
+      //   },
+      // },
       {
         test: /\.vue$/,
         loader: "vue-loader",

@@ -58,17 +58,51 @@ import { $gettext, Mount } from "common/vm";
 import * as options from "options/options";
 import offline from "offline-plugin/runtime";
 
-window.addEventListener("load", () => {
-  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  if (typeof window.web3 !== undefined) {
-    // Use Mist/MetaMask's provider
-    window.web3js = new window.Web3(window.web3.currentProvider);
-  } else {
-    // Handle the case where the user doesn't have web3. Probably
-    // show them a message telling them to install Metamask in
-    // order to use our app.
-  }
-});
+import Auth from "common/auth";
+Auth.authenticate();
+
+
+
+// window.addEventListener("load", () => {
+//   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+//   if (typeof window.web3 !== undefined) {
+//     // Use Mist/MetaMask's provider
+//     window.web3js= new window.Web3(window.web3.currentProvider);
+//     console.log(window.web3, window.web3js);
+//     web3js.eth.getAccounts((error,result) => {
+//       if (error) {
+//           console.log('error', error);
+//       } else {
+//           console.log('result', result);
+//       }
+//     });
+
+//     web3js.eth.personal.sign(
+//         web3.utils.utf8ToHex('nonce'), 
+//         accountId,
+//         '',
+//         (err, signed) => {
+//             if (err) return reject(err)
+//             console.log(accountId, signed);
+//             return resolve({accountId, signed})
+//         }
+//     ) 
+//     const config = new ConfigHelper().getConfig(
+//       'rinkeby',
+//       '741c04fb098840529986d26e8f2c1c26'
+//     )
+//     Ocean.getInstance({
+//       ...config,
+//       web3Provider: window.web3
+//     }).then(ocean => {
+//       console.log('Ocean', ocean);
+//     })
+//   } else {
+//     // Handle the case where the user doesn't have web3. Probably
+//     // show them a message telling them to install Metamask in
+//     // order to use our app.
+//   }
+// });
 
 // Initialize helpers
 const viewer = new Viewer();
@@ -143,6 +177,14 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+  if (!Auth.token()) {
+    if (to.name != 'login') {
+      next({name: 'login'});
+    } else {
+      next();
+    }
+    return;
+  }
   if (document.querySelector(".v-dialog--active.v-dialog--fullscreen")) {
     // Disable back button in full-screen viewers and editors.
     next(false);
