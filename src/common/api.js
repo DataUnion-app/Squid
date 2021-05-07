@@ -36,13 +36,16 @@ https://docs.photoprism.org/developer-guide/
 export const BASE_URL = 'http://206.81.26.71:8081';
 import Auth from './auth';
 
+import photos from "../../static/photos/sample.json";
+
 class API {
   photos = async(status, page) => {
+    return photos;
     const imageHeaders = new Headers()
     imageHeaders.append("Authorization", `Bearer ${Auth.token()}`)
   
     const getUserImagesRequest = await fetch(
-      `${BASE_URL}/api/v1/taxonomy/image`,
+      `${BASE_URL}/api/v1/all-metadata`,
       {
         method: 'GET',
         headers: imageHeaders,

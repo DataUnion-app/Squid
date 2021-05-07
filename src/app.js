@@ -178,6 +178,9 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (!Auth.token()) {
+    if (!Auth.loaded) {
+      return;
+    }
     if (to.name != 'login') {
       next({name: 'login'});
     } else {

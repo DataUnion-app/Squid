@@ -446,6 +446,7 @@ export class Photo extends RestModel {
   }
 
   thumbnailUrl(size) {
+    return 'https://picsum.photos/200/300';
     let hash = this.mainFileHash();
 
     if (!hash) {

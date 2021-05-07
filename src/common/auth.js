@@ -7,10 +7,12 @@ class Auth {
             accessToken: null,
             refreshToken: null
         };
+        this.loaded = false;
     }
 
-    setToken(token) {
-        this.auth = token;
+    setAuth(auth) {
+        this.auth = auth;
+        localStorage.setItem('auth', JSON.stringify(this.auth));
         vm.$emit('login');
     }
 
@@ -18,7 +20,31 @@ class Auth {
         return this.auth.accessToken;
     }
 
-    authenticate(accountId) {
+    restoreToken() {
+        const auth = JSON.parse(localStorage.getItem('auth'));
+        if (auth && auth.accessToken) {
+            this.setAuth(auth);
+            return true;
+        }
+        return false;
+    }
+
+    fetchToken(account, isRefresh) {
+        this.loaded = true;
+        if (!isRefresh && this.restoreToken()) {
+            return;
+        }
+        return Register(account).then(nonce => {
+            GetTokens(account).then(result => {
+                this.setAuth(result);
+                return result;
+            }).catch(err => {
+            })
+        }).catch(err => {
+        })
+    }
+
+    authenticate(accountId, isRefresh) {
         window.addEventListener("load", () => {
             // Modern dapp browsers...
             if (window.ethereum) {
@@ -30,6 +56,7 @@ class Auth {
             }
             // Non-dapp browsers...
             else {
+                this.loaded = true;
               return Promise.reject();
             }
             try {
@@ -37,21 +64,17 @@ class Auth {
                 return window.ethereum.enable().then(result => {
                     web3.eth.getAccounts((error,result) => {
                     if (error) {
+                        this.loaded = true;
                         return Promise.reject();
                     } else {
                         const account = result[0];
-                        Register(account).then(nonce => {
-                            GetTokens(account).then(result => {
-                                this.setToken(result);
-                            }).catch(err => {
-                            })
-                        }).catch(err => {
-                        })
+                        this.fetchToken(account, isRefresh);
                     }
                     });
                 });
               } catch (error) {
                 // User denied account access...
+                this.loaded = true;
                 return Promise.reject();
               }
         });
