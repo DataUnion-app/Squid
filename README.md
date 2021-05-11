@@ -10,6 +10,16 @@ Build for production
 
 `npm run build`
 
+Docker
+
+- Build image
+
+    `docker build . -t dataunion/squid`
+
+- Run container
+
+    `docker run -p 8080:8080 -d dataunion/squid`
+
 Structure
 
 - Router
