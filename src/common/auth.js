@@ -1,5 +1,6 @@
-import {vm} from 'common/vm';
+import {Observer} from 'common/vm';
 import {BASE_URL} from './api';
+const blockies = require('ethereum-blockies-png')
 
 class Auth {
     constructor() {
@@ -7,13 +8,19 @@ class Auth {
             accessToken: null,
             refreshToken: null
         };
+        this.account = null;
         this.loaded = false;
     }
 
     setAuth(auth) {
         this.auth = auth;
         localStorage.setItem('auth', JSON.stringify(this.auth));
-        vm.$emit('login');
+        localStorage.setItem('account', this.account);
+        Observer.$emit('login', {account: this.account, blockies: this.blockies()});
+    }
+
+    blockies() {
+        return blockies.createDataURL({ seed: this.account })
     }
 
     token() {
@@ -22,7 +29,8 @@ class Auth {
 
     restoreToken() {
         const auth = JSON.parse(localStorage.getItem('auth'));
-        if (auth && auth.accessToken) {
+        this.account = localStorage.getItem('account');
+        if (auth && auth.accessToken && this.account && this.account != 'null') {
             this.setAuth(auth);
             return true;
         }
@@ -36,6 +44,7 @@ class Auth {
         }
         return Register(account).then(nonce => {
             GetTokens(account).then(result => {
+                this.account = account;
                 this.setAuth(result);
                 return result;
             }).catch(err => {
@@ -44,39 +53,43 @@ class Auth {
         })
     }
 
+    login(isRefresh) {
+        if (window.ethereum) {
+            window.web3 = new Web3(window.ethereum);
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+            window.web3 = new Web3(web3.currentProvider);
+        }
+        // Non-dapp browsers...
+        else {
+            this.loaded = true;
+            return Promise.reject();
+        }
+        try {
+            // Request account access if needed
+            return window.ethereum.enable().then(result => {
+                web3.eth.getAccounts((error,result) => {
+                if (error) {
+                    this.loaded = true;
+                    return Promise.reject();
+                } else {
+                    const account = result[0];
+                    return this.fetchToken(account, isRefresh);
+                }
+                });
+            });
+        } catch (error) {
+            // User denied account access...
+            this.loaded = true;
+            return Promise.reject();
+        }
+    }
+
     authenticate(accountId, isRefresh) {
         window.addEventListener("load", () => {
             // Modern dapp browsers...
-            if (window.ethereum) {
-              window.web3 = new Web3(window.ethereum);
-            }
-            // Legacy dapp browsers...
-            else if (window.web3) {
-              window.web3 = new Web3(web3.currentProvider);
-            }
-            // Non-dapp browsers...
-            else {
-                this.loaded = true;
-              return Promise.reject();
-            }
-            try {
-                // Request account access if needed
-                return window.ethereum.enable().then(result => {
-                    web3.eth.getAccounts((error,result) => {
-                    if (error) {
-                        this.loaded = true;
-                        return Promise.reject();
-                    } else {
-                        const account = result[0];
-                        this.fetchToken(account, isRefresh);
-                    }
-                    });
-                });
-              } catch (error) {
-                // User denied account access...
-                this.loaded = true;
-                return Promise.reject();
-              }
+            this.login(isRefresh);
         });
     }
 }

@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 export let vm = {
   $gettext: (msgid) => msgid,
   $ngettext: (msgid, plural, n) => {
@@ -6,6 +8,8 @@ export let vm = {
   $pgettext: (context, msgid) => msgid,
   $npgettext: (context, msgid) => msgid,
 };
+
+export let Observer = new Vue();
 
 export function $gettext(msgid) {
   return vm.$gettext(msgid);
@@ -21,7 +25,7 @@ export function Mount(Vue, app, router) {
     render: (h) => h(app),
   }).$mount("#photoprism");
 
-  vm.$on('login', () => {
+  Observer.$on('login', () => {
     vm.$router.push({name: 'home'});
   })
 }

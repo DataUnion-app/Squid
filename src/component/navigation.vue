@@ -59,361 +59,364 @@
           </v-list-tile-action>
         </v-list-tile>
 
-        <v-list-tile v-if="isMini" to="/browse" class="nav-browse" @click.stop="">
-          <v-list-tile-action :title="$gettext('Search')">
-            <v-icon>search</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate>Search</translate>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-group v-if="!isMini" prepend-icon="search" no-action>
-          <template #activator>
-            <v-list-tile to="/browse" class="nav-browse" @click.stop="">
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  <translate key="Search">Search</translate>
-                  <span v-if="config.count.all > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.all }}</span>
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-
-          <v-list-tile :to="{name: 'browse', query: { q: 'mono:true quality:3 photo:true' }}" :exact="true" class="nav-monochrome" @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate>Monochrome</translate>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile :to="{name: 'browse', query: { q: 'panorama:true' }}" :exact="true" class="nav-panoramas"
-                       @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate>Panoramas</translate>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile :to="{name: 'photos', query: { q: 'stack:true' }}" :exact="true" class="nav-stacks" @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate>Stacks</translate>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile :to="{name: 'photos', query: { q: 'scan:true' }}" :exact="true" class="nav-scans" @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate>Scans</translate>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile v-if="$config.feature('review')" to="/review" class="nav-review"
-                       @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate>Review</translate>
-                <span v-show="config.count.review > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.review }}</span>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile v-show="$config.feature('archive')" to="/archive" class="nav-archive" @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate>Archive</translate>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list-group>
-
-        <v-list-tile v-if="isMini && $config.feature('albums')" to="/albums" class="nav-albums" @click.stop="">
-          <v-list-tile-action :title="$gettext('Albums')">
-            <v-icon>bookmark</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-              <translate key="Albums">Albums</translate>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-group v-if="!isMini && $config.feature('albums')" prepend-icon="bookmark" no-action>
-          <template #activator>
-            <v-list-tile to="/albums" class="nav-albums" @click.stop="">
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  <translate key="Albums">Albums</translate>
-                  <span v-if="config.count.albums > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.albums }}</span>
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-
-          <v-list-tile to="/unsorted" class="nav-unsorted">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate key="Unsorted">Unsorted</translate>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list-group>
-
-        <v-list-tile v-if="$config.feature('videos')" to="/videos" class="nav-video" @click.stop="">
-          <v-list-tile-action :title="$gettext('Videos')">
-            <v-icon>play_circle_fill</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Videos">Videos</translate>
-              <span v-show="config.count.videos > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.videos }}</span>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile to="/favorites" class="nav-favorites" @click.stop="">
-          <v-list-tile-action :title="$gettext('Favorites')">
-            <v-icon>favorite</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Favorites">Favorites</translate>
-              <span v-show="config.count.favorites > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.favorites }}</span>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile v-show="$config.feature('moments')" :to="{ name: 'moments' }" class="nav-moments"
-                     @click.stop="">
-          <v-list-tile-action :title="$gettext('Moments')">
-            <v-icon>star</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Moments">Moments</translate>
-              <span v-show="config.count.moments > 0"
-                    :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.moments }}</span>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile :to="{ name: 'calendar' }" class="nav-calendar" @click.stop="">
-          <v-list-tile-action :title="$gettext('Calendar')">
-            <v-icon>date_range</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Calendar">Calendar</translate>
-              <span v-show="config.count.months > 0"
-                    :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.months }}</span>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile v-if="isMini" v-show="$config.feature('places')" :to="{ name: 'places' }" class="nav-places"
-                     @click.stop="">
-          <v-list-tile-action :title="$gettext('Places')">
-            <v-icon>place</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Places">Places</translate>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-group v-if="!isMini" v-show="$config.feature('places')" prepend-icon="place" no-action>
-          <template #activator>
-            <v-list-tile to="/places" class="nav-places" @click.stop="">
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  <translate key="Places">Places</translate>
-                  <span v-show="config.count.places > 0"
-                        :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.places }}</span>
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-
-          <v-list-tile to="/states" class="nav-states" @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate key="States">States</translate>
-                <span v-show="config.count.states > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.states }}</span>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list-group>
-
-        <v-list-tile v-show="$config.feature('labels')" to="/labels" class="nav-labels" @click.stop="">
-          <v-list-tile-action :title="$gettext('Labels')">
-            <v-icon>label</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Labels">Labels</translate>
-              <span v-show="config.count.labels > 0"
-                    :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.labels }}</span>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile v-show="$config.feature('folders')" :to="{ name: 'folders' }" class="nav-folders" @click.stop="">
-          <v-list-tile-action :title="$gettext('Folders')">
-            <v-icon>folder</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Folders">Folders</translate>
-              <span v-show="config.count.folders > 0"
-                    :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.folders }}</span>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile v-show="$config.feature('private')" to="/private" class="nav-private" @click.stop="">
-          <v-list-tile-action :title="$gettext('Private')">
-            <v-icon>lock</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Private">Private</translate>
-              <span v-show="config.count.private > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.private }}</span>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile v-if="isMini && $config.feature('library')" to="/library" class="nav-library" @click.stop="">
-          <v-list-tile-action :title="$gettext('Library')">
-            <v-icon>camera_roll</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Library">Library</translate>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-group v-if="!isMini && $config.feature('library')" prepend-icon="camera_roll" no-action>
-          <template #activator>
-            <v-list-tile to="/library" class="nav-library" @click.stop="">
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  <translate key="Library">Library</translate>
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-
-          <v-list-tile v-show="$config.feature('files')" to="/library/files" class="nav-originals" @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate key="Originals">Originals</translate>
-                <span v-show="config.count.files > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.files }}</span>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile to="/library/hidden" class="nav-hidden" @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate key="Hidden">Hidden</translate>
-                <span v-show="config.count.hidden > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.hidden }}</span>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile to="/library/errors" class="nav-errors" @click.stop="">
-            <v-list-tile-content>
-              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                <translate key="Errors">Errors</translate>
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list-group>
-
-        <template v-if="!config.disable.settings">
-          <v-list-tile v-if="isMini" to="/settings" class="nav-settings" @click.stop="">
-            <v-list-tile-action :title="$gettext('Settings')">
-              <v-icon>settings</v-icon>
+        <template v-if="account">
+          <v-list-tile v-if="isMini" to="/browse" class="nav-browse" @click.stop="">
+            <v-list-tile-action :title="$gettext('Search')">
+              <v-icon>search</v-icon>
             </v-list-tile-action>
 
             <v-list-tile-content>
               <v-list-tile-title>
-                <translate key="Settings">Settings</translate>
+                <translate>Search</translate>
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-group v-else prepend-icon="settings" no-action>
+          <v-list-group v-if="!isMini" prepend-icon="search" no-action>
             <template #activator>
-              <v-list-tile to="/settings" class="nav-settings" @click.stop="">
+              <v-list-tile to="/browse" class="nav-browse" @click.stop="">
                 <v-list-tile-content>
                   <v-list-tile-title>
-                    <translate key="Settings">Settings</translate>
+                    <translate key="Search">Search</translate>
+                    <span v-if="config.count.all > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.all }}</span>
                   </v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
             </template>
 
-            <v-list-tile :to="{ name: 'about' }" :exact="true" class="nav-about" @click.stop="">
+            <v-list-tile :to="{name: 'browse', query: { q: 'mono:true quality:3 photo:true' }}" :exact="true" class="nav-monochrome" @click.stop="">
               <v-list-tile-content>
                 <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                  <translate>About</translate>
+                  <translate>Monochrome</translate>
                 </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 
-            <v-list-tile v-show="!isPublic && auth" :to="{ name: 'feedback' }" :exact="true" class="nav-feedback"
-                         @click.stop="">
+            <v-list-tile :to="{name: 'browse', query: { q: 'panorama:true' }}" :exact="true" class="nav-panoramas"
+                        @click.stop="">
               <v-list-tile-content>
                 <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                  <translate>Feedback</translate>
+                  <translate>Panoramas</translate>
                 </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 
-            <v-list-tile :to="{ name: 'license' }" :exact="true" class="nav-license" @click.stop="">
+            <v-list-tile :to="{name: 'photos', query: { q: 'stack:true' }}" :exact="true" class="nav-stacks" @click.stop="">
               <v-list-tile-content>
                 <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
-                  <translate key="License">License</translate>
+                  <translate>Stacks</translate>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-tile :to="{name: 'photos', query: { q: 'scan:true' }}" :exact="true" class="nav-scans" @click.stop="">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                  <translate>Scans</translate>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-tile v-if="$config.feature('review')" to="/review" class="nav-review"
+                        @click.stop="">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                  <translate>Review</translate>
+                  <span v-show="config.count.review > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.review }}</span>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-tile v-show="$config.feature('archive')" to="/archive" class="nav-archive" @click.stop="">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                  <translate>Archive</translate>
                 </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-list-group>
+
+          <v-list-tile v-if="isMini && $config.feature('albums')" to="/albums" class="nav-albums" @click.stop="">
+            <v-list-tile-action :title="$gettext('Albums')">
+              <v-icon>bookmark</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                <translate key="Albums">Albums</translate>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-group v-if="!isMini && $config.feature('albums')" prepend-icon="bookmark" no-action>
+            <template #activator>
+              <v-list-tile to="/albums" class="nav-albums" @click.stop="">
+                <v-list-tile-content>
+                  <v-list-tile-title>
+                    <translate key="Albums">Albums</translate>
+                    <span v-if="config.count.albums > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.albums }}</span>
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </template>
+
+            <v-list-tile to="/unsorted" class="nav-unsorted">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                  <translate key="Unsorted">Unsorted</translate>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+
+          <v-list-tile v-if="$config.feature('videos')" to="/videos" class="nav-video" @click.stop="">
+            <v-list-tile-action :title="$gettext('Videos')">
+              <v-icon>play_circle_fill</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Videos">Videos</translate>
+                <span v-show="config.count.videos > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.videos }}</span>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile to="/favorites" class="nav-favorites" @click.stop="">
+            <v-list-tile-action :title="$gettext('Favorites')">
+              <v-icon>favorite</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Favorites">Favorites</translate>
+                <span v-show="config.count.favorites > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.favorites }}</span>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile v-show="$config.feature('moments')" :to="{ name: 'moments' }" class="nav-moments"
+                      @click.stop="">
+            <v-list-tile-action :title="$gettext('Moments')">
+              <v-icon>star</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Moments">Moments</translate>
+                <span v-show="config.count.moments > 0"
+                      :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.moments }}</span>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile :to="{ name: 'calendar' }" class="nav-calendar" @click.stop="">
+            <v-list-tile-action :title="$gettext('Calendar')">
+              <v-icon>date_range</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Calendar">Calendar</translate>
+                <span v-show="config.count.months > 0"
+                      :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.months }}</span>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile v-if="isMini" v-show="$config.feature('places')" :to="{ name: 'places' }" class="nav-places"
+                      @click.stop="">
+            <v-list-tile-action :title="$gettext('Places')">
+              <v-icon>place</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Places">Places</translate>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-group v-if="!isMini" v-show="$config.feature('places')" prepend-icon="place" no-action>
+            <template #activator>
+              <v-list-tile to="/places" class="nav-places" @click.stop="">
+                <v-list-tile-content>
+                  <v-list-tile-title>
+                    <translate key="Places">Places</translate>
+                    <span v-show="config.count.places > 0"
+                          :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.places }}</span>
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </template>
+
+            <v-list-tile to="/states" class="nav-states" @click.stop="">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                  <translate key="States">States</translate>
+                  <span v-show="config.count.states > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.states }}</span>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+
+          <v-list-tile v-show="$config.feature('labels')" to="/labels" class="nav-labels" @click.stop="">
+            <v-list-tile-action :title="$gettext('Labels')">
+              <v-icon>label</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Labels">Labels</translate>
+                <span v-show="config.count.labels > 0"
+                      :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.labels }}</span>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile v-show="$config.feature('folders')" :to="{ name: 'folders' }" class="nav-folders" @click.stop="">
+            <v-list-tile-action :title="$gettext('Folders')">
+              <v-icon>folder</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Folders">Folders</translate>
+                <span v-show="config.count.folders > 0"
+                      :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.folders }}</span>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile v-show="$config.feature('private')" to="/private" class="nav-private" @click.stop="">
+            <v-list-tile-action :title="$gettext('Private')">
+              <v-icon>lock</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Private">Private</translate>
+                <span v-show="config.count.private > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.private }}</span>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile v-if="isMini && $config.feature('library')" to="/library" class="nav-library" @click.stop="">
+            <v-list-tile-action :title="$gettext('Library')">
+              <v-icon>camera_roll</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Library">Library</translate>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-group v-if="!isMini && $config.feature('library')" prepend-icon="camera_roll" no-action>
+            <template #activator>
+              <v-list-tile to="/library" class="nav-library" @click.stop="">
+                <v-list-tile-content>
+                  <v-list-tile-title>
+                    <translate key="Library">Library</translate>
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </template>
+
+            <v-list-tile v-show="$config.feature('files')" to="/library/files" class="nav-originals" @click.stop="">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                  <translate key="Originals">Originals</translate>
+                  <span v-show="config.count.files > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.files }}</span>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-tile to="/library/hidden" class="nav-hidden" @click.stop="">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                  <translate key="Hidden">Hidden</translate>
+                  <span v-show="config.count.hidden > 0" :class="`nav-count ${rtl ? '--rtl' : ''}`">{{ config.count.hidden }}</span>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-tile to="/library/errors" class="nav-errors" @click.stop="">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                  <translate key="Errors">Errors</translate>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+
+          <template v-if="!config.disable.settings">
+            <v-list-tile v-if="isMini" to="/settings" class="nav-settings" @click.stop="">
+              <v-list-tile-action :title="$gettext('Settings')">
+                <v-icon>settings</v-icon>
+              </v-list-tile-action>
+
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  <translate key="Settings">Settings</translate>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-group v-else prepend-icon="settings" no-action>
+              <template #activator>
+                <v-list-tile to="/settings" class="nav-settings" @click.stop="">
+                  <v-list-tile-content>
+                    <v-list-tile-title>
+                      <translate key="Settings">Settings</translate>
+                    </v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </template>
+
+              <v-list-tile :to="{ name: 'about' }" :exact="true" class="nav-about" @click.stop="">
+                <v-list-tile-content>
+                  <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                    <translate>About</translate>
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <v-list-tile v-show="!isPublic && auth" :to="{ name: 'feedback' }" :exact="true" class="nav-feedback"
+                          @click.stop="">
+                <v-list-tile-content>
+                  <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                    <translate>Feedback</translate>
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <v-list-tile :to="{ name: 'license' }" :exact="true" class="nav-license" @click.stop="">
+                <v-list-tile-content>
+                  <v-list-tile-title :class="`menu-item ${rtl ? '--rtl' : ''}`">
+                    <translate key="License">License</translate>
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-list-group>
+          </template>
+
+          <v-list-tile v-show="!isPublic && auth" class="nav-logout" @click="logout">
+            <v-list-tile-action :title="$gettext('Logout')">
+              <v-icon>power_settings_new</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <translate key="Logout">Logout</translate>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
         </template>
 
-        <v-list-tile v-show="!isPublic && auth" class="nav-logout" @click="logout">
-          <v-list-tile-action :title="$gettext('Logout')">
-            <v-icon>power_settings_new</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <translate key="Logout">Logout</translate>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile v-show="!auth" to="/login" class="nav-login" @click.stop="">
+        <v-list-tile v-show="!account" to="/login" class="nav-login" @click.stop="">
           <v-list-tile-action :title="$gettext('Login')">
             <v-icon>lock</v-icon>
           </v-list-tile-action>
@@ -424,16 +427,25 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+      </v-list>
 
-        <v-list-tile v-show="$config.disconnected" to="/help/websockets" class="nav-connecting navigation" style="position:fixed; bottom: 0; left:0; right: 0;"
-                     @click.stop="">
-          <v-list-tile-action :title="$gettext('Offline')">
-            <v-icon color="warning">wifi_off</v-icon>
+      <v-divider></v-divider>
+
+      <v-list subheader>
+        <v-subheader>User</v-subheader>
+
+        <v-list-tile v-if="account" class="nav-login" @click.stop="">
+          <v-list-tile-action :title="account">
+            <!-- <v-icon>verified_user</v-icon> -->
+
+            <!-- <v-avatar color="white"> -->
+              <img style="width: 30px; height: 30px; border-radius: 50%;" :src="blockies"/>
+            <!-- </v-avatar> -->
           </v-list-tile-action>
 
           <v-list-tile-content>
-            <v-list-tile-title class="text--warning">
-              <translate key="Offline">Offline</translate>
+            <v-list-tile-title>
+              {{account}}
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -451,7 +463,7 @@
 <script>
 import Album from "model/album";
 import Event from "pubsub-js";
-
+import {Observer} from "common/vm";
 export default {
   name: "PNavigation",
   data() {
@@ -480,6 +492,8 @@ export default {
         index: 0,
       },
       rtl: this.$rtl,
+      account: null,
+      blockies: null
     };
   },
   computed: {
@@ -500,12 +514,21 @@ export default {
       }
     });
   },
+  mounted() {
+    this.listen();
+  },
   destroyed() {
     Event.unsubscribe(this.reload.subscription);
     Event.unsubscribe(this.upload.subscription);
     Event.unsubscribe(this.edit.subscription);
   },
   methods: {
+    listen() {
+      Observer.$on('login', ({account, blockies}) => {
+        this.account = account;
+        this.blockies = blockies;
+      })
+    },
     openUpload() {
       if (this.auth && !this.isReadOnly && this.$config.feature('upload')) {
         this.upload.dialog = true;

@@ -9,40 +9,10 @@
       <v-card flat tile class="ma-2 application">
         <v-card-actions>
           <v-layout wrap align-top>
-            <v-flex xs12 class="pa-2">
-              <v-text-field
-                  v-model="username"
-                  required hide-details
-                  type="text"
-                  :disabled="loading"
-                  :label="$gettext('Name')"
-                  browser-autocomplete="off"
-                  color="secondary-dark"
-                  class="input-name"
-                  placeholder="••••••••"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs12 class="pa-2">
-              <v-text-field
-                  v-model="password"
-                  required hide-details
-                  :type="showPassword ? 'text' : 'password'"
-                  :disabled="loading"
-                  :label="$gettext('Password')"
-                  browser-autocomplete="off"
-                  color="secondary-dark"
-                  placeholder="••••••••"
-                  class="input-password"
-                  :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-                  @click:append="showPassword = !showPassword"
-                  @keyup.enter.native="login"
-              ></v-text-field>
-            </v-flex>
             <v-flex xs12 class="px-2 py-3">
               <v-btn color="primary-button"
                      class="white--text ml-0 action-confirm"
                      depressed
-                     :disabled="loading || !password || !username"
                      @click.stop="login">
                 <translate>Sign in</translate>
                 <v-icon :right="!rtl" :left="rtl" dark>login</v-icon>
@@ -58,6 +28,7 @@
 </template>
 
 <script>
+import Auth from 'common/auth';
 export default {
   name: 'Login',
   data() {
@@ -75,17 +46,7 @@ export default {
   },
   methods: {
     login() {
-      if (!this.username || !this.password) {
-        return;
-      }
-
-      this.loading = true;
-      this.$session.login(this.username, this.password).then(
-        () => {
-          this.loading = false;
-          this.$router.push(this.nextUrl);
-        }
-      ).catch(() => this.loading = false);
+      Auth.login();
     },
   },
   mounted() {
