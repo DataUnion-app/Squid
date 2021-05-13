@@ -35,13 +35,13 @@ import Api from "./api";
 
 const config = {
   "mode": "user",
-  "name": "PhotoPrism",
+  "name": "DataPortal",
   "version": "210501-d8322a59-Linux-x86_64",
   "copyright": "(c) 2018-2021 Michael Mayer \u003chello@photoprism.org\u003e",
   "flags": "public experimental settings",
   "siteUrl": "https://demo.photoprism.org/",
   "sitePreview": "https://dl.photoprism.org/assets/img/preview.jpg",
-  "siteTitle": "PhotoPrism",
+  "siteTitle": "DataPortal",
   "siteCaption": "Demo",
   "siteDescription": "Open-Source Personal Photo Management. Say goodbye to solutions that force you to upload your visual memories to the cloud.",
   "siteAuthor": "PhotoPrism.org",
