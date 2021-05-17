@@ -1,17 +1,17 @@
-FROM node:14
+FROM node:latest
 
-# Create app directory
-WORKDIR /usr/src/app
+RUN mkdir squid
 
-# Install app dependencies
-COPY package*.json ./
+# ADD . /parse
+COPY package*.json ./squid/
+
+WORKDIR /squid
 
 RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+RUN npm install -g nodemon
 
-# Bundle app source
 COPY . .
 
 EXPOSE 8080
+
 CMD [ "npm", "run", "dev" ]

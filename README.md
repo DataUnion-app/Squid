@@ -1,76 +1,30 @@
-Test
+# Squid for Data Portal
 
-`npm run test`
+## Overview
 
-Run locally
+## Docker for local environment
 
-`npm run dev`
+Docker is amazing. [Learn it here](https://docs.docker.com/reference/).
 
-Build for production
+### Tools
+Some tools are needed locally for development purposes and aren't included in the containers. These are general tools that are assumed to be installed and working correctly:
 
-`npm run build`
+* [npm](https://www.npmjs.com/get-npm) - To install packages, npm is included with [NodeJS](https://nodejs.org/), I would just install NodeJS
 
-Docker
+### How to reset Docker
+If for any reason you want to clear everything and restart from scratch
+`docker system prune -a`
 
-- Build image
+### Build and run
 
-    `docker build . -t dataunion/squid`
+Run `docker-compose up`
 
-- Run container
+You should now have a complete environment up and running. Type
 
-    `docker run -p 8080:8080 -d dataunion/squid`
+    docker ps -a
 
-Structure
+Now the last step to access all the virtual hosts locally, is to update your `/etc/hosts` file with the following DNS entries:
 
-- Router
+    127.0.0.1 squid.du
 
-    `src/routes.js`
-
-    There has a login middleware which checks the Authentication Handler to check if token exists. If user is not authenticated, it redirects to `/login`, Otherwise, process next request.
-
-- Authentication Handler
-
-    `src/common/auth.js`
-    
-    This is inheritied from the react frontend app and uses the same function.
-    
-    In order to initialize Web3 handler, to get sign request and to get Backend api token, you can do like this.
-
-    ```
-    import Auth from 'common/auth';
-    Auth.authenticate(accountId);
-    ```
-
-    You can get token from `Auth.token()`
-
-- API Handler
-
-    `src/common/api.js`
-
-    It's pretty self-explanatory
-
-    You can just call `API.[api]` to fetch and this will return Promise object.
-
-- Sample Data
-
-    Currently sample data is located in `static/photos/sample.json`
-
-- Models
-    
-    A Model is a helper of a collection used for the app located in `src/model`.
-    
-    For example, `Photo` model inherits `Rest` Model and this Rest Model inherits `Model` class
-
-    - Photo model
-        
-        Concrete class that contains helper functions including get url of asset, including GetThumbnail, GetCountry etc
-
-    - Rest Model
-        
-        This has some virtual functions need to be reimplemented in concrete class, including `getCollectionResource` which returns the Model type. According to this value, api call endpoint will be determined.
-
-        This has 4 common functions which are for CRUD resources in restful API.
-
-    - Model
-
-        Has basic function to get and set value.
+That should be it for Docker. 
