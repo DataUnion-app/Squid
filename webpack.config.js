@@ -72,6 +72,9 @@ const config = {
           if (req.url.startsWith('/squid')) {
             return req.url // do not proxy
           }
+          if (req.url.startsWith('/static')) {
+            return req.url // do not proxy
+          }
           return false
         }
     }]
