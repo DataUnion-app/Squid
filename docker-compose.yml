@@ -18,4 +18,4 @@ services:
     volumes:
       - .:/squid
     ports:
-      - 8087:8080
+      - 8088:8080
