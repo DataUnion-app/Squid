@@ -159,7 +159,7 @@ Vue.use(Router);
 // Configure client-side routing
 const router = new Router({
   routes: Routes,
-  mode: "history",
+  // mode: "history",
   saveScrollPosition: true,
   scrollBehavior: (to, from, savedPosition) => {
     if (savedPosition) {

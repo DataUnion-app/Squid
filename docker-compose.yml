@@ -4,12 +4,11 @@ services:
     image: nginx:latest
     container_name: squid_web
     volumes:
-      - ./docker/squid.du.crt:/etc/nginx/ssl/squid.du.crt
-      - ./docker/squid.du.key:/etc/nginx/ssl/squid.du.key
       - ./docker/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
-      - 443:443
+    depends_on:
+      - squid_app
   squid_app:
     image: squid_app
     container_name: squid_app
@@ -18,7 +17,5 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/squid
-    depends_on:
-      - squid_web
     ports:
       - 8080:8080
