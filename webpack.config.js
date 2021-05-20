@@ -65,19 +65,19 @@ const config = {
       historyApiFallback: true,
       disableHostCheck: true,
       port: 8080,
-      proxy: [{
-        context: () => true,
-        target: 'http://127.0.0.1:8080',
-        bypass: (req) => {
-          if (req.url.startsWith('/squid')) {
-            return req.url // do not proxy
-          }
-          if (req.url.startsWith('/static')) {
-            return req.url // do not proxy
-          }
-          return false
-        }
-    }]
+    //   proxy: [{
+    //     context: () => true,
+    //     target: 'http://127.0.0.1:8080',
+    //     bypass: (req) => {
+    //       if (req.url.startsWith('/squid')) {
+    //         return req.url // do not proxy
+    //       }
+    //       if (req.url.startsWith('/static')) {
+    //         return req.url // do not proxy
+    //       }
+    //       return false
+    //     }
+    // }]
   },
   resolve: {
     modules: [path.join(__dirname, "src"), path.join(__dirname, "node_modules")],
