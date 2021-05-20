@@ -27,6 +27,20 @@ class Auth {
         return this.auth.accessToken;
     }
 
+    refreshToken() {
+        if (this.auth.refreshToken) {
+            return RefreshTokens(this.auth.refreshToken).then(response => {
+                if (response.access_token) {
+                    this.auth.accessToken = response.access_token;
+                    this.setAuth(this.auth);
+                    return true;
+                }
+                return false;
+            })
+        }
+        return false;
+    }
+
     restoreToken() {
         const auth = JSON.parse(localStorage.getItem('auth'));
         this.account = localStorage.getItem('account');

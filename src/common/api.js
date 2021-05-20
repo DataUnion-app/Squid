@@ -39,25 +39,53 @@ import Auth from './auth';
 import photos from "../../static/photos/sample.json";
 
 class API {
-  photos = async(status, page) => {
-    return photos;
-    const imageHeaders = new Headers()
-    imageHeaders.append("Authorization", `Bearer ${Auth.token()}`)
-  
-    const getUserImagesRequest = await fetch(
-      `${BASE_URL}/api/v1/all-metadata`,
-      {
-        method: 'GET',
-        headers: imageHeaders,
+  call = (path, method, data, headers) => {
+    const apiHeaders = new Headers()
+    apiHeaders.append("Authorization", `Bearer ${Auth.token()}`)
+    if (headers) {
+      Object.keys(headers).map(key => {
+        apiHeaders[key] = headers[key];
+      })
+    }
+    const param = {
+      method: method,
+      headers: apiHeaders,
+    }
+    if (data) {
+      param.body = JSON.stringify(data);
+    }
+    return fetch(
+      `${BASE_URL}/api/v1/${path}`, param
+    ).then(response => {
+      if (response.ok) {
+        return response.json();
       }
-    )
-  
-    const jsonResult = await getUserImagesRequest.json()
-  
-    // ts
-    console.log(`[photo.ts] GetAllImages jsonResult`, jsonResult)
-  
-    return jsonResult
+      const status = response.status;
+      return response.json().then(response => {
+        if (response.msg == 'Token has expired') {
+          return Auth.refreshToken().then(result => {
+            if (result) {
+              return this.call(path, method, data, headers);
+            }
+          });
+        }
+        return Promise.reject({
+          status: status,
+          response: response
+        })
+      })
+    })
+  }
+  photos = async(status, page) => {
+    page = page || 1;
+    status = status || '';
+    this.call('search-images', 'POST', {status, page, tag: ''})
+    .then(response => {
+      console.log('SUCCESS', response);
+    }).catch(err => {
+      console.log('ERROR', err);
+    });
+    return photos;
   }
 }
 
