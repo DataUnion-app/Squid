@@ -17,11 +17,11 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn icon class="hidden-xs-only action-reload" :title="$gettext('Reload')" @click.stop="refresh">
+      <!-- <v-btn icon class="hidden-xs-only action-reload" :title="$gettext('Reload')" @click.stop="refresh">
         <v-icon>refresh</v-icon>
-      </v-btn>
+      </v-btn> -->
 
-      <v-btn v-if="settings.view === 'cards'" icon :title="$gettext('Toggle View')" @click.stop="setView('list')">
+      <!-- <v-btn v-if="settings.view === 'cards'" icon :title="$gettext('Toggle View')" @click.stop="setView('list')">
         <v-icon>view_list</v-icon>
       </v-btn>
       <v-btn v-else-if="settings.view === 'list'" icon :title="$gettext('Toggle View')" @click.stop="setView('mosaic')">
@@ -29,17 +29,17 @@
       </v-btn>
       <v-btn v-else icon :title="$gettext('Toggle View')" @click.stop="setView('cards')">
         <v-icon>view_column</v-icon>
-      </v-btn>
+      </v-btn> -->
 
-      <v-btn v-if="!$config.values.readonly && $config.feature('upload')" icon class="hidden-sm-and-down action-upload"
+      <!-- <v-btn v-if="!$config.values.readonly && $config.feature('upload')" icon class="hidden-sm-and-down action-upload"
              :title="$gettext('Upload')" @click.stop="showUpload()">
         <v-icon>cloud_upload</v-icon>
-      </v-btn>
+      </v-btn> -->
 
-      <v-btn icon class="p-expand-search" :title="$gettext('Expand Search')"
+      <!-- <v-btn icon class="p-expand-search" :title="$gettext('Expand Search')"
              @click.stop="searchExpanded = !searchExpanded">
         <v-icon>{{ searchExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</v-icon>
-      </v-btn>
+      </v-btn> -->
     </v-toolbar>
 
     <v-card v-show="searchExpanded"

@@ -6,7 +6,7 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --mode development --host 0.0.0.0 --open --hot",
+    "dev": "webpack-dev-server --mode development --host 127.0.0.1 --open --hot",
     "watch": "webpack --watch",
     "build": "webpack --optimize-minimize",
     "lint": "eslint --cache src/ *.js",
