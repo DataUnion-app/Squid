@@ -50,12 +50,13 @@ class API {
     const param = {
       method: method,
       headers: apiHeaders,
+      // mode: 'no-cors'
     }
     if (data) {
       param.body = JSON.stringify(data);
     }
     return fetch(
-      `${BASE_URL}/api/v1/${path}`, param
+      `${BASE_URL}/${path}`, param
     ).then(response => {
       if (response.ok) {
         return response.json();
@@ -79,13 +80,26 @@ class API {
   photos = async(status, page) => {
     page = page || 1;
     status = status || '';
-    this.call('search-images', 'POST', {status, page, tag: ''})
+    this.tags().then(response => {
+      console.log('TAG SUCCESS', response);
+    }).catch(err => {
+      console.log('TAG ERROR', err);
+    })
+    this.call('api/v1/search-images', 'POST', {status, page, tag: ''})
     .then(response => {
       console.log('SUCCESS', response);
     }).catch(err => {
       console.log('ERROR', err);
     });
     return photos;
+  }
+  tags = async() => {
+    return this.call('staticdata/tags?type=', 'GET')
+    .then(response => {
+      console.log('SUCCESS', response);
+    }).catch(err => {
+      console.log('ERROR', err);
+    });
   }
 }
 
