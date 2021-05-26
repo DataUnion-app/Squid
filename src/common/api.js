@@ -85,7 +85,7 @@ class API {
     }).catch(err => {
       console.log('TAG ERROR', err);
     })
-    this.call('api/v1/search-images', 'POST', {status, page, tag: ''})
+    this.call('api/v1/search-images-by-status', 'POST', {status, page})
     .then(response => {
       console.log('SUCCESS', response);
     }).catch(err => {
@@ -93,8 +93,17 @@ class API {
     });
     return photos;
   }
-  tags = async() => {
-    return this.call('staticdata/tags?type=', 'GET')
+  overallTags = async() => {
+    return this.call(`api/v1/stats/overall-tags?start_date=01-01-2018&end_date=06-06-2021`, 'GET')
+    .then(response => {
+      console.log('SUCCESS', response);
+    }).catch(err => {
+      console.log('ERROR', err);
+    });
+  }
+  tags = async(type) => {
+    type = type || 'RECOMMENDED_WORDS';
+    return this.call(`staticdata/tags?type=${type}`, 'GET')
     .then(response => {
       console.log('SUCCESS', response);
     }).catch(err => {
