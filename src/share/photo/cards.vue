@@ -29,8 +29,9 @@
                 :class="photo.classes"
                 @contextmenu.stop="onContextMenu($event, index)">
           <div class="card-background accent lighten-3"></div>
-          <v-img :key="photo.Hash"
-                 :src="photo.thumbnailUrl('tile_500')"
+
+          <!-- <v-img :key="photo.Hash"
+                 v-bind:src="photo.thumbnailUrl('tile_500')"
                  :alt="photo.Title"
                  :title="photo.Title"
                  :transition="false"
@@ -90,9 +91,9 @@
               <v-icon color="white" class="select-on">check_circle</v-icon>
               <v-icon color="white" class="select-off">radio_button_off</v-icon>
             </v-btn>
-          </v-img>
+          </v-img> -->
 
-          <v-card-title primary-title class="pa-3 card-details" style="user-select: none;">
+          <!-- <v-card-title primary-title class="pa-3 card-details" style="user-select: none;">
             <div>
               <h3 class="body-2 mb-2" :title="photo.Title">
                 <div @click.stop.prevent="openPhoto(index, false)">
@@ -133,7 +134,7 @@
                 </template>
               </div>
             </div>
-          </v-card-title>
+          </v-card-title> -->
         </v-card>
       </v-flex>
     </v-layout>

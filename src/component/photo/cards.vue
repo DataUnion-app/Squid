@@ -7,7 +7,7 @@
             <translate>Couldn't find recently edited</translate>
           </h3>
           <h3 v-else class="title ma-0 pa-0">
-            <translate>Couldn't find anything</translate>
+            <translate>Couldn't find anythingdd</translate>
           </h3>
           <p class="mt-4 mb-0 pa-0">
             <translate>Try again using other filters or keywords.</translate>
@@ -32,8 +32,9 @@
                 class="result accent lighten-3"
                 :class="photo.classes()"
                 @contextmenu.stop="onContextMenu($event, index)">
-          <div class="card-background accent lighten-3"></div>
-          <v-img :key="photo.Hash"
+          <!-- <div class="card-background accent lighten-3"></div> -->
+          <img :src="photo.thumbnailUrl('tile_500')" style="width: 100%; height: 200px; object-fit: cover;" />
+          <!-- <v-img :key="photo.Hash"
                  :src="photo.thumbnailUrl('tile_500')"
                  :alt="photo.Title"
                  :title="photo.Title"
@@ -111,8 +112,7 @@
               <v-icon color="white" class="select-on">favorite</v-icon>
               <v-icon color="white" class="select-off">favorite_border</v-icon>
             </v-btn>
-          </v-img>
-
+          </v-img> -->
           <v-card-actions v-if="photo.Quality < 3 && context === 'review'" class="card-details pa-0">
             <v-layout row wrap align-center>
               <v-flex xs6 class="text-xs-center pa-1">

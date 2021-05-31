@@ -3,7 +3,7 @@
        :infinite-scroll-disabled="scrollDisabled" :infinite-scroll-distance="1200"
        :infinite-scroll-listen-for-event="'scrollRefresh'">
 
-    <p-photo-toolbar :settings="settings" :filter="filter" :filter-change="updateQuery" :dirty="dirty"
+    <p-photo-toolbar :tags="tags" :settings="settings" :filter="filter" :filter-change="updateQuery" :dirty="dirty"
                      :refresh="refresh"></p-photo-toolbar>
 
     <v-container v-if="loading" fluid class="pa-4">
@@ -45,6 +45,7 @@
 import {Photo, TypeLive, TypeRaw, TypeVideo} from "model/photo";
 import Thumb from "model/thumb";
 import Event from "pubsub-js";
+import Api from "common/api";
 
 export default {
   name: 'PPagePhotos',
@@ -87,6 +88,8 @@ export default {
     }
 
     return {
+      tags: [],
+      c: [],
       subscriptions: [],
       listen: false,
       dirty: false,
@@ -147,14 +150,17 @@ export default {
       this.search();
     }
   },
-  created() {
+  created() {    
     this.search();
 
     this.subscriptions.push(Event.subscribe("import.completed", (ev, data) => this.onImportCompleted(ev, data)));
     this.subscriptions.push(Event.subscribe("photos", (ev, data) => this.onUpdate(ev, data)));
 
     this.subscriptions.push(Event.subscribe("touchmove.top", () => this.refresh()));
-    this.subscriptions.push(Event.subscribe("touchmove.bottom", () => this.loadMore()));
+    this.subscriptions.push(Event.subscribe("touchmove.bottom", () => {
+      console.log('Loding More on created');
+      this.loadMore()
+    }));
   },
   destroyed() {
     for (let i = 0; i < this.subscriptions.length; i++) {
@@ -269,6 +275,7 @@ export default {
         Object.assign(params, this.staticFilter);
       }
 
+      console.log('Viewing Results');
       return Photo.search(params).then((resp) => {
         // Success.
         this.viewer.loading = false;
@@ -302,6 +309,7 @@ export default {
         Object.assign(params, this.staticFilter);
       }
 
+      console.log('Loading More');
       Photo.search(params).then(response => {
         this.results = Photo.mergeResponse(this.results, response);
         this.complete = (response.count < count);
@@ -387,6 +395,7 @@ export default {
       this.complete = false;
       this.scrollDisabled = false;
 
+      console.log('Loding More on Refresh');
       this.loadMore();
     },
     search() {
@@ -406,32 +415,45 @@ export default {
       this.listen = false;
       this.complete = false;
 
-      const params = this.searchParams();
-
-      Photo.search(params).then(response => {
-        this.offset = this.batchSize;
-        this.results = response.models;
-        this.complete = (response.count < this.batchSize);
-        this.scrollDisabled = this.complete;
-
-        if (this.complete) {
-          if (!this.results.length) {
-            this.$notify.warn(this.$gettext("No results"));
-          } else if (this.results.length === 1) {
-            this.$notify.info(this.$gettext("One result"));
-          } else {
-            this.$notify.info(this.$gettextInterpolate(this.$gettext("%{n} results"), {n: this.results.length}));
+      let promise = Promise.resolve(this.tags);
+      if (this.tags.length == 0) {
+        promise = Api.tags().then(response => {
+          this.tags = response.result;
+          if (this.tags.length > 0) {
+            this.filter.tag = this.tags[0];
           }
-        } else {
-          this.$notify.info(this.$gettext('More than 50 results'));
+          return this.tags;
+        })
+      }
+      promise.then(() => {
+        const params = this.searchParams();
+        Photo.search(params).then(response => {
+          console.log('On Search', response);
+          this.offset = this.batchSize;
+          this.results = response.models;
+          this.complete = (response.count < this.batchSize);
+          this.scrollDisabled = this.complete;
 
-          this.$nextTick(() => {
-            if (this.$root.$el.clientHeight <= window.document.documentElement.clientHeight + 300) {
-              this.$emit("scrollRefresh");
+          if (this.complete) {
+            if (!this.results.length) {
+              this.$notify.warn(this.$gettext("No results"));
+            } else if (this.results.length === 1) {
+              this.$notify.info(this.$gettext("One result"));
+            } else {
+              this.$notify.info(this.$gettextInterpolate(this.$gettext("%{n} results"), {n: this.results.length}));
             }
-          });
-        }
-      }).finally(() => {
+          } else {
+            this.$notify.info(this.$gettext('More than 50 results'));
+
+            this.$nextTick(() => {
+              if (this.$root.$el.clientHeight <= window.document.documentElement.clientHeight + 300) {
+                this.$emit("scrollRefresh");
+              }
+            });
+          }
+        })  
+      })
+      .finally(() => {
         this.dirty = false;
         this.loading = false;
         this.listen = true;
@@ -442,6 +464,7 @@ export default {
     onImportCompleted() {
       if (!this.listen) return;
 
+      console.log('Loding More on Import Completed');
       this.loadMore();
     },
     updateResults(entity) {

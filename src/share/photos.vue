@@ -429,6 +429,7 @@ export default {
       this.complete = false;
 
       const params = this.searchParams();
+      console.log(params);
 
       Photo.search(params).then(response => {
         this.offset = this.batchSize;

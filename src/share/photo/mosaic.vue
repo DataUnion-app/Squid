@@ -28,7 +28,7 @@
                 class="result"
                 :class="photo.classes()"
                 @contextmenu.stop="onContextMenu($event, index)">
-          <v-img :key="photo.Hash"
+          <!-- <v-img :key="photo.Hash"
                  :src="photo.thumbnailUrl('tile_224')"
                  :alt="photo.Title"
                  :title="photo.Title"
@@ -89,7 +89,7 @@
               <v-icon color="white" class="select-on">check_circle</v-icon>
               <v-icon color="white" class="select-off">radio_button_off</v-icon>
             </v-btn>
-          </v-img>
+          </v-img> -->
         </v-card>
       </v-flex>
     </v-layout>

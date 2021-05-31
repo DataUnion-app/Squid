@@ -15,6 +15,12 @@
                     @keyup.enter.native="filterChange"
       ></v-text-field>
 
+      <v-autocomplete
+        v-model="tag"
+        :items="tags"
+        label="Select a Tag"
+      ></v-autocomplete>
+      
       <v-spacer></v-spacer>
 
       <!-- <v-btn icon class="hidden-xs-only action-reload" :title="$gettext('Reload')" @click.stop="refresh">
@@ -158,14 +164,27 @@ import * as options from "options/options";
 export default {
   name: 'PPhotoToolbar',
   props: {
+    tags: Array,
     dirty: Boolean,
     filter: Object,
     settings: Object,
     refresh: Function,
     filterChange: Function,
   },
+  watch: {
+    tags() {
+      if (this.tags.length > 0 && this.tag == '') {
+        this.tag = this.tags[0];
+      }
+    },
+    tag(newVal, oldval) {
+      this.filter.tag = this.tag;
+      this.filterChange();
+    }
+  },
   data() {
     return {
+      tag: '',
       experimental: this.$config.get("experimental"),
       isFullScreen: !!document.fullscreenElement,
       config: this.$config.values,

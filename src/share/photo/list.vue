@@ -17,7 +17,7 @@
         </v-card-title>
       </v-card>
     </div>
-    <v-data-table v-else
+    <!-- <v-data-table v-else
                   v-model="selected"
                   :headers="listColumns"
                   :items="photos"
@@ -88,7 +88,7 @@
                 </span>
         </td>
       </template>
-    </v-data-table>
+    </v-data-table> -->
   </div>
 </template>
 <script>

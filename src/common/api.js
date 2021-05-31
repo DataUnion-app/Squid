@@ -34,12 +34,13 @@ https://docs.photoprism.org/developer-guide/
 // import Event from "pubsub-js";
 
 export const BASE_URL = 'http://206.81.26.71:8081';
+// export const BASE_URL = 'https://alpha.dataunion.app:4430';
 import Auth from './auth';
 
 import photos from "../../static/photos/sample.json";
 
 class API {
-  call = (path, method, data, headers) => {
+  call = (path, method, data, headers, isPure) => {
     const apiHeaders = new Headers()
     apiHeaders.append("Authorization", `Bearer ${Auth.token()}`)
     if (headers) {
@@ -58,6 +59,9 @@ class API {
     return fetch(
       `${BASE_URL}/${path}`, param
     ).then(response => {
+      if (isPure) {
+        return response;
+      }
       if (response.ok) {
         return response.json();
       }
@@ -77,37 +81,106 @@ class API {
       })
     })
   }
-  photos = async(status, page) => {
-    page = page || 1;
-    status = status || '';
-    this.tags().then(response => {
-      console.log('TAG SUCCESS', response);
-    }).catch(err => {
-      console.log('TAG ERROR', err);
+  streamToBase64 = (stream) => {
+    const concat = require('concat-stream')
+    const { Base64Encode } = require('base64-stream')
+  
+    return new Promise((resolve, reject) => {
+      const base64 = new Base64Encode()
+  
+      const cbConcat = (base64) => {
+        resolve(base64)
+      }
+  
+      stream
+        .pipe(base64)
+        .pipe(concat(cbConcat))
+        .on('error', (error) => {
+          reject(error)
+        })
     })
-    this.call('api/v1/search-images-by-status', 'POST', {status, page})
+  }  
+  getDataUrl = async function (blob) {
+    return new Promise(resolve => {
+      let reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+
+    return;
+    const encoder = require('fast-png');
+    const img = encoder.decode(data);
+
+    return URL.createObjectURL(
+      new Blob([img.data.buffer], { type: 'image/png' } /* (1) */)
+    )
+
+    var canvas = document.createElement('canvas')
+    var ctx = canvas.getContext('2d')
+  
+    canvas.width = img.width
+    canvas.height = img.height
+    ctx.drawImage(img.data, 0, 0)
+  
+    // If the image is not png, the format
+    // must be specified here
+    return canvas.toDataURL()
+  }
+  thumbnail = async(id) => {
+    return this.call(`api/v1/image/thumbnail?image_id=${id}`, 'GET', null, null, true)
     .then(response => {
-      console.log('SUCCESS', response);
+      return response.blob();      
     }).catch(err => {
-      console.log('ERROR', err);
+      return Promise.reject(err);
+    });
+  }
+  photos = async({status, tag, page}) => {
+    page = page || 1;
+    status = status || 'VERIFIABLE';
+    return this.call('api/v1/search-images', 'POST', {status, page, tag})
+    .then(async response => {
+      const result = [];
+      for(let i = 0; i < response.result.length; i++) {
+        const item = response.result[i];
+        const photo = JSON.parse(JSON.stringify(photos[0]))
+        photo.Hash = item;
+        const binaryData = await this.thumbnail(item)
+        // console.log('binary', binaryData);
+        // response.arrayBuffer().then(binaryData => {
+          // const base64 = btoa(unescape(encodeURIComponent(binaryData)));
+          const data = await this.getDataUrl(binaryData)
+          console.log(data);
+          const dataUrl = data;
+          photo.imageData = dataUrl;
+        // })
+        result.push(photo);
+      }
+      console.log('REFINED RESULT', result);
+      return result;
+    }).catch(err => {
+      return Promise.reject(err);
     });
     return photos;
   }
   overallTags = async() => {
     return this.call(`api/v1/stats/overall-tags?start_date=01-01-2018&end_date=06-06-2021`, 'GET')
     .then(response => {
-      console.log('SUCCESS', response);
+      return response;
     }).catch(err => {
-      console.log('ERROR', err);
+      return Promise.reject(err);
     });
   }
   tags = async(type) => {
     type = type || 'RECOMMENDED_WORDS';
+    status = 'VERIFIABLE';
     return this.call(`staticdata/tags?type=${type}`, 'GET')
+    // return this.call(`api/v1/tags?status=${status}`, 'GET')
     .then(response => {
-      console.log('SUCCESS', response);
+      response.result.unshift('food bounty');
+      response.result.unshift('hey');
+      return response;
     }).catch(err => {
-      console.log('ERROR', err);
+      return Promise.reject(err);
     });
   }
 }

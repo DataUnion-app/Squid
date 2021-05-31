@@ -446,7 +446,16 @@ export class Photo extends RestModel {
   }
 
   thumbnailUrl(size) {
-    return 'https://picsum.photos/200/300';
+    // return 'https://picsum.photos/200/300';
+    // console.log('PHOTO', this);
+    if (this.imageData) {
+      return this.imageData;
+    } else {
+      return null;
+      // return `data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==`;
+    }
+    
+
     let hash = this.mainFileHash();
 
     if (!hash) {

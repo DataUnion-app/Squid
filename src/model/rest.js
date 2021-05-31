@@ -174,9 +174,7 @@ export class Rest extends Model {
   }
 
   static search(params) {
-    const options = {
-      params: params,
-    };
+    console.log('Params', params);
     const collection = this.getCollectionResource();
     if (!Api[collection]) {
       return Promise.resolve({
@@ -186,7 +184,7 @@ export class Rest extends Model {
         offset: 0
       });
     }
-    return Api[collection]().then(result => {
+    return Api[collection](params).then(result => {
       const resp = {};
       resp.models = [];
       for (let i = 0; i < result.length; i++) {
@@ -198,9 +196,12 @@ export class Rest extends Model {
       resp.offset = 0;
       return Promise.resolve(resp);
     }).catch(err => {
-      return [];
+      console.log(err);
+      return Promise.reject(err);
     });
-
+    const options = {
+      params: params,
+    };
     return Api.get(this.getCollectionResource(), options).then((resp) => {
       let count = resp.data.length;
       let limit = 0;
