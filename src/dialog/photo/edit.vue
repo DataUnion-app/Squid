@@ -36,7 +36,7 @@
         </v-tab>
 
         <v-tab id="tab-labels" ripple :disabled="!$config.feature('labels')">
-          <translate key="Labels">Labels</translate>
+          <translate key="Labels">Comments</translate>
         </v-tab>
 
         
