@@ -39,14 +39,7 @@
           <translate key="Labels">Labels</translate>
         </v-tab>
 
-        <v-tab id="tab-files" ripple>
-          <translate key="Files">Files</translate>
-        </v-tab>
-
-        <v-tab v-if="$config.feature('edit')" id="tab-info" ripple>
-          <v-icon>settings</v-icon>
-        </v-tab>
-
+        
         <v-tabs-items touchless>
           <v-tab-item>
             <p-tab-photo-details :key="uid" ref="details" :model="model" :uid="uid"
