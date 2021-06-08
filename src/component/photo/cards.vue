@@ -7,7 +7,7 @@
             <translate>Couldn't find recently edited</translate>
           </h3>
           <h3 v-else class="title ma-0 pa-0">
-            <translate>Couldn't find anythingdd</translate>
+            <translate>Couldn't find anything</translate>
           </h3>
           <p class="mt-4 mb-0 pa-0">
             <translate>Try again using other filters or keywords.</translate>
