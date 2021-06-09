@@ -147,7 +147,7 @@
                   {{ photo.Description }}
                 </button>
               </div>
-              <div class="caption">
+              <!-- <div class="caption">
                 <button class="action-date-edit" :data-uid="photo.UID"
                         @click.exact="editPhoto(index)">
                   <v-icon size="14" :title="labels.taken">date_range</v-icon>
@@ -182,7 +182,7 @@
                     {{ photo.locationInfo() }}
                   </button>
                 </template>
-              </div>
+              </div> -->
             </div>
           </v-card-title>
         </v-card>

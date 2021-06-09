@@ -182,6 +182,19 @@ class API {
       return Promise.reject(err);
     });
   }
+  queryTags = async(image_ids) => {
+    image_ids = [
+      "sdf",
+      "sdfsdf",
+      "dfsdf"
+    ]
+    return this.call(`api/v1/query-tags`, 'POST', {image_ids})
+    .then(response => {
+      return response;
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+  }
 }
 
 export default new API();
