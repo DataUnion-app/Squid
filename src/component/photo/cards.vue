@@ -7,7 +7,7 @@
             <translate>Couldn't find recently edited</translate>
           </h3>
           <h3 v-else class="title ma-0 pa-0">
-            <translate>Couldn't find anythingdd</translate>
+            <translate>Couldn't find anything</translate>
           </h3>
           <p class="mt-4 mb-0 pa-0">
             <translate>Try again using other filters or keywords.</translate>
@@ -147,7 +147,7 @@
                   {{ photo.Description }}
                 </button>
               </div>
-              <div class="caption">
+              <!-- <div class="caption">
                 <button class="action-date-edit" :data-uid="photo.UID"
                         @click.exact="editPhoto(index)">
                   <v-icon size="14" :title="labels.taken">date_range</v-icon>
@@ -182,7 +182,7 @@
                     {{ photo.locationInfo() }}
                   </button>
                 </template>
-              </div>
+              </div> -->
             </div>
           </v-card-title>
         </v-card>

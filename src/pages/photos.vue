@@ -425,6 +425,9 @@ export default {
           return this.tags;
         })
       }
+      Api.queryTags().then(response => {
+          console.log("========queryTags response======", response);
+      })
       promise.then(() => {
         const params = this.searchParams();
         Photo.search(params).then(response => {

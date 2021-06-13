@@ -179,7 +179,19 @@ class API {
     // return this.call(`api/v1/tags?status=${status}`, 'GET')
     .then(response => {
       response.result.unshift('food bounty');
-      response.result.unshift('hey');
+      return response;
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+  }
+  queryTags = async(image_ids) => {
+    image_ids = [
+      "sdf",
+      "sdfsdf",
+      "dfsdf"
+    ]
+    return this.call(`api/v1/query-tags`, 'POST', {image_ids})
+    .then(response => {
       return response;
     }).catch(err => {
       return Promise.reject(err);
