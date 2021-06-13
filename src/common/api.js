@@ -32,6 +32,7 @@ https://docs.photoprism.org/developer-guide/
 // import Notify from "common/notify";
 // import { $gettext } from "./vm";
 // import Event from "pubsub-js";
+import Vue from 'vue';
 
 export const BASE_URL = 'http://206.81.26.71:8081';
 // export const BASE_URL = 'https://alpha.dataunion.app:4430';
@@ -144,15 +145,16 @@ class API {
         const item = response.result[i];
         const photo = JSON.parse(JSON.stringify(photos[0]))
         photo.Hash = item;
-        const binaryData = await this.thumbnail(item)
-        // console.log('binary', binaryData);
-        // response.arrayBuffer().then(binaryData => {
-          // const base64 = btoa(unescape(encodeURIComponent(binaryData)));
-          const data = await this.getDataUrl(binaryData)
-          console.log(data);
-          const dataUrl = data;
-          photo.imageData = dataUrl;
-        // })
+        // const binaryData = await this.thumbnail(item)
+          this.thumbnail(item).then(binaryData => {
+            this.getDataUrl(binaryData).then(data => {
+              Vue.set(photo, 'imageData', data);
+            })
+          })
+          // const data = await this.getDataUrl(binaryData)
+          // console.log(data);
+          // const dataUrl = data;
+          // photo.imageData = dataUrl;
         result.push(photo);
       }
       console.log('REFINED RESULT', result);

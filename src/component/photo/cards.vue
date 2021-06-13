@@ -33,7 +33,7 @@
                 :class="photo.classes()"
                 @contextmenu.stop="onContextMenu($event, index)">
           <!-- <div class="card-background accent lighten-3"></div> -->
-          <img :src="photo.thumbnailUrl('tile_500')" style="width: 100%; height: 200px; object-fit: cover;" />
+          <img :src="photo.imageData" style="width: 100%; height: 200px; object-fit: cover;" />
           <!-- <v-img :key="photo.Hash"
                  :src="photo.thumbnailUrl('tile_500')"
                  :alt="photo.Title"
