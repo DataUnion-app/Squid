@@ -6,7 +6,7 @@
       open
       >
       <template #logo>
-        <img alt="Vue logo" src="@/assets/logo.png">
+        <img alt="Vue logo" src="@/assets/logo-avatar.svg">
       </template>
       <vs-sidebar-item id="Home">
         <template #icon>
