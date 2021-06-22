@@ -20,6 +20,12 @@
         </template>
         My Images
       </vs-sidebar-item>
+      <vs-sidebar-item id="Map">
+        <template #icon>
+          <i class='bx bx-grid-alt'></i>
+        </template>
+        World Map
+      </vs-sidebar-item>
       <template #footer>
         <vs-row justify="space-between">
           <vs-avatar>
