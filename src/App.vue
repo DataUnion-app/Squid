@@ -1,7 +1,13 @@
 <template>
   <div id="app">
     <Sidebar class="sidebar"/>
-    <router-view class="p-5 main"/>
+    <transition
+      name="fade"
+      mode="out-in"
+    >
+      <router-view class="p-5 main"/>
+    </transition>
+    <!-- <router-view class="p-5 main"/> -->
   </div>
 </template>
 
@@ -23,7 +29,30 @@ export default {
 </script>
 
 <style>
+body {
+  overflow-y: hidden!important;
+}
 .main {
   margin-left: 260px;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.3s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0
+}
+
+*:not(i){
+      font-family: Nunito!important;
+}
+
+/* For Image Viewer Overlap Sidebar */
+.viewer-container {
+  z-index: 99999999!important;
 }
 </style>

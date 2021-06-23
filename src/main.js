@@ -9,7 +9,9 @@ import router from './router';
 import store from './store';
 import Auth from '@/utils/auth';
 import './component';
-
+import 'viewerjs/dist/viewer.css'
+import VueViewer from 'v-viewer'
+Vue.use(VueViewer)
 Vue.use(Vuesax, {
 })
 

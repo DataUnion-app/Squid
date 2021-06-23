@@ -1,6 +1,18 @@
 <template>
   <div class="">
-    <img v-if="image" class="w-full h-full cursor-pointer" :src="image" @click="details" />
+    <div class="w-full h-full cursor-pointer relative">
+      <i 
+        class='font-bold text-white absolute text-2xl bx bx-zoom-in'
+        style="right: 10px; top: 10px;"
+      >
+      </i>
+      <i 
+        class='font-bold text-white absolute text-2xl bx bx-heart'
+        style="left: 10px; top: 10px;"
+      >
+      </i>
+      <img v-if="image" :src="image" @click="details" />
+    </div>
     <div v-show="!image" ref="loader" class="relative w-full h-full"></div>
 
     <vs-dialog v-model="showDetails">
@@ -54,11 +66,15 @@ export default {
   methods: {
     ...mapActions(['getImage', 'getTags']),
     details() {
-      this.getTags(this.hash).then(tags => {
-        console.log(tags);
-        this.tags = tags;
-        this.showDetails = true;
+      // this.getTags(this.hash).then(tags => {
+      //   console.log(tags);
+      //   this.tags = tags;
+      //   this.showDetails = true;
+      // })
+      this.$viewerApi({
+        images: [this.image],
       })
+      // this.$emit('onDetails');
     },
     isUp(tag) {
       const down = tag.down_votes || tag.down_Votes;

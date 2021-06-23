@@ -39,6 +39,8 @@ export default {
   computed: {
     ...mapState(['tags'])
   },
+  methods: {
+  },
   data() {
     return {
       tag: '',

@@ -1,12 +1,14 @@
 <template>
   <div class="">
     <vs-sidebar
-      absolute
+      background="dark"
+      textWhite
       v-model="active"
       open
       >
       <template #logo>
-        <img alt="Vue logo" src="@/assets/logo-avatar.svg">
+        <img class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg">
+        <div class="text-5xl font-extrabold text-purple-600">Squid</div>
       </template>
       <vs-sidebar-item id="Home">
         <template #icon>
@@ -18,28 +20,23 @@
         <template #icon>
           <i class='bx bx-grid-alt'></i>
         </template>
-        My Images
+        Gallery
       </vs-sidebar-item>
-      <template #footer>
-        <vs-row justify="space-between">
-          <vs-avatar>
-            <img src="/avatars/avatar-5.png" alt="">
+      <template #footer v-if="blockies">
+        <div class="w-full flex flex-nowrap items-center">
+          <vs-avatar class="mr-3" style="min-width: 44px;">
+            <img :src="blockies" alt="">
           </vs-avatar>
-
-          <vs-avatar badge-color="danger" badge-position="top-right">
-            <i class='bx bx-bell' ></i>
-
-            <template #badge>
-              28
-            </template>
-          </vs-avatar>
-        </vs-row>
+          <div class="text-purple-600 font-bold text-sm overflow-ellipsis overflow-hidden">{{account}}</div>
+        </div>
       </template>
     </vs-sidebar>
   </div>
 </template>
 
 <script>
+import Observer from '@/utils/observer';
+import Auth from '@/utils/auth';
 export default {
   name: 'Sidebar',
   props: {
@@ -57,12 +54,24 @@ export default {
   },
   data() {
     return {
-      active: 'Home'
+      active: 'Home',
+      blockies: null,
+      account: null
     };
   },
   computed: {
   },
   methods: {
+  },
+  mounted() {
+    if (Auth.token()) {
+      this.blockies = Auth.blockies();
+      this.account = Auth.account;
+    }
+    Observer.$on('login', ({account}) => {
+      this.blockies = Auth.blockies();
+      this.account = account;
+    })
   }
 }
 </script>
