@@ -1,12 +1,7 @@
 <template>
   <div class="home">
-    <vs-select v-if="tags.length > 0" placeholder="Select a tag" v-model="tag">
-      <vs-option v-for="(item) in tags.slice(0, 20)" :key="item" :label="item" :value="item">
-        {{item}}
-      </vs-option>
-    </vs-select>
     <div>
-      <div v-if="tag != ''" class="flex flex-wrap justify-center">
+      <div v-if="photos.length > 0" class="flex flex-wrap justify-center">
         <div 
           v-for="photo in photos" 
           :key="photo.hash" 
@@ -22,7 +17,7 @@
         </div>
       </div>
       <div v-else>
-        Please Select a tag to see images
+        There is no image you uploaded
       </div>
     </div>
   </div>
@@ -37,25 +32,20 @@ export default {
   components: {
   },
   computed: {
-    ...mapState(['tags'])
   },
   methods: {
   },
   data() {
     return {
-      tag: '',
       photos: [],
     }
   },
   watch: {
-    tag(newVal, oldVal) {
-      if (newVal == '') {
-        return;
-      }
-      API.photos({tag: this.tag}).then(photos => {
-        this.photos = photos;
-      })
-    }
+  },
+  mounted() {
+    API.myImages().then(photos => {
+      this.photos = photos;
+    })
   }
 }
 </script>

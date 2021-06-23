@@ -1,7 +1,7 @@
 import Observer from '@/utils/observer';
 import {BASE_URL} from './api';
 import Web3 from 'web3';
-const blockies = require('ethereum-blockies-png')
+import utils from './index';
 
 class Auth {
     constructor() {
@@ -21,7 +21,7 @@ class Auth {
     }
 
     blockies() {
-        return blockies.createDataURL({ seed: this.account })
+        return utils.blockies(this.account)
     }
 
     token() {

@@ -27,7 +27,7 @@
           <vs-avatar class="mr-3" style="min-width: 44px;">
             <img :src="blockies" alt="">
           </vs-avatar>
-          <div class="text-purple-600 font-bold text-sm overflow-ellipsis overflow-hidden">{{account}}</div>
+          <div class="text-white-600 font-bold text-sm overflow-ellipsis overflow-hidden">{{account}}</div>
         </div>
       </template>
     </vs-sidebar>
