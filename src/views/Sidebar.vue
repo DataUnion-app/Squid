@@ -22,6 +22,12 @@
         </template>
         Gallery
       </vs-sidebar-item>
+      <vs-sidebar-item id="Map">
+        <template #icon>
+          <i class='bx bx-grid-alt'></i>
+        </template>
+        World Map
+      </vs-sidebar-item>
       <template #footer v-if="blockies">
         <div class="w-full flex flex-nowrap items-center">
           <vs-avatar class="mr-3" style="min-width: 44px;">
