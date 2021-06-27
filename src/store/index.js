@@ -8,7 +8,8 @@ const store = new Vuex.Store({
   state: {
     tags: [],
     imageCache: {},
-    tagsCache: {}
+    tagsCache: {},
+    albums: {},
   },
   actions: {
     init({commit}) {

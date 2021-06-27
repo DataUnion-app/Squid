@@ -11,9 +11,18 @@ import Auth from '@/utils/auth';
 import './component';
 import 'viewerjs/dist/viewer.css'
 import VueViewer from 'v-viewer'
+import * as VueGoogleMaps from 'vue2-google-maps'
+
 Vue.use(VueViewer)
 Vue.use(Vuesax, {
 })
+
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyBN0tTc5wqVuzgrO5_qxqf7yHrRbxcWUss',
+    libraries: 'places',
+  }
+});
 
 Vue.config.productionTip = false
 
