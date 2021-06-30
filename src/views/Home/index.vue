@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <h1 class="text-3xl not-margin">Home</h1>
     <div>
       <div v-if="photos.length > 0" class="flex flex-wrap justify-center">
         <div 

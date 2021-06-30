@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <h1 class="text-3xl not-margin"> Gallery </h1>
     <vs-select v-if="tags.length > 0" placeholder="Select a tag" v-model="tag">
       <vs-option v-for="(item) in tags.slice(0, 20)" :key="item" :label="item" :value="item">
         {{item}}

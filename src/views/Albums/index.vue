@@ -1,12 +1,26 @@
 <template>
   <div>
-    <div>Album: {{ $route.params.id }}</div>
-    <div class="p-3 flex justify-left">
-      <vs-input v-model="albumName" placeholder="" />
-      <vs-button @click="changeName"> Change </vs-button>
+    <div style="display: flex">
+      <div>
+        <h1 class="text-3xl not-margin">Album: {{ $route.params.id }}</h1>
+      </div>
+      <div style="margin-left: 20px">
+        <i
+          @click="showChangeNameModal()"
+          class="
+            font-bold
+            text-black
+            absolute
+            text-2xl
+            bx bx-edit
+            cursor-pointer
+          "
+        ></i>
+      </div>
     </div>
+
     <div>
-      <div v-if="photos.length > 0" class="flex flex-wrap justify-center">
+      <div v-if="photos.length > 0" class="flex flex-wrap justify-center overflow-y-auto">
         <div
           v-for="(photo, index) in photos"
           :key="photo"
@@ -20,7 +34,14 @@
             />
             <i
               @click="removeAlbums(index)"
-              class="font-bold text-white absolute text-2xl bx bx-trash cursor-pointer"
+              class="
+                font-bold
+                text-white
+                absolute
+                text-2xl
+                bx bx-trash
+                cursor-pointer
+              "
               style="right: 15px; top: 15px"
             >
             </i>
@@ -29,6 +50,24 @@
       </div>
       <div v-else>There is no image your album</div>
     </div>
+    <vs-dialog v-model="showModal">
+      <template #header>
+        <h1 class="text-3xl not-margin">Change Album's Name</h1>
+      </template>
+
+      <div class="flex">
+        <div
+          class="flex flex-col"
+          style="width: 50%; min-width: 400px; max-height: 80%"
+        >
+          <div class="p-3 flex justify-center">
+            <vs-input v-model="albumName" placeholder="" />
+            <vs-button @click="changeName"> Change </vs-button>
+          </div>
+        </div>
+      </div>
+      <template #footer> </template>
+    </vs-dialog>
   </div>
 </template>
 
@@ -44,13 +83,22 @@ export default {
       photos: [],
       name: "",
       albumName: "",
+      showModal: false,
     };
   },
   methods: {
+    showChangeNameModal() {
+    this.showModal = true;
+    },
     changeName() {
       API.changeAlbumName({ oldname: this.name, newname: this.albumName }).then(
         () => {
-          document.location.reload();
+          this.showModal = false;
+          
+          const param = this.albumName;
+
+          this.$router.push({ name: "Albums", params: { id:param } });
+          this.$store.dispatch("setAlbums");
         }
       );
     },
@@ -82,11 +130,10 @@ export default {
   },
   updated() {
     this.name = this.$route.params.id;
-    //this.albumName = this.name;
   },
   mounted() {
     this.name = this.$route.params.id;
-    //this.albumName = this.name;
+    this.albumName = this.name;
     API.getAlbums({ name: this.name }).then((photos) => {
       this.photos = photos;
     });

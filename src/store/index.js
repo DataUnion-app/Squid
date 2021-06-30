@@ -9,14 +9,17 @@ const store = new Vuex.Store({
     tags: [],
     imageCache: {},
     tagsCache: {},
-    albums: {},
+    albums: [],
   },
   actions: {
     init({commit}) {
       console.log('initing');
       API.tags().then(tags => {
         commit('set', ['tags', tags])
-      })
+      });
+      API.albums().then(albums => {
+        commit('set', ['albums', albums])
+      });
     },
     getImage({state}, id) {
       if (state.imageCache[id]) {
@@ -24,6 +27,8 @@ const store = new Vuex.Store({
       }
       return API.thumbnail(id).then(thumbnail => {
         state.imageCache[id] = thumbnail;
+        console.log(id);
+        //console.log(state.imageCache[id]);
         return thumbnail;
       });
     },
@@ -35,12 +40,25 @@ const store = new Vuex.Store({
         state.tagsCache[id] = response;
         return response;
       });
-    }
+    },
+    setAlbums({commit}) {
+      API.albums().then(albums => {
+        commit('set', ['albums', albums])
+      });
+    },
   },
   mutations: {
     set(state, [key, value]) {
       state[key] = value;
     }
+  },
+  getters: {
+    imagebyId: (state) => (id) => {
+      return state.imageCache[id];
+    },
+    getAlbums: (state) => {
+      return state.albums;
+    },
   }
 })
 export default store

@@ -1,22 +1,7 @@
 <template>
   <div>
-    <div style="width: 100%; height: 800px" id="map"></div>
-    <gmap-map
-      v-if="false"
-      :center="center"
-      :zoom="3"
-      style="width: 100%; height: 800px"
-    >
-      <gmap-custom-marker
-        v-for="(m, index) in markers"
-        :key="index"
-        :marker="m"
-        :title="m.label"
-        @click.native="gotoMap(m)"
-      >
-        <img :src="images[index]" style="width: 30px; height: 30px" />
-      </gmap-custom-marker>
-    </gmap-map>
+    <h1 class="text-3xl not-margin"> World Map</h1>
+    <div style="width: 100%; height: 750px" id="map"></div>
     <vs-dialog v-model="showDetails">
       <template #header>
         <h1 class="text-3xl not-margin">Details</h1>
@@ -86,13 +71,12 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import utils from "@/utils";
 import API from "@/utils/api";
-import GmapCustomMarker from "vue2-gmap-custom-marker";
 
 export default {
-  name: "GoogleMap",
+  name: "Map",
   data() {
     return {
       // default to Montreal to keep it simple
@@ -130,7 +114,7 @@ export default {
         markerIcon.style.height = "50px";
         markerIcon.style.borderRadius = "50%";
         markerIcon.style.backgroundSize = "cover";
-        markerIcon.src = this.$store.state.imageCache[hash];
+        markerIcon.src = this.imagebyId(hash);
         markerIcon.style.cursor = "pointer";
 
         markerIcon.addEventListener("click", () => this.details(hash));
@@ -139,6 +123,9 @@ export default {
           .addTo(map);
       }
     });
+  },
+  computed: {
+    ...mapGetters(["imagebyId"]),
   },
   methods: {
     ...mapActions(["getImage", "getTags"]),

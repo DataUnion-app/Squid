@@ -66,7 +66,6 @@ class API {
       });
   }
 
-  //http://206.81.26.71:8081/api/v1/image/thumbnail?image_id=002008000890109c
   thumbnail = async (id) => {
     return this.call(`api/v1/image/thumbnail?image_id=${id}`, 'GET', null, null, true)
       .then(response => {

@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapState } from "vuex";
 
 import Observer from "@/utils/observer";
 import Auth from "@/utils/auth";
@@ -144,10 +144,11 @@ export default {
       account: null,
       showAlbums: false,
       albumName: "",
-      albums: [],
     };
   },
-  computed: {},
+  computed: {
+    ...mapState(['albums']),
+  },
   
   methods: {
     createAlbum() {
@@ -171,9 +172,7 @@ export default {
     },
 
     refreshAlbums() {
-      API.albums().then((albums) => {
-        this.albums = albums;
-      });
+      this.$store.dispatch("setAlbums");
     },
   },
   mounted() {
@@ -183,7 +182,7 @@ export default {
       this.account = Auth.account;
     }
 
-    this.refreshAlbums();
+    //this.refreshAlbums();
 
     Observer.$on("login", ({ account }) => {
       this.blockies = Auth.blockies();
