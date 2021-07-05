@@ -1,7 +1,6 @@
 <template>
   <div>
-    <h1 class="text-3xl not-margin"> World Map</h1>
-    <div style="width: 100%; height: 750px" id="map"></div>
+    <div style="width: 100%; height: 700px" id="map"></div>
     <vs-dialog v-model="showDetails">
       <template #header>
         <h1 class="text-3xl not-margin">Details</h1>
@@ -10,13 +9,26 @@
       <div class="flex">
         <div style="width: 50%; min-width: 400px">
           <div class="relative w-full">
-            <div style="width: 100%; padding-top: 100%">
-              <img
-                @click="preview"
-                :src="image"
-                class="cursor-pointer w-full h-full absolute p-1 object-contain"
-                style="top: 0; left: 0"
-              />
+            <div style="width: 100%">
+              <vs-card>
+                <template #img>
+                  <img
+                    v-if="image"
+                    class="object-cover w-full h-full"
+                    :src="image"
+                    @click="preview"
+                    alt=""
+                  />
+                </template>
+                <template #interactions>
+                  <vs-button v-if="!flag" danger icon>
+                    <i class="bx bx-heart" @click="showdataDialog"></i>
+                  </vs-button>
+                  <vs-button v-else danger icon>
+                    <i class="bx bx-trash" @click="removeIconClicked"></i>
+                  </vs-button>
+                </template>
+              </vs-card>
             </div>
           </div>
           <div class="mt-3 flex flex-wrap">
@@ -25,7 +37,7 @@
                 class="flex mr-1 items-center rounded-full py-1 px-2 m-1"
                 :class="isUp(tag) ? 'bg-green-300' : 'bg-red-300'"
               >
-                {{ tag.tag }}
+                {{ tag.tag }} ? up : {{tag.up_votes}}, down : {{tag.down_votes}} 
               </div>
             </div>
           </div>
@@ -67,7 +79,7 @@
       </div>
       <template #footer> </template>
     </vs-dialog>
-  </div>
+    </div>
 </template>
 
 <script>
@@ -85,22 +97,16 @@ export default {
       tags: [],
       comment: "",
       comments: [],
-      //image: null,
-      center: { lat: 100.508, lng: -73.587 },
       markers: [],
-      places: [],
       image: "",
-      currentPlace: null,
       hash: "",
     };
   },
-
   mounted() {
-    const key = "sAS3TYpCMClh1eeXYWHP";
     const map = new window.maplibregl.Map({
       container: "map", // container id
-      style: `https://api.maptiler.com/maps/streets/style.json?key=${key}`, // style URL
-      center: [-74.5, 40], // starting position [lng, lat]
+      style: `https://api.maptiler.com/maps/streets/style.json?key=${process.env.VUE_APP_KEY}`, // style URL
+      center: [-38, -40], // starting position [lng, lat]
       zoom: 3, // starting zoom
     });
     API.myWorld().then((markers) => {
@@ -108,16 +114,30 @@ export default {
       var marker;
 
       for (var i = 0; i < this.markers.length; i++) {
-        const hash = this.markers[i].hash;
+
+        if(i == 0) {
+          map.flyTo({
+            center: [this.markers[i].lat, this.markers[i].lng]
+          });
+        }
+        
+        const markerItem = this.markers[i];
         const markerIcon = document.createElement("img");
         markerIcon.style.width = "50px";
         markerIcon.style.height = "50px";
         markerIcon.style.borderRadius = "50%";
         markerIcon.style.backgroundSize = "cover";
-        markerIcon.src = this.imagebyId(hash);
+        markerIcon.src = this.imagebyId(markerItem.hash);
         markerIcon.style.cursor = "pointer";
 
-        markerIcon.addEventListener("click", () => this.details(hash));
+
+        markerIcon.addEventListener("click", () => {
+          this.details(markerItem.hash); 
+          map.flyTo({
+            center: [markerItem.lat, markerItem.lng]
+          });
+        })
+          
         marker = new window.maplibregl.Marker(markerIcon)
           .setLngLat([this.markers[i].lat, this.markers[i].lng])
           .addTo(map);
@@ -130,9 +150,6 @@ export default {
   methods: {
     ...mapActions(["getImage", "getTags"]),
     // receives a place object via the autocomplete component
-    setPlace(place) {
-      this.currentPlace = place;
-    },
     avatar(id) {
       return utils.blockies(id);
     },
@@ -166,33 +183,6 @@ export default {
       API.addComment({ id: this.hash, comment: this.comment }).then(() => {
         this.refreshComments();
         this.comment = "";
-      });
-    },
-    gotoMap(m) {
-      this.center = m;
-      this.hash = m.hash;
-      this.refreshComments();
-      this.details();
-    },
-
-    addMarker() {
-      if (this.currentPlace) {
-        const marker = {
-          lat: this.currentPlace.geometry.location.lat(),
-          lng: this.currentPlace.geometry.location.lng(),
-        };
-        this.markers.push({ position: marker });
-        this.places.push(this.currentPlace);
-        this.center = marker;
-        this.currentPlace = null;
-      }
-    },
-    geolocate() {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.center = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
       });
     },
   },

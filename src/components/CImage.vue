@@ -6,8 +6,8 @@
         style="right: 10px; top: 10px;"
       >
       </i> -->
-      <i
-        @click="showAlbumDialog"
+      <!-- <i
+        @click="showdataDialog"
         class="font-bold text-white absolute text-2xl bx bx-heart"
         style="left: 10px; top: 10px"
       >
@@ -17,7 +17,26 @@
         class="object-cover w-full h-full"
         :src="image"
         @click="details"
-      />
+      /> -->
+      <vs-card>
+        <template #img>
+          <img
+            v-if="image"
+            style="width:100%; height:300px"
+            :src="image"
+            @click="details"
+            alt=""
+          />
+        </template>
+        <template #interactions>
+          <vs-button v-if="!flag" danger icon>
+            <i class="bx bx-heart" @click="showdataDialog"></i>
+          </vs-button>
+          <vs-button v-else danger icon>
+            <i class="bx bx-trash" @click="removeIconClicked"></i>
+          </vs-button>
+        </template>
+      </vs-card>
       <div v-show="!image" ref="loader" class="relative w-full h-full"></div>
     </div>
 
@@ -29,13 +48,26 @@
       <div class="flex">
         <div style="width: 50%; min-width: 400px">
           <div class="relative w-full">
-            <div style="width: 100%; padding-top: 100%">
-              <img
-                @click="preview"
-                :src="image"
-                class="cursor-pointer w-full h-full absolute p-1 object-contain"
-                style="top: 0; left: 0"
-              />
+            <div style="width: 100%">
+              <vs-card>
+                <template #img>
+                  <img
+                    v-if="image"
+                    style="width:100%; height:350px"
+                    :src="image"
+                    @click="preview"
+                    alt=""
+                  />
+                </template>
+                <template #interactions>
+                  <vs-button v-if="!flag" danger icon>
+                    <i class="bx bx-heart" @click="showdataDialog"></i>
+                  </vs-button>
+                  <vs-button v-else danger icon>
+                    <i class="bx bx-trash" @click="removeIconClicked"></i>
+                  </vs-button>
+                </template>
+              </vs-card>
             </div>
           </div>
           <div class="mt-3 flex flex-wrap">
@@ -44,7 +76,7 @@
                 class="flex mr-1 items-center rounded-full py-1 px-2 m-1"
                 :class="isUp(tag) ? 'bg-green-300' : 'bg-red-300'"
               >
-                {{ tag.tag }}
+                {{ tag.tag }} ? up : {{tag.up_votes}}, down : {{tag.down_votes}} 
               </div>
             </div>
           </div>
@@ -86,9 +118,9 @@
       </div>
       <template #footer> </template>
     </vs-dialog>
-    <vs-dialog v-model="showAlbums">
+    <vs-dialog v-model="showdatas">
       <template #header>
-        <h1 class="text-3xl not-margin">Add Albums</h1>
+        <h1 class="text-3xl not-margin">Add Data</h1>
       </template>
 
       <div class="flex">
@@ -98,12 +130,12 @@
         >
           <div class="p-3 flex justify-center">
             <vs-select
-              v-if="albums.length > 0"
-              placeholder="Select a album"
-              v-model="album"
+              v-if="datas.length > 0"
+              placeholder="Select a data"
+              v-model="data"
             >
               <vs-option
-                v-for="item in albums"
+                v-for="item in datas"
                 :key="item.name"
                 :label="item.name"
                 :value="item.name"
@@ -111,7 +143,7 @@
                 {{ item.name }}
               </vs-option>
             </vs-select>
-            <vs-button @click="addAlbums"> Save </vs-button>
+            <vs-button @click="adddatas"> Save </vs-button>
           </div>
         </div>
       </div>
@@ -129,23 +161,28 @@ export default {
   name: "CImage",
   props: {
     hash: String,
+    flag: Boolean,
+    index: Number,
   },
   watch: {},
   data() {
     return {
       image: null,
       showDetails: false,
-      showAlbums: false,
+      showdatas: false,
       tags: [],
       comment: "",
       comments: [],
-      albums: [],
-      album: "",
+      datas: [],
+      data: "",
     };
   },
   computed: {},
   methods: {
     ...mapActions(["getImage", "getTags"]),
+    removeIconClicked(event) {
+      this.$emit("clicked", this.index);
+    },
     avatar(id) {
       return utils.blockies(id);
     },
@@ -166,31 +203,29 @@ export default {
       });
     },
     details() {
-      console.log(this.hash);
       this.getTags(this.hash).then((tags) => {
         this.tags = tags;
         this.showDetails = true;
       });
     },
-    showAlbumDialog() {
-      this.refreshAlbums();
-      this.showAlbums = true;
+    showdataDialog() {
+      this.refreshdatas();
+      this.showdatas = true;
     },
-    addAlbums() {
-      if (this.album !== "") {
-        API.saveAlbum({ name: this.album, hash: this.hash }).then((flag) => {
+    adddatas() {
+      if (this.data !== "") {
+        API.savedata({ name: this.data, hash: this.hash }).then((flag) => {
           if (flag) {
             this.openNotificationSucess("top-right", "success");
           } else {
             this.openNotificationFailed("top-right", "danger");
           }
-          this.showAlbums = false;
+          this.showdatas = false;
         });
       }
     },
     isUp(tag) {
-      const down = tag.down_votes || tag.down_Votes;
-      return tag.up_votes > down;
+      return tag.up_votes > tag.down_votes;
     },
     postComment() {
       API.addComment({ id: this.hash, comment: this.comment }).then(() => {
@@ -208,9 +243,9 @@ export default {
         images: [this.image],
       });
     },
-    refreshAlbums() {
-      API.albums().then((albums) => {
-        this.albums = albums;
+    refreshdatas() {
+      API.datas().then((datas) => {
+        this.datas = datas;
       });
     },
   },
@@ -222,7 +257,7 @@ export default {
     });
 
     this.refreshComments();
-    this.refreshAlbums();
+    this.refreshdatas();
 
     this.getImage(this.hash).then((image) => {
       this.image = image;

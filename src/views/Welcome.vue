@@ -1,10 +1,11 @@
 <template>
-  <div class="">
-      Welcome. Please login
+  <div>
+    Welcome. Please login
   </div>
 </template>
 
 <script>
+
 export default {
   name: 'Welcome',
   props: {
@@ -15,9 +16,14 @@ export default {
     return {
     };
   },
+  components: {
+  },
   computed: {
   },
   methods: {
+    
+  },
+  mounted() {
   }
 }
 </script>

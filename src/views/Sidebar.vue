@@ -17,7 +17,7 @@
         </template>
         Gallery
       </vs-sidebar-item>
-      <div v-if="albums.length > 0">
+      <div v-if="datas.length > 0">
         <vs-sidebar-group>
           <template #header>
             <vs-sidebar-item arrow>
@@ -25,9 +25,9 @@
                 <i class="bx bx-group"></i>
               </template>
               <div style="width: 180px">
-                Albums
+                Data
                 <i
-                  @click="createAlbum"
+                  @click="createdata"
                   class="bx bx-plus"
                   style="float: right"
                 ></i>
@@ -35,26 +35,26 @@
             </vs-sidebar-item>
           </template>
           <vs-sidebar-item
-            v-for="album in albums"
-            :key="album.name"
-            :id="album.name"
+            v-for="data in datas"
+            :key="data.name"
+            :id="data.name"
           >
             <template #icon>
-              <i class="bx bx-album"></i>
+              <i class="bx bx-data"></i>
             </template>
-            {{ album.name }}
+            {{ data.name }}
           </vs-sidebar-item>
         </vs-sidebar-group>
       </div>
       <div v-else>
         <vs-sidebar-item>
           <template #icon>
-            <i class="bx bx-album"></i>
+            <i class="bx bx-data"></i>
           </template>
           <div style="width: 180px">
-                Albums
+                Data
                 <i
-                  @click="createAlbum"
+                  @click="createdata"
                   class="bx bx-plus"
                   style="float: right"
                 ></i>
@@ -85,9 +85,9 @@
         </div>
       </template>
     </vs-sidebar>
-    <vs-dialog v-model="showAlbums">
+    <vs-dialog v-model="showdatas">
       <template #header>
-        <h1 class="text-3xl not-margin">Create Album</h1>
+        <h1 class="text-3xl not-margin">Create Data</h1>
       </template>
 
       <div class="flex">
@@ -96,8 +96,8 @@
           style="width: 50%; min-width: 400px; max-height: 80%"
         >
           <div class="p-3 flex justify-center">
-            <vs-input v-model="albumName" placeholder="Input your album name" />
-            <vs-button @click="createAlbum"> Create </vs-button>
+            <vs-input v-model="dataName" placeholder="Input your data name" />
+            <vs-button @click="createdata"> Create </vs-button>
           </div>
         </div>
       </div>
@@ -124,15 +124,15 @@ export default {
       if (this.$route.name == this.active) {
         return;
       }
-      for (var i = 0; i < this.albums.length; i++) {
-        if (this.active == this.albums[i].name) break;
+      for (var i = 0; i < this.datas.length; i++) {
+        if (this.active == this.datas[i].name) break;
       }
 
-      if (i == this.albums.length) this.$router.push({ name: this.active });
+      if (i == this.datas.length) this.$router.push({ name: this.active });
       else {
         const param = this.active;
         this.$router
-          .push({ name: "Albums", params: { id: param } })
+          .push({ name: "datas", params: { id: param } })
           .catch(() => {});
       }
     },
@@ -142,22 +142,22 @@ export default {
       active: "Home",
       blockies: null,
       account: null,
-      showAlbums: false,
-      albumName: "",
+      showdatas: false,
+      dataName: "",
     };
   },
   computed: {
-    ...mapState(['albums']),
+    ...mapState(['datas']),
   },
   
   methods: {
-    createAlbum() {
-      this.showAlbums = true;
-      if (this.albumName !== "") {
-        API.createAlbum({ name: this.albumName }).then(() => {
-          this.refreshAlbums();
-          this.albumName = "";
-          this.showAlbums = false;
+    createdata() {
+      this.showdatas = true;
+      if (this.dataName !== "") {
+        API.createdata({ name: this.dataName }).then(() => {
+          this.refreshdatas();
+          this.dataName = "";
+          this.showdatas = false;
           this.openNotification("top-right", "success");
         });
       }
@@ -167,12 +167,12 @@ export default {
         color,
         position,
         title: "Success",
-        text: "Album successfuly created",
+        text: "data successfuly created",
       });
     },
 
-    refreshAlbums() {
-      this.$store.dispatch("setAlbums");
+    refreshdatas() {
+      this.$store.dispatch("setdatas");
     },
   },
   mounted() {
@@ -182,7 +182,7 @@ export default {
       this.account = Auth.account;
     }
 
-    //this.refreshAlbums();
+    //this.refreshdatas();
 
     Observer.$on("login", ({ account }) => {
       this.blockies = Auth.blockies();

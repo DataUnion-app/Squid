@@ -100,6 +100,7 @@ class Auth {
 const auth = new Auth();
 
 export const Register = async (accountId) => {
+    console.log("register");
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
   
@@ -107,7 +108,8 @@ export const Register = async (accountId) => {
         "public_address": accountId
     }
     const addressObject = JSON.stringify(obj)
-  
+    console.log(accountId);
+    console.log("before register");
     const nonceRequest = await fetch(
         `${BASE_URL}/register`, {
           method: 'POST',
@@ -115,7 +117,8 @@ export const Register = async (accountId) => {
           body: addressObject,
           redirect: 'follow'
       })
-  
+
+    console.log("after register");
     const jsonResult = await nonceRequest.json()
     if (jsonResult["status"] != "failed") {
         const nonce = jsonResult["nonce"]

@@ -30,7 +30,8 @@ export default {
 
 <style>
 body {
-  overflow-y: hidden!important;
+  /* overflow-y: hidden!important; */
+  overflow-x: hidden;
 }
 .main {
   margin-left: 260px;

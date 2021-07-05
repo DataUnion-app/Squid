@@ -1,7 +1,7 @@
 <template>
   <div class="home">
-    <h1 class="text-3xl not-margin">Home</h1>
-    <div>
+    <CHeader title="Home"/>
+    <div style="margin-top:10px">
       <div v-if="photos.length > 0" class="flex flex-wrap justify-center">
         <div 
           v-for="photo in photos" 
@@ -10,7 +10,7 @@
         >
           <div style="width: 100%; padding-top: 100%;">
             <CImage 
-              :hash="photo.hash" 
+              :hash="photo.hash"
               class="w-full h-full absolute p-1"
               style="top: 0; left: 0;"
             />

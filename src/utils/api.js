@@ -1,5 +1,8 @@
 export const BASE_URL = 'http://206.81.26.71:8081';
 // export const BASE_URL = 'https://alpha.dataunion.app:4430';
+// export const BASE_URL = 'http://localhost:8080';
+// export const BASE_URL = 'https://dev.dataunion.app:8082';
+// export const BASE_URL = 'https://alpha.dataunion.app:4430';
 import Auth from './auth';
 import VM from '../main';
 
@@ -170,70 +173,70 @@ class API {
     return comments[id] || [];
   }
 
-  createAlbum = async ({
+  createdata = async ({
     name
   }) => {
-    const albums = JSON.parse(localStorage.getItem('albums')) || [];
-    const album = {};
-    album.name = name;
-    album.photos = [];
-    albums.push(album);
-    localStorage.setItem('albums', JSON.stringify(albums));
+    const datas = JSON.parse(localStorage.getItem('datas')) || [];
+    const data = {};
+    data.name = name;
+    data.photos = [];
+    datas.push(data);
+    localStorage.setItem('datas', JSON.stringify(datas));
 
     return Promise.resolve(true);
   }
 
-  saveAlbum = async ({
+  savedata = async ({
     name,
     hash
   }) => {
-    const albums = JSON.parse(localStorage.getItem('albums')) || [];
-    const index = albums.findIndex(item => item.name === name);
-    if (albums[index].photos.findIndex(item => item == hash) < 0) {
-      albums[index].photos.push(hash);
-      localStorage.setItem('albums', JSON.stringify(albums));
+    const datas = JSON.parse(localStorage.getItem('datas')) || [];
+    const index = datas.findIndex(item => item.name === name);
+    if (datas[index].photos.findIndex(item => item == hash) < 0) {
+      datas[index].photos.push(hash);
+      localStorage.setItem('datas', JSON.stringify(datas));
       return Promise.resolve(true);
     }
     return Promise.resolve(false);
   }
 
-  changeAlbumName = async ({
+  changedataName = async ({
     oldname,
     newname
   }) => {
-    const albums = JSON.parse(localStorage.getItem('albums')) || [];
-    const index = albums.findIndex(item => item.name === oldname);
-    albums[index].name = newname;
-    localStorage.setItem('albums', JSON.stringify(albums));
-    return albums[index].photos;
+    const datas = JSON.parse(localStorage.getItem('datas')) || [];
+    const index = datas.findIndex(item => item.name === oldname);
+    datas[index].name = newname;
+    localStorage.setItem('datas', JSON.stringify(datas));
+    return datas[index].photos;
   }
 
-  removeAlbums = async ({
+  removedatas = async ({
     name,
     index
   }) => {
-    const albums = JSON.parse(localStorage.getItem('albums')) || [];
-    const a_index = albums.findIndex(item => item.name === name);
-    console.log(albums[a_index].photos);
-    albums[a_index].photos.splice(index, 1);
-    console.log(albums[a_index].photos);
-    localStorage.setItem('albums', JSON.stringify(albums));
-    return albums[a_index].photos;
+    const datas = JSON.parse(localStorage.getItem('datas')) || [];
+    const a_index = datas.findIndex(item => item.name === name);
+    console.log(datas[a_index].photos);
+    datas[a_index].photos.splice(index, 1);
+    console.log(datas[a_index].photos);
+    localStorage.setItem('datas', JSON.stringify(datas));
+    return datas[a_index].photos;
   }
-  albums = async () => {
-    const albums = JSON.parse(localStorage.getItem('albums'));
-    if (!albums) {
+  datas = async () => {
+    const datas = JSON.parse(localStorage.getItem('datas'));
+    if (!datas) {
       return [];
     }
-    return albums;
+    return datas;
   }
 
-  getAlbums = async ({
+  getdatas = async ({
     name
   }) => {
-    const albums = JSON.parse(localStorage.getItem('albums')) || [];
-    const index = albums.findIndex(item => item.name === name);
-    return albums[index].photos;
+    const datas = JSON.parse(localStorage.getItem('datas')) || [];
+    const index = datas.findIndex(item => item.name === name);
+    return datas[index].photos;
   }
 
   photos = async ({

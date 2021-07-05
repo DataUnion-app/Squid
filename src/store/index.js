@@ -9,7 +9,7 @@ const store = new Vuex.Store({
     tags: [],
     imageCache: {},
     tagsCache: {},
-    albums: [],
+    datas: [],
   },
   actions: {
     init({commit}) {
@@ -17,8 +17,8 @@ const store = new Vuex.Store({
       API.tags().then(tags => {
         commit('set', ['tags', tags])
       });
-      API.albums().then(albums => {
-        commit('set', ['albums', albums])
+      API.datas().then(datas => {
+        commit('set', ['datas', datas])
       });
     },
     getImage({state}, id) {
@@ -41,11 +41,11 @@ const store = new Vuex.Store({
         return response;
       });
     },
-    setAlbums({commit}) {
-      API.albums().then(albums => {
-        commit('set', ['albums', albums])
+    setdatas({commit}) {
+      API.datas().then(datas => {
+        commit('set', ['datas', datas])
       });
-    },
+    }
   },
   mutations: {
     set(state, [key, value]) {
@@ -56,8 +56,8 @@ const store = new Vuex.Store({
     imagebyId: (state) => (id) => {
       return state.imageCache[id];
     },
-    getAlbums: (state) => {
-      return state.albums;
+    getdatas: (state) => {
+      return state.datas;
     },
   }
 })
