@@ -8,10 +8,10 @@
     <div class="main-body">
       <div>
         <div v-if="photos.length > 0" class="flex flex-wrap justify-center">
-          <div v-for="photo in photos" :key="photo.hash" class="image-relative">
+          <div v-for="photo in photos" :key="photo" class="image-relative">
             <div class="comment">
               <CImage
-                :hash="photo.hash"
+                :hash="photo"
                 class="w-full h-full absolute p-1 comment-item"
               />
             </div>

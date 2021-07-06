@@ -11,7 +11,6 @@ class API {
   }
 
   call = (path, method, data, headers, isPure) => {
-    console.log('call', Auth.token());
     const apiHeaders = new Headers()
     apiHeaders.append("Authorization", `Bearer ${Auth.token()}`)
     if (headers) {
