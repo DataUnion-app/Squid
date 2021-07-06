@@ -5,25 +5,14 @@
       :flag="true"
       @edit_clicked="onClickEdit"
     />
-    <div style="margin-top: 10px">
+    <div class="main-body">
       <div>
-        <div
-          v-if="photos.length > 0"
-          class="flex flex-wrap justify-center overflow-y-auto"
-        >
-          <div
-            v-for="(photo, index) in photos"
-            :key="photo"
-            class="w-1/4 relative"
-          >
-            <div style="width: 100%; padding-top: 100%">
+        <div v-if="photos.length > 0" class="flex flex-wrap justify-center">
+          <div v-for="photo in photos" :key="photo.hash" class="image-relative">
+            <div class="comment">
               <CImage
-                :hash="photo"
-                :flag="true"
-                :index="index"
-                @clicked="onClickChild"
-                class="w-full h-full absolute p-1"
-                style="top: 0; left: 0"
+                :hash="photo.hash"
+                class="w-full h-full absolute p-1 comment-item"
               />
             </div>
           </div>
@@ -32,14 +21,11 @@
       </div>
       <vs-dialog v-model="showModal">
         <template #header>
-          <h1 class="text-3xl not-margin">Change Data Name</h1>
+          <h1 class="text-3xl not-margin">Change Data Set Name</h1>
         </template>
 
         <div class="flex">
-          <div
-            class="flex flex-col"
-            style="width: 50%; min-width: 400px; max-height: 80%"
-          >
+          <div class="flex flex-col image-detail-right">
             <div class="p-3 flex justify-center">
               <vs-input v-model="dataName" placeholder="" />
               <vs-button @click="changeName"> Change </vs-button>
@@ -69,7 +55,7 @@ export default {
   },
   methods: {
     onClickChild(value) {
-      this.removedatas(value);
+      this.removeData(value);
     },
     onClickEdit() {
       this.showChangeNameModal();
@@ -78,19 +64,20 @@ export default {
       this.showModal = true;
     },
     changeName() {
-      API.changedataName({ oldname: this.name, newname: this.dataName }).then(
-        () => {
-          this.showModal = false;
+      API.changeDataSetName({
+        oldname: this.name,
+        newname: this.dataName,
+      }).then(() => {
+        this.showModal = false;
 
-          const param = this.dataName;
+        const param = this.dataName;
 
-          this.$router.push({ name: "datas", params: { id: param } });
-          this.$store.dispatch("setdatas");
-        }
-      );
+        this.$router.push({ name: "datas", params: { id: param } });
+        this.$store.dispatch("setdatas");
+      });
     },
-    removedatas(index) {
-      API.removedatas({ name: this.name, index: index }).then((photos) => {
+    removeData(index) {
+      API.removeData({ name: this.name, index: index }).then((photos) => {
         this.photos = photos;
         this.openNotification("top-right", "success");
       });
@@ -110,7 +97,7 @@ export default {
       if (newVal == "") {
         return;
       }
-      API.getdatas({ name: this.name }).then((photos) => {
+      API.getData({ name: this.name }).then((photos) => {
         this.photos = photos;
       });
     },
@@ -121,7 +108,7 @@ export default {
   mounted() {
     this.name = this.$route.params.id;
     this.dataName = this.name;
-    API.getdatas({ name: this.name }).then((photos) => {
+    API.getData({ name: this.name }).then((photos) => {
       this.photos = photos;
     });
   },

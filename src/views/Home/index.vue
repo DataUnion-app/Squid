@@ -1,52 +1,41 @@
 <template>
   <div class="home">
-    <CHeader title="Home"/>
-    <div style="margin-top:10px">
+    <CHeader title="Home" />
+    <div class="main-body">
       <div v-if="photos.length > 0" class="flex flex-wrap justify-center">
-        <div 
-          v-for="photo in photos" 
-          :key="photo.hash" 
-          class="w-1/4 relative"
-        >
-          <div style="width: 100%; padding-top: 100%;">
-            <CImage 
+        <div v-for="photo in photos" :key="photo.hash" class="image-relative">
+          <div class="comment">
+            <CImage
               :hash="photo.hash"
-              class="w-full h-full absolute p-1"
-              style="top: 0; left: 0;"
+              class="w-full h-full absolute p-1 comment-item"
             />
           </div>
         </div>
       </div>
-      <div v-else>
-        There is no image you uploaded
-      </div>
+      <div v-else>There is no image you uploaded</div>
     </div>
   </div>
 </template>
 
 <script>
-import {mapState} from 'vuex';
-import API from '@/utils/api';
+import { mapState } from "vuex";
+import API from "@/utils/api";
 
 export default {
-  name: 'Home',
-  components: {
-  },
-  computed: {
-  },
-  methods: {
-  },
+  name: "Home",
+  components: {},
+  computed: {},
+  methods: {},
   data() {
     return {
       photos: [],
-    }
+    };
   },
-  watch: {
-  },
+  watch: {},
   mounted() {
-    API.myImages().then(photos => {
+    API.myImages().then((photos) => {
       this.photos = photos;
-    })
-  }
-}
+    });
+  },
+};
 </script>

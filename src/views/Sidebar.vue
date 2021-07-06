@@ -24,12 +24,11 @@
               <template #icon>
                 <i class="bx bx-group"></i>
               </template>
-              <div style="width: 180px">
-                Data
+              <div class="sidebar">
+                Data Set
                 <i
-                  @click="createdata"
-                  class="bx bx-plus"
-                  style="float: right"
+                  @click="createData"
+                  class="bx bx-plus sidebar-item"
                 ></i>
               </div>
             </vs-sidebar-item>
@@ -51,14 +50,13 @@
           <template #icon>
             <i class="bx bx-data"></i>
           </template>
-          <div style="width: 180px">
-                Data
-                <i
-                  @click="createdata"
-                  class="bx bx-plus"
-                  style="float: right"
-                ></i>
-              </div>
+          <div class="sidebar">
+            Data Set
+            <i
+              @click="createData"
+              class="bx bx-plus sidebar-item">
+            </i>
+          </div>
         </vs-sidebar-item>
       </div>
       <vs-sidebar-item id="Map">
@@ -69,7 +67,7 @@
       </vs-sidebar-item>
       <template #footer v-if="blockies">
         <div class="w-full flex flex-nowrap items-center">
-          <vs-avatar class="mr-3" style="min-width: 44px">
+          <vs-avatar class="mr-3 comment-avatar">
             <img :src="blockies" alt="" />
           </vs-avatar>
           <div
@@ -87,17 +85,19 @@
     </vs-sidebar>
     <vs-dialog v-model="showdatas">
       <template #header>
-        <h1 class="text-3xl not-margin">Create Data</h1>
+        <h1 class="text-3xl not-margin">Create Data Set</h1>
       </template>
 
       <div class="flex">
         <div
-          class="flex flex-col"
-          style="width: 50%; min-width: 400px; max-height: 80%"
+          class="flex flex-col add-dialog"
         >
           <div class="p-3 flex justify-center">
-            <vs-input v-model="dataName" placeholder="Input your data name" />
-            <vs-button @click="createdata"> Create </vs-button>
+            <vs-input
+              v-model="dataName"
+              placeholder="Input your data set name"
+            />
+            <vs-button @click="createData"> Create </vs-button>
           </div>
         </div>
       </div>
@@ -115,6 +115,9 @@ import API from "@/utils/api";
 
 export default {
   name: "Sidebar",
+  created() {
+    this.$root.$refs.Sidebar = this;
+  },
   props: {},
   watch: {
     $route() {
@@ -147,14 +150,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(['datas']),
+    ...mapState(["datas"]),
   },
-  
+
   methods: {
-    createdata() {
+    createData() {
       this.showdatas = true;
       if (this.dataName !== "") {
-        API.createdata({ name: this.dataName }).then(() => {
+        API.createData({ name: this.dataName }).then(() => {
           this.refreshdatas();
           this.dataName = "";
           this.showdatas = false;
@@ -178,7 +181,6 @@ export default {
   mounted() {
     if (Auth.token()) {
       this.blockies = Auth.blockies();
-      console.log(this.blockies);
       this.account = Auth.account;
     }
 

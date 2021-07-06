@@ -1,26 +1,13 @@
 <template>
-  <div
-    style="
-      height: 50px;
-      width: 110%;
-      margin-left: -45px;
-      margin-top: -20px;
-      background-color: RGB(238, 242, 245);
-      display: flex;
-      position: relative;
-    "
-  >
-    <div v-if="flag" style="width: 60%">
-      <div style="display: flex">
+  <div class="header" >
+    <div v-if="flag" class="header-child">
+      <div class="flex">
         <div>
-          <h1
-            class="text-3xl not-margin"
-            style="padding: 10px; margin-left: 100px"
-          >
-            Data: {{ title }}
+          <h1 class="text-4xl not-margin header-title">
+            {{ title }} Data Set
           </h1>
         </div>
-        <div style="margin-left: 20px; margin-top: 10px">
+        <div class="header-edit-button">
           <i
             @click="editClicked()"
             class="
@@ -35,21 +22,21 @@
         </div>
       </div>
     </div>
-    <div v-else style="width: 60%">
-      <h1 class="text-3xl not-margin" style="padding: 10px; margin-left: 100px">
+    <div v-else class="header-child">
+      <h1 class="text-4xl not-margin header-title">
         {{ title }}
       </h1>
     </div>
-    <div style="padding: 15px; width: 40%">
-      <ul style="display: flex">
+    <div class="header-icon">
+      <ul class="flex">
         <li>
-          <i style="margin-left: 20px" class="bx bx-code-alt"></i>
+          <i class="bx bx-code-alt header-icon-item"></i>
         </li>
         <li>
-          <i style="margin-left: 20px" class="bx bxl-telegram"></i>
+          <i class="bx bxl-telegram header-icon-item"></i>
         </li>
         <li>
-          <i style="margin-left: 20px" class="bx bxl-discord"></i>
+          <i class="bx bxl-discord header-icon-item"></i>
         </li>
       </ul>
     </div>

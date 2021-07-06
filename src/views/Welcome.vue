@@ -1,6 +1,6 @@
 <template>
   <div>
-    Welcome. Please login
+    <CHeader title="Welcome. Please login" />
   </div>
 </template>
 

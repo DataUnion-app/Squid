@@ -27,8 +27,6 @@ const store = new Vuex.Store({
       }
       return API.thumbnail(id).then(thumbnail => {
         state.imageCache[id] = thumbnail;
-        console.log(id);
-        //console.log(state.imageCache[id]);
         return thumbnail;
       });
     },

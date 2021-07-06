@@ -1,8 +1,6 @@
 export const BASE_URL = 'http://206.81.26.71:8081';
 // export const BASE_URL = 'https://alpha.dataunion.app:4430';
-// export const BASE_URL = 'http://localhost:8080';
 // export const BASE_URL = 'https://dev.dataunion.app:8082';
-// export const BASE_URL = 'https://alpha.dataunion.app:4430';
 import Auth from './auth';
 import VM from '../main';
 
@@ -13,6 +11,7 @@ class API {
   }
 
   call = (path, method, data, headers, isPure) => {
+    console.log('call', Auth.token());
     const apiHeaders = new Headers()
     apiHeaders.append("Authorization", `Bearer ${Auth.token()}`)
     if (headers) {
@@ -84,35 +83,25 @@ class API {
       });
   }
 
-  myWorld = async () => {
-    return Promise.resolve([{
-        lat: 38,
-        lng: 40,
-        label: "Background",
-        hash: "002008000890109c",
-      },
-      {
-        lat: 28,
-        lng: 20,
-        label: "Odin",
-        hash: "f8ec5e7c3c1c1810",
-      },
-      {
-        lat: 30,
-        lng: -10,
-        label: "Tomato",
-        hash: "fff1c0808081c1fb",
-      }
-    ]);
+  imageTag = (id) => {
+    return this.call(`api/v1/metadata/query`, 'POST', {
+        image_ids: id,
+        annotations:['BoundingBox', 'GeoLocation']
+      })
+      .then(response => {
+        return response.result.GeoLocation;
+      }).catch(err => {
+        return Promise.reject(err);
+      });
   }
 
   myImages = async () => {
-    // TODO: Remove mockup data
+    // TODO: Remove mockup data 
     return Promise.resolve([{
-        hash: "002008000890109c"
+        hash: "00fcff53017cf800"
       },
       {
-        hash: "0280001b0420a111"
+        hash: "3f3f0000027fffff"
       },
       {
         hash: "7efdfffff6eeff3f"
@@ -173,7 +162,7 @@ class API {
     return comments[id] || [];
   }
 
-  createdata = async ({
+  createData = async ({
     name
   }) => {
     const datas = JSON.parse(localStorage.getItem('datas')) || [];
@@ -186,7 +175,7 @@ class API {
     return Promise.resolve(true);
   }
 
-  savedata = async ({
+  saveData = async ({
     name,
     hash
   }) => {
@@ -200,7 +189,7 @@ class API {
     return Promise.resolve(false);
   }
 
-  changedataName = async ({
+  changeDataSetName = async ({
     oldname,
     newname
   }) => {
@@ -211,15 +200,13 @@ class API {
     return datas[index].photos;
   }
 
-  removedatas = async ({
+  removeData = async ({
     name,
     index
   }) => {
     const datas = JSON.parse(localStorage.getItem('datas')) || [];
     const a_index = datas.findIndex(item => item.name === name);
-    console.log(datas[a_index].photos);
     datas[a_index].photos.splice(index, 1);
-    console.log(datas[a_index].photos);
     localStorage.setItem('datas', JSON.stringify(datas));
     return datas[a_index].photos;
   }
@@ -231,7 +218,7 @@ class API {
     return datas;
   }
 
-  getdatas = async ({
+  getData = async ({
     name
   }) => {
     const datas = JSON.parse(localStorage.getItem('datas')) || [];

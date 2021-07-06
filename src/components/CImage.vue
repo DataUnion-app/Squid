@@ -1,36 +1,13 @@
 <template>
   <div class="">
     <div class="w-full h-full cursor-pointer relative">
-      <!-- <i 
-        class='font-bold text-white absolute text-2xl bx bx-zoom-in'
-        style="right: 10px; top: 10px;"
-      >
-      </i> -->
-      <!-- <i
-        @click="showdataDialog"
-        class="font-bold text-white absolute text-2xl bx bx-heart"
-        style="left: 10px; top: 10px"
-      >
-      </i>
-      <img
-        v-if="image"
-        class="object-cover w-full h-full"
-        :src="image"
-        @click="details"
-      /> -->
       <vs-card>
         <template #img>
-          <img
-            v-if="image"
-            style="width:100%; height:300px"
-            :src="image"
-            @click="details"
-            alt=""
-          />
+          <img v-if="image" class="image" :src="image" @click="details" />
         </template>
         <template #interactions>
           <vs-button v-if="!flag" danger icon>
-            <i class="bx bx-heart" @click="showdataDialog"></i>
+            <i class="bx bx-heart" @click="showDataDialog"></i>
           </vs-button>
           <vs-button v-else danger icon>
             <i class="bx bx-trash" @click="removeIconClicked"></i>
@@ -46,50 +23,72 @@
       </template>
 
       <div class="flex">
-        <div style="width: 50%; min-width: 400px">
+        <div class="image-detail-left">
           <div class="relative w-full">
-            <div style="width: 100%">
-              <vs-card>
-                <template #img>
-                  <img
-                    v-if="image"
-                    style="width:100%; height:350px"
-                    :src="image"
-                    @click="preview"
-                    alt=""
-                  />
-                </template>
-                <template #interactions>
-                  <vs-button v-if="!flag" danger icon>
-                    <i class="bx bx-heart" @click="showdataDialog"></i>
-                  </vs-button>
-                  <vs-button v-else danger icon>
-                    <i class="bx bx-trash" @click="removeIconClicked"></i>
-                  </vs-button>
-                </template>
-              </vs-card>
-            </div>
+            <vs-card>
+              <template #img>
+                <img
+                  v-if="image"
+                  class="image-detail"
+                  :src="image"
+                  @click="preview"
+                  alt=""
+                />
+              </template>
+              <template #interactions>
+                <vs-button v-if="!flag" danger icon>
+                  <i class="bx bx-heart" @click="showDataDialog"></i>
+                </vs-button>
+                <vs-button v-else danger icon>
+                  <i class="bx bx-trash" @click="removeIconClicked"></i>
+                </vs-button>
+              </template>
+            </vs-card>
           </div>
           <div class="mt-3 flex flex-wrap">
             <div v-for="tag in tags" :key="tag.tag" class="flex">
-              <div
-                class="flex mr-1 items-center rounded-full py-1 px-2 m-1"
-                :class="isUp(tag) ? 'bg-green-300' : 'bg-red-300'"
-              >
-                {{ tag.tag }} ? up : {{tag.up_votes}}, down : {{tag.down_votes}} 
-              </div>
+              <vs-tooltip v-if="isUp(tag)" danger>
+                <vs-button danger flat>
+                  {{ tag.tag }}
+                </vs-button>
+                <template #tooltip>
+                  <div>
+                    <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
+                    <div>
+                      <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
+                    </div>
+                  </div>
+                </template>
+              </vs-tooltip>
+              <vs-tooltip v-else success>
+                <vs-button success flat>
+                  {{ tag.tag }}
+                </vs-button>
+                <template #tooltip>
+                  <div>
+                    <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
+                    <div>
+                      <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
+                    </div>
+                  </div>
+                </template>
+              </vs-tooltip>
             </div>
           </div>
         </div>
-        <div
-          class="flex flex-col"
-          style="width: 50%; min-width: 400px; max-height: 80%"
-        >
+        <div class="flex flex-col image-detail-right">
           <div class="relative w-full">
-            <div style="width: 100%; padding-top: 100%">
+            <div class="comment">
               <div
-                class="w-full h-full absolute p-1 object-contain pr-5"
-                style="top: 0; left: 0"
+                class="
+                  w-full
+                  h-full
+                  absolute
+                  p-1
+                  object-contain
+                  pr-5
+                  comment-item
+                "
               >
                 <div v-if="comments.length > 0" class="h-full flex flex-col">
                   <div class="text-2xl text-center">Comments</div>
@@ -99,7 +98,7 @@
                       :key="index"
                       class="flex items-center m-1"
                     >
-                      <vs-avatar class="mr-3" style="min-width: 44px">
+                      <vs-avatar class="mr-3 comment-avatar">
                         <img :src="avatar(item.from)" alt="" />
                       </vs-avatar>
                       <div>{{ item.comment }}</div>
@@ -118,20 +117,17 @@
       </div>
       <template #footer> </template>
     </vs-dialog>
-    <vs-dialog v-model="showdatas">
+    <vs-dialog v-model="showDataSet">
       <template #header>
-        <h1 class="text-3xl not-margin">Add Data</h1>
+        <h1 class="text-3xl not-margin">Add to Data Set</h1>
       </template>
 
       <div class="flex">
-        <div
-          class="flex flex-col"
-          style="width: 50%; min-width: 400px; max-height: 80%"
-        >
-          <div class="p-3 flex justify-center">
+        <div class="flex flex-col add-dialog">
+          <div v-if="datas.length > 0" class="p-3 flex justify-center">
             <vs-select
               v-if="datas.length > 0"
-              placeholder="Select a data"
+              placeholder="Select a Data Set"
               v-model="data"
             >
               <vs-option
@@ -143,7 +139,11 @@
                 {{ item.name }}
               </vs-option>
             </vs-select>
-            <vs-button @click="adddatas"> Save </vs-button>
+            <vs-button @click="addDataSet"> Save </vs-button>
+          </div>
+          <div v-else class="p-3 flex justify-center">
+            There is no data set yet, Please create one
+            <vs-button @click="connectSidebar"> Create </vs-button>
           </div>
         </div>
       </div>
@@ -169,7 +169,7 @@ export default {
     return {
       image: null,
       showDetails: false,
-      showdatas: false,
+      showDataSet: false,
       tags: [],
       comment: "",
       comments: [],
@@ -194,6 +194,10 @@ export default {
         text: "Successfuly added",
       });
     },
+    connectSidebar() {
+      this.showDataSet = false;
+      this.$root.$refs.Sidebar.createData();
+    },
     openNotificationFailed(position = null, color) {
       const noti = this.$vs.notification({
         color,
@@ -208,19 +212,19 @@ export default {
         this.showDetails = true;
       });
     },
-    showdataDialog() {
-      this.refreshdatas();
-      this.showdatas = true;
+    showDataDialog() {
+      this.refreshDataSet();
+      this.showDataSet = true;
     },
-    adddatas() {
+    addDataSet() {
       if (this.data !== "") {
-        API.savedata({ name: this.data, hash: this.hash }).then((flag) => {
+        API.saveData({ name: this.data, hash: this.hash }).then((flag) => {
           if (flag) {
             this.openNotificationSucess("top-right", "success");
           } else {
             this.openNotificationFailed("top-right", "danger");
           }
-          this.showdatas = false;
+          this.showDataSet = false;
         });
       }
     },
@@ -243,7 +247,7 @@ export default {
         images: [this.image],
       });
     },
-    refreshdatas() {
+    refreshDataSet() {
       API.datas().then((datas) => {
         this.datas = datas;
       });
@@ -257,7 +261,7 @@ export default {
     });
 
     this.refreshComments();
-    this.refreshdatas();
+    this.refreshDataSet();
 
     this.getImage(this.hash).then((image) => {
       this.image = image;

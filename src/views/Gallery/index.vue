@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <CHeader title="Gallery" />
-    <div style="margin-top: 10px">
+    <div class="main-body">
       <vs-select
         v-if="tags.length > 0"
         placeholder="Select a tag"
@@ -16,14 +16,13 @@
           {{ item }}
         </vs-option>
       </vs-select>
-      <div>
+      <div class="main-body">
         <div v-if="tag != ''" class="flex flex-wrap justify-center">
-          <div v-for="photo in photos" :key="photo.hash" class="w-1/4 relative">
-            <div style="width: 100%; padding-top: 100%">
+          <div v-for="photo in photos" :key="photo.hash" class="image-relative">
+            <div class="comment">
               <CImage
                 :hash="photo.hash"
-                class="w-full h-full absolute p-1"
-                style="top: 0; left: 0"
+                class="w-full h-full absolute p-1 comment-item"
               />
             </div>
           </div>
@@ -60,6 +59,9 @@ export default {
         this.photos = photos;
       });
     },
+  },
+  mounted() {
+    this.tag = this.$store.state.tags[0];
   },
 };
 </script>
