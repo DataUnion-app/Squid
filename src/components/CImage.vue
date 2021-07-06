@@ -47,8 +47,8 @@
           </div>
           <div class="mt-3 flex flex-wrap">
             <div v-for="tag in tags" :key="tag.tag" class="flex">
-              <vs-tooltip v-if="isUp(tag)" danger>
-                <vs-button danger flat>
+              <vs-tooltip v-if="isUp(tag)" success>
+                <vs-button success flat>
                   {{ tag.tag }}
                 </vs-button>
                 <template #tooltip>
@@ -60,8 +60,8 @@
                   </div>
                 </template>
               </vs-tooltip>
-              <vs-tooltip v-else success>
-                <vs-button success flat>
+              <vs-tooltip v-else danger>
+                <vs-button danger flat>
                   {{ tag.tag }}
                 </vs-button>
                 <template #tooltip>
@@ -229,7 +229,7 @@ export default {
       }
     },
     isUp(tag) {
-      return tag.up_votes > tag.down_votes;
+      return tag.up_votes >= tag.down_votes;
     },
     postComment() {
       API.addComment({ id: this.hash, comment: this.comment }).then(() => {
