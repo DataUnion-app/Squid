@@ -351,6 +351,7 @@ export default {
   methods: {
     ...mapActions(["getImage", "getTags"]),
     onTooltipOutside(e) {
+      console.log(e.srcElement.className)
       if (this.addDataTooltip && e.srcElement.className != 'vs-select__options__content') {
         this.addDataTooltip = false
       }
