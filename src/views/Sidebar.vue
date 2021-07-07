@@ -121,12 +121,12 @@ export default {
   props: {},
   watch: {
     $route() {
-      this.active = this.$route.name;
+        if(this.$route.name != "datas")
+          this.active = this.$route.name;
     },
     active() {
-      if (this.$route.name == this.active) {
-        return;
-      }
+      if (this.$route.name != this.active) {
+        
       for (var i = 0; i < this.datas.length; i++) {
         if (this.active == this.datas[i].name) break;
       }
@@ -137,6 +137,7 @@ export default {
         this.$router
           .push({ name: "datas", params: { id: param } })
           .catch(() => {});
+      }
       }
     },
   },

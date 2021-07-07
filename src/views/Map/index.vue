@@ -20,23 +20,91 @@
                 />
               </template>
               <template #interactions>
-                <vs-button danger icon>
-                  <i class="bx bx-heart" @click="showDataDialog"></i>
-                </vs-button>
+                <vs-tooltip
+            ref="tooltip"
+            bottom
+            shadow
+            :interactivity="true"
+            :not-hover="true"
+            v-model="addDataTooltip"
+          >
+            <vs-button danger icon @click="showDataTooltip">
+              <i class="bx bx-heart"></i>
+            </vs-button>
+            <template #tooltip>
+              <div class="content-tooltip">
+                <div v-if="datas.length > 0">
+                  <h4 class="center">Please select a Data Set</h4>
+                  <vs-select
+                    class="vs-body"
+                    placeholder="Select a Data Set"
+                    v-model="data"
+                  >
+                    <vs-option
+                      v-for="item in datas"
+                      :key="item.name"
+                      :label="item.name"
+                      :value="item.name"
+                    >
+                      {{ item.name }}
+                    </vs-option>
+                  </vs-select>
+                  <p>You are sure to add this image in that Data Set?</p>
+                  <footer class="flex">
+                    <vs-button @click="addDataSet" danger block>
+                      Yes
+                    </vs-button>
+                    <vs-button
+                      @click="addDataTooltip = false"
+                      transparent
+                      dark
+                      block
+                    >
+                      No
+                    </vs-button>
+                  </footer>
+                </div>
+                <div v-else class="p-3 flex justify-center">
+                  There is no data set yet, Please create one
+                  <footer class="flex">
+                    <vs-button @click="connectSidebar"> Create </vs-button>
+                  </footer>
+                </div>
+              </div>
+            </template>
+          </vs-tooltip>
               </template>
             </vs-card>
           </div>
           <div class="mt-3 flex flex-wrap">
             <div v-for="tag in tags" :key="tag.tag" class="flex">
-              <div
-                class="flex mr-1 items-center rounded-full py-1 px-2 m-1"
-                :class="isUp(tag) ? 'bg-green-300' : 'bg-red-300'"
-              >
-                {{ tag.tag }}:
-                <div>
-                  <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
-                  <div><i class="bx bx-downvote"></i>:{{ tag.down_votes }}</div>
-                </div>
+              <div v-for="tag in tags" :key="tag.tag" class="flex">
+                <vs-tooltip v-if="isUp(tag)" success>
+                  <vs-button success flat>
+                    {{ tag.tag }}
+                  </vs-button>
+                  <template #tooltip>
+                    <div>
+                      <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
+                      <div>
+                        <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
+                      </div>
+                    </div>
+                  </template>
+                </vs-tooltip>
+                <vs-tooltip v-else danger>
+                  <vs-button danger flat>
+                    {{ tag.tag }}
+                  </vs-button>
+                  <template #tooltip>
+                    <div>
+                      <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
+                      <div>
+                        <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
+                      </div>
+                    </div>
+                  </template>
+                </vs-tooltip>
               </div>
             </div>
           </div>
@@ -91,13 +159,13 @@
         <div class="flex flex-col add-dialog">
           <div v-if="datas.length > 0" class="p-3 flex justify-center">
             <vs-select
-              v-if="datas.length > 0"
               placeholder="Select a Data Set"
               v-model="data"
             >
               <vs-option
                 v-for="item in datas"
                 :key="item.name"
+                :label="item.name"
                 :value="item.name"
               >
                 {{ item.name }}
@@ -115,7 +183,11 @@
     </vs-dialog>
   </div>
 </template>
-
+<style>
+.vs-select__options {
+  z-index: 9999999 !important;
+}
+</style>
 <script>
 import { mapActions, mapGetters } from "vuex";
 import utils from "@/utils";
@@ -138,27 +210,38 @@ export default {
       datas: [],
       data: "",
       images: [],
+      addDataTooltip: false,
     };
   },
   mounted() {
+    let imageHash = this.getImageWorld;
     API.myImages().then((photos) => {
-      var i,
+      let i,
         length = photos.length;
-      var temp_image = [];
-      for (i = 0; i < length; i++) temp_image.push(photos[i].hash);
+      let tempImage = [];
+      for (i = 0; i < length; i++) tempImage.push(photos[i].hash);
 
-      API.imageTag(temp_image).then((images) => {
+      API.imageTag(tempImage).then((images) => {
         this.markers = images;
-        var marker;
+        let marker;
 
-        for (var i = 0; i < this.markers.length; i++) {
-          if (i == 0) {
+        for (let i = 0; i < this.markers.length; i++) {
+          if (this.markers[i].image_id == imageHash) {
             map.flyTo({
               center: [
                 this.markers[i].value.longitude,
                 this.markers[i].value.latitude,
               ],
             });
+          } 
+          else {
+            map.flyTo({
+              center: [
+                this.markers[0].value.longitude,
+                this.markers[0].value.latitude,
+              ],
+            });
+            this.$store.dispatch("setImageWorld", "");
           }
 
           const markerItem = this.markers[i];
@@ -173,10 +256,7 @@ export default {
           markerIcon.addEventListener("click", () => {
             this.details(markerItem.image_id);
             map.flyTo({
-              center: [
-                markerItem.value.longitude,
-                markerItem.value.latitude,
-              ],
+              center: [markerItem.value.longitude, markerItem.value.latitude],
             });
           });
 
@@ -198,7 +278,7 @@ export default {
     });
   },
   computed: {
-    ...mapGetters(["imagebyId"]),
+    ...mapGetters(["imagebyId", "getImageWorld"]),
   },
   methods: {
     ...mapActions(["getImage", "getTags"]),
@@ -209,7 +289,6 @@ export default {
     details(hash) {
       this.hash = hash;
       this.refreshComments();
-      //this.details();
       this.getImage(this.hash).then((image) => {
         this.image = image;
       });
@@ -226,6 +305,10 @@ export default {
       this.$viewerApi({
         images: [this.image],
       });
+    },
+        showDataTooltip() {
+      this.addDataTooltip = true;
+      this.refreshDataSet();
     },
     connectSidebar() {
       this.showDataSet = false;
@@ -259,7 +342,8 @@ export default {
           } else {
             this.openNotificationFailed("top-right", "danger");
           }
-          this.showDataSet = false;
+          this.addDataTooltip = false;
+          this.addDataDetailTooltip = false;
         });
       }
     },
@@ -280,6 +364,12 @@ export default {
       });
     },
   },
+    updated() {
+    if (this.$refs.tooltip) {
+      this.$refs.tooltip.removeTooltip = () => {};
+    }
+  },
+
 };
 </script>
 

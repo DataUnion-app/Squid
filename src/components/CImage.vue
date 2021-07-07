@@ -6,11 +6,86 @@
           <img v-if="image" class="image" :src="image" @click="details" />
         </template>
         <template #interactions>
-          <vs-button v-if="!flag" danger icon>
-            <i class="bx bx-heart" @click="showDataDialog"></i>
-          </vs-button>
-          <vs-button v-else danger icon>
-            <i class="bx bx-trash" @click="removeIconClicked"></i>
+          <vs-tooltip
+            ref="tooltip"
+            v-if="!flag"
+            bottom
+            shadow
+            :not-hover="true"
+            v-model="addDataTooltip"
+          >
+            <vs-button danger icon @click="showDataTooltip">
+              <i class="bx bx-heart"></i>
+            </vs-button>
+            <template #tooltip>
+              <div class="content-tooltip" v-click-outside="onTooltipOutside">
+                <div v-if="datas.length > 0">
+                  <h4 class="center">Please select a Data Set</h4>
+                  <vs-select
+                    class="vs-body"
+                    placeholder="Select a Data Set"
+                    v-model="data"
+                  >
+                    <vs-option
+                      v-for="item in datas"
+                      :key="item.name"
+                      :label="item.name"
+                      :value="item.name"
+                    >
+                      {{ item.name }}
+                    </vs-option>
+                  </vs-select>
+                  <p>You are sure to add this image in that Data Set?</p>
+                  <footer class="flex">
+                    <vs-button @click="addDataSet" danger block>
+                      Yes
+                    </vs-button>
+                    <vs-button
+                      @click="addDataTooltip = false"
+                      transparent
+                      dark
+                      block
+                    >
+                      No
+                    </vs-button>
+                  </footer>
+                </div>
+                <div v-else class="p-3 flex justify-center">
+                  There is no data set yet, Please create one
+                  <footer class="flex">
+                    <vs-button @click="connectSidebar"> Create </vs-button>
+                  </footer>
+                </div>
+              </div>
+            </template>
+          </vs-tooltip>
+          <vs-tooltip v-else bottom shadow not-hover v-model="removeImage">
+            <vs-button danger icon @click="removeImage = !removeImage">
+              <i class="bx bx-trash"></i>
+            </vs-button>
+            <template #tooltip>
+              <div class="content-tooltip">
+                <h4 class="center">Confirm</h4>
+                <p>You are sure to remove this image?</p>
+                <footer class="flex">
+                  <vs-button @click="removeIconClicked" danger block>
+                    Remove
+                  </vs-button>
+                  <vs-button
+                    @click="removeImage = false"
+                    transparent
+                    dark
+                    block
+                  >
+                    Cancel
+                  </vs-button>
+                </footer>
+              </div>
+            </template>
+          </vs-tooltip>
+
+          <vs-button danger icon @click="goWorldMap">
+            <i class="bx bx-world"></i>
           </vs-button>
         </template>
       </vs-card>
@@ -36,11 +111,98 @@
                 />
               </template>
               <template #interactions>
-                <vs-button v-if="!flag" danger icon>
-                  <i class="bx bx-heart" @click="showDataDialog"></i>
-                </vs-button>
-                <vs-button v-else danger icon>
-                  <i class="bx bx-trash" @click="removeIconClicked"></i>
+                <vs-tooltip
+                  ref="tooltipdetail"
+                  v-if="!flag"
+                  bottom
+                  shadow
+                  not-hover
+                  v-model="addDataDetailTooltip"
+                >
+                  <vs-button danger icon @click="showDataDetailTooltip">
+                    <i class="bx bx-heart"></i>
+                  </vs-button>
+                  <template #tooltip>
+                    <div class="content-tooltip">
+                      <div v-if="datas.length > 0">
+                        <h4>Please select a Data Set</h4>
+                        <vs-select
+                          class="vs-body"
+                          placeholder="Select a Data Set"
+                          v-model="data"
+                        >
+                          <vs-option
+                            v-for="item in datas"
+                            :key="item.name"
+                            :label="item.name"
+                            :value="item.name"
+                          >
+                            {{ item.name }}
+                          </vs-option>
+                        </vs-select>
+                        <p>You are sure to add this image in that Data Set?</p>
+                        <footer class="flex">
+                          <vs-button @click="addDataSet" danger block>
+                            Yes
+                          </vs-button>
+                          <vs-button
+                            @click="addDataDetailTooltip = false"
+                            transparent
+                            dark
+                            block
+                          >
+                            No
+                          </vs-button>
+                        </footer>
+                      </div>
+                      <div v-else class="p-3 flex justify-center">
+                        There is no data set yet, Please create one
+                        <footer class="flex">
+                          <vs-button @click="connectSidebar">
+                            Create
+                          </vs-button>
+                        </footer>
+                      </div>
+                    </div>
+                  </template>
+                </vs-tooltip>
+                <vs-tooltip
+                  v-else
+                  bottom
+                  shadow
+                  not-hover
+                  v-model="removeImageDetail"
+                >
+                  <vs-button
+                    danger
+                    icon
+                    @click="removeImageDetail = !removeImageDetail"
+                  >
+                    <i class="bx bx-trash"></i>
+                  </vs-button>
+                  <template #tooltip>
+                    <div class="content-tooltip">
+                      <h4 class="center">Confirm</h4>
+                      <p>You are sure to remove this image?</p>
+                      <footer class="flex">
+                        <vs-button @click="removeIconClicked" danger block>
+                          Remove
+                        </vs-button>
+                        <vs-button
+                          @click="removeImageDetail = false"
+                          transparent
+                          dark
+                          block
+                        >
+                          Cancel
+                        </vs-button>
+                      </footer>
+                    </div>
+                  </template>
+                </vs-tooltip>
+
+                <vs-button danger icon @click="goWorldMap">
+                  <i class="bx bx-world"></i>
                 </vs-button>
               </template>
             </vs-card>
@@ -151,9 +313,13 @@
     </vs-dialog>
   </div>
 </template>
-
+<style>
+.vs-select__options {
+  z-index: 9999999 !important;
+}
+</style>
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import utils from "@/utils";
 import API from "@/utils/api";
 
@@ -175,13 +341,24 @@ export default {
       comments: [],
       datas: [],
       data: "",
+      addDataTooltip: false,
+      addDataDetailTooltip: false,
+      removeImage: false,
+      removeImageDetail: false,
     };
   },
   computed: {},
   methods: {
     ...mapActions(["getImage", "getTags"]),
+    onTooltipOutside(e) {
+      if (this.addDataTooltip && e.srcElement.className != 'vs-select__options__content') {
+        this.addDataTooltip = false
+      }
+    },
     removeIconClicked(event) {
-      this.$emit("clicked", this.index);
+      this.removeImage = false;
+      this.removeImageDetail = false;
+      this.$emit("onClickChild", this.index);
     },
     avatar(id) {
       return utils.blockies(id);
@@ -196,6 +373,8 @@ export default {
     },
     connectSidebar() {
       this.showDataSet = false;
+      this.addDataTooltip = false;
+      this.addDataDetailTooltip = false;
       this.$root.$refs.Sidebar.createData();
     },
     openNotificationFailed(position = null, color) {
@@ -224,7 +403,8 @@ export default {
           } else {
             this.openNotificationFailed("top-right", "danger");
           }
-          this.showDataSet = false;
+          this.addDataTooltip = false;
+          this.addDataDetailTooltip = false;
         });
       }
     },
@@ -252,6 +432,26 @@ export default {
         this.datas = datas;
       });
     },
+    goWorldMap() {
+      this.$store.dispatch("setImageWorld", this.hash);
+      this.$router.push({ name: "Map" }).catch(() => {});
+    },
+    showDataTooltip() {
+      this.addDataTooltip = true;
+      this.refreshDataSet();
+    },
+    showDataDetailTooltip() {
+      this.addDataDetailTooltip = true;
+      this.refreshDataSet();
+    },
+  },
+  updated() {
+    if (this.$refs.tooltip) {
+      this.$refs.tooltip.removeTooltip = () => {};
+    }
+    if (this.$refs.tooltipdetail) {
+      this.$refs.tooltipdetail.removeTooltip = () => {};
+    }
   },
   mounted() {
     this.$vs.loading({

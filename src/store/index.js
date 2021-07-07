@@ -10,6 +10,8 @@ const store = new Vuex.Store({
     imageCache: {},
     tagsCache: {},
     datas: [],
+    imageWorld: "",
+    selectTag: "",
   },
   actions: {
     init({commit}) {
@@ -43,6 +45,12 @@ const store = new Vuex.Store({
       API.datas().then(datas => {
         commit('set', ['datas', datas])
       });
+    },
+    setImageWorld({commit}, hash) {
+      commit('set', ['imageWorld', hash])
+    },
+    setSelectTag({commit}, tag) {
+      commit('set', ['selectTag', tag]);
     }
   },
   mutations: {
@@ -57,6 +65,9 @@ const store = new Vuex.Store({
     getdatas: (state) => {
       return state.datas;
     },
+    getImageWorld: (state) => {
+      return state.imageWorld;
+    }
   }
 })
 export default store
