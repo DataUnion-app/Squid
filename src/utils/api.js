@@ -85,7 +85,7 @@ class API {
   imageTag = (id) => {
     return this.call(`api/v1/metadata/query`, 'POST', {
         image_ids: id,
-        annotations:['BoundingBox', 'GeoLocation']
+        annotations: ['BoundingBox', 'GeoLocation']
       })
       .then(response => {
         return response.result.GeoLocation;
@@ -165,12 +165,24 @@ class API {
     name
   }) => {
     const datas = JSON.parse(localStorage.getItem('datas')) || [];
-    const data = {};
-    data.name = name;
-    data.photos = [];
-    datas.push(data);
-    localStorage.setItem('datas', JSON.stringify(datas));
+    const index = datas.findIndex(item => item.name === name);
+    if (index < 0) {
+      const data = {};
+      data.name = name;
+      data.photos = [];
+      datas.push(data);
+      localStorage.setItem('datas', JSON.stringify(datas));
+      return Promise.resolve(true);
+    }
+    return Promise.resolve(false);
+  }
 
+  removeDataSet = async( {
+    index
+  }) => {
+    const datas = JSON.parse(localStorage.getItem('datas')) || [];
+    datas.splice(index, 1);
+    localStorage.setItem('datas', JSON.stringify(datas));
     return Promise.resolve(true);
   }
 

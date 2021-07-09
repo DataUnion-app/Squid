@@ -3,7 +3,7 @@
     <div class="w-full h-full cursor-pointer relative">
       <vs-card>
         <template #img>
-          <img v-if="image" class="image" :src="image" @click="details" />
+          <img v-if="image" class="image" :src="image" @click="preview" />
         </template>
         <template #interactions>
           <vs-tooltip
@@ -83,9 +83,11 @@
               </div>
             </template>
           </vs-tooltip>
-
           <vs-button danger icon @click="goWorldMap">
             <i class="bx bx-world"></i>
+          </vs-button>
+          <vs-button danger icon @click="showDetails = !showDetails" style="margin-left: 140px">
+            <i class="bx bx-detail"></i>
           </vs-button>
         </template>
       </vs-card>
@@ -123,7 +125,10 @@
                     <i class="bx bx-heart"></i>
                   </vs-button>
                   <template #tooltip>
-                    <div class="content-tooltip">
+                    <div
+                      class="content-tooltip"
+                      v-click-outside="onTooltipOutside"
+                    >
                       <div v-if="datas.length > 0">
                         <h4>Please select a Data Set</h4>
                         <vs-select
@@ -351,9 +356,18 @@ export default {
   methods: {
     ...mapActions(["getImage", "getTags"]),
     onTooltipOutside(e) {
-      console.log(e.srcElement.className)
-      if (this.addDataTooltip && e.srcElement.className != 'vs-select__options__content') {
-        this.addDataTooltip = false
+      console.log(e.srcElement.className);
+      if (
+        this.addDataTooltip &&
+        e.srcElement.className != "vs-select__options__content"
+      ) {
+        this.addDataTooltip = false;
+      }
+      if (
+        this.addDataDetailTooltip &&
+        e.srcElement.className != "vs-select__options__content"
+      ) {
+        this.addDataDetailTooltip = false;
       }
     },
     removeIconClicked(event) {
@@ -413,10 +427,12 @@ export default {
       return tag.up_votes >= tag.down_votes;
     },
     postComment() {
-      API.addComment({ id: this.hash, comment: this.comment }).then(() => {
-        this.refreshComments();
-        this.comment = "";
-      });
+      if (this.comment !== "") {
+        API.addComment({ id: this.hash, comment: this.comment }).then(() => {
+          this.refreshComments();
+          this.comment = "";
+        });
+      }
     },
     refreshComments() {
       API.comments(this.hash).then((comments) => {

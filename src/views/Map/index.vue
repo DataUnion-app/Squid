@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="map-size" id="map"></div>
+  <div class="">
+    <div class="map-size overflow-hidden" id="map"></div>
     <vs-dialog v-model="showDetails">
       <template #header>
         <h1 class="text-3xl not-margin">Details</h1>
@@ -21,58 +21,63 @@
               </template>
               <template #interactions>
                 <vs-tooltip
-            ref="tooltip"
-            bottom
-            shadow
-            :interactivity="true"
-            :not-hover="true"
-            v-model="addDataTooltip"
-          >
-            <vs-button danger icon @click="showDataTooltip">
-              <i class="bx bx-heart"></i>
-            </vs-button>
-            <template #tooltip>
-              <div class="content-tooltip">
-                <div v-if="datas.length > 0">
-                  <h4 class="center">Please select a Data Set</h4>
-                  <vs-select
-                    class="vs-body"
-                    placeholder="Select a Data Set"
-                    v-model="data"
-                  >
-                    <vs-option
-                      v-for="item in datas"
-                      :key="item.name"
-                      :label="item.name"
-                      :value="item.name"
+                  ref="tooltip"
+                  bottom
+                  shadow
+                  :interactivity="true"
+                  :not-hover="true"
+                  v-model="addDataTooltip"
+                >
+                  <vs-button danger icon @click="showDataTooltip">
+                    <i class="bx bx-heart"></i>
+                  </vs-button>
+                  <template #tooltip>
+                    <div
+                      class="content-tooltip"
+                      v-click-outside="onTooltipOutside"
                     >
-                      {{ item.name }}
-                    </vs-option>
-                  </vs-select>
-                  <p>You are sure to add this image in that Data Set?</p>
-                  <footer class="flex">
-                    <vs-button @click="addDataSet" danger block>
-                      Yes
-                    </vs-button>
-                    <vs-button
-                      @click="addDataTooltip = false"
-                      transparent
-                      dark
-                      block
-                    >
-                      No
-                    </vs-button>
-                  </footer>
-                </div>
-                <div v-else class="p-3 flex justify-center">
-                  There is no data set yet, Please create one
-                  <footer class="flex">
-                    <vs-button @click="connectSidebar"> Create </vs-button>
-                  </footer>
-                </div>
-              </div>
-            </template>
-          </vs-tooltip>
+                      <div v-if="datas.length > 0">
+                        <h4 class="center">Please select a Data Set</h4>
+                        <vs-select
+                          class="vs-body"
+                          placeholder="Select a Data Set"
+                          v-model="data"
+                        >
+                          <vs-option
+                            v-for="item in datas"
+                            :key="item.name"
+                            :label="item.name"
+                            :value="item.name"
+                          >
+                            {{ item.name }}
+                          </vs-option>
+                        </vs-select>
+                        <p>You are sure to add this image in that Data Set?</p>
+                        <footer class="flex">
+                          <vs-button @click="addDataSet" danger block>
+                            Yes
+                          </vs-button>
+                          <vs-button
+                            @click="addDataTooltip = false"
+                            transparent
+                            dark
+                            block
+                          >
+                            No
+                          </vs-button>
+                        </footer>
+                      </div>
+                      <div v-else class="p-3 flex justify-center">
+                        There is no data set yet, Please create one
+                        <footer class="flex">
+                          <vs-button @click="connectSidebar">
+                            Create
+                          </vs-button>
+                        </footer>
+                      </div>
+                    </div>
+                  </template>
+                </vs-tooltip>
               </template>
             </vs-card>
           </div>
@@ -158,10 +163,7 @@
       <div class="flex">
         <div class="flex flex-col add-dialog">
           <div v-if="datas.length > 0" class="p-3 flex justify-center">
-            <vs-select
-              placeholder="Select a Data Set"
-              v-model="data"
-            >
+            <vs-select placeholder="Select a Data Set" v-model="data">
               <vs-option
                 v-for="item in datas"
                 :key="item.name"
@@ -233,8 +235,7 @@ export default {
                 this.markers[i].value.latitude,
               ],
             });
-          } 
-          else {
+          } else {
             map.flyTo({
               center: [
                 this.markers[0].value.longitude,
@@ -282,6 +283,14 @@ export default {
   },
   methods: {
     ...mapActions(["getImage", "getTags"]),
+    onTooltipOutside(e) {
+      if (
+        this.addDataTooltip &&
+        e.srcElement.className != "vs-select__options__content"
+      ) {
+        this.addDataTooltip = false;
+      }
+    },
     // receives a place object via the autocomplete component
     avatar(id) {
       return utils.blockies(id);
@@ -306,7 +315,7 @@ export default {
         images: [this.image],
       });
     },
-        showDataTooltip() {
+    showDataTooltip() {
       this.addDataTooltip = true;
       this.refreshDataSet();
     },
@@ -320,10 +329,12 @@ export default {
       });
     },
     postComment() {
-      API.addComment({ id: this.hash, comment: this.comment }).then(() => {
-        this.refreshComments();
-        this.comment = "";
-      });
+      if (this.comment !== "") {
+        API.addComment({ id: this.hash, comment: this.comment }).then(() => {
+          this.refreshComments();
+          this.comment = "";
+        });
+      }
     },
     showDataDialog() {
       this.refreshDataSet();
@@ -364,12 +375,12 @@ export default {
       });
     },
   },
-    updated() {
+
+  updated() {
     if (this.$refs.tooltip) {
       this.$refs.tooltip.removeTooltip = () => {};
     }
   },
-
 };
 </script>
 

@@ -17,6 +17,7 @@
         </template>
         Gallery
       </vs-sidebar-item>
+
       <div v-if="datas.length > 0">
         <vs-sidebar-group>
           <template #header>
@@ -27,35 +28,59 @@
               <div class="sidebar">
                 Data Set
                 <i
-                  @click="createData"
+                  v-on:click.stop="createData"
                   class="bx bx-plus sidebar-item"
                 ></i>
               </div>
             </vs-sidebar-item>
           </template>
           <vs-sidebar-item
-            v-for="data in datas"
+            v-for="(data, index) in datas"
             :key="data.name"
             :id="data.name"
           >
             <template #icon>
               <i class="bx bx-data"></i>
             </template>
-            {{ data.name }}
+            <div class="sidebar">
+              {{ data.name }}
+<vs-tooltip right shadow not-hover v-model="openTooltip[index]">
+              <i
+                @click="openTooltip[index] = !openTooltip[index]"
+                class="bx bx-trash sidebar-item"
+              >
+              </i>
+        <template #tooltip>
+          <div class="content-tooltip">
+            <h4 class="center">
+              Confirm
+            </h4>
+            <p>
+              You are sure to delete this user, by doing so you cannot recover the data
+            </p>
+            <footer class="flex">
+              <vs-button v-on:click.stop="removeData(index)" danger block>
+                Delete
+              </vs-button>
+              <vs-button @click="openTooltip[index]=false" transparent dark block>
+                Cancel
+              </vs-button>
+            </footer>
+          </div>
+        </template>
+      </vs-tooltip>
+            </div>
           </vs-sidebar-item>
         </vs-sidebar-group>
       </div>
       <div v-else>
-        <vs-sidebar-item>
+        <vs-sidebar-item @click.native="createData">
           <template #icon>
             <i class="bx bx-data"></i>
           </template>
           <div class="sidebar">
             Data Set
-            <i
-              @click="createData"
-              class="bx bx-plus sidebar-item">
-            </i>
+            <i class="bx bx-plus sidebar-item"> </i>
           </div>
         </vs-sidebar-item>
       </div>
@@ -89,9 +114,7 @@
       </template>
 
       <div class="flex">
-        <div
-          class="flex flex-col add-dialog"
-        >
+        <div class="flex flex-col add-dialog">
           <div class="p-3 flex justify-center">
             <vs-input
               v-model="dataName"
@@ -121,23 +144,20 @@ export default {
   props: {},
   watch: {
     $route() {
-        if(this.$route.name != "datas")
-          this.active = this.$route.name;
+      if (this.$route.name !== "datas") this.active = this.$route.name;
     },
-    active() {
+    active: function () {
       if (this.$route.name != this.active) {
-        
-      for (var i = 0; i < this.datas.length; i++) {
-        if (this.active == this.datas[i].name) break;
-      }
-
-      if (i == this.datas.length) this.$router.push({ name: this.active });
-      else {
-        const param = this.active;
-        this.$router
-          .push({ name: "datas", params: { id: param } })
-          .catch(() => {});
-      }
+        for (var i = 0; i < this.datas.length; i++) {
+          if (this.active == this.datas[i].name) break;
+        }
+        if (i == this.datas.length) this.$router.push({ name: this.active });
+        else {
+          const param = this.active;
+          this.$router
+            .push({ name: "datas", params: { id: param } })
+            .catch(() => {});
+        }
       }
     },
   },
@@ -148,33 +168,66 @@ export default {
       account: null,
       showdatas: false,
       dataName: "",
+      openTooltip: [],
     };
   },
   computed: {
     ...mapState(["datas"]),
   },
-
   methods: {
     createData() {
       this.showdatas = true;
       if (this.dataName !== "") {
-        API.createData({ name: this.dataName }).then(() => {
+        API.createData({ name: this.dataName }).then((flag) => {
+          if (flag) {
+            this.refreshdatas();
+            this.dataName = "";
+            this.showdatas = false;
+            this.openNotification("top-right", "success");
+            // vm.$forceUpdate();
+          } else {
+            this.showdatas = true;
+            this.openNotificationFailed("top-right", "danger");
+          }
+        });
+      }
+    },
+    removeData(index) {
+      API.removeDataSet({ index: index }).then((flag) => {
+        if (flag) {
           this.refreshdatas();
           this.dataName = "";
           this.showdatas = false;
-          this.openNotification("top-right", "success");
-        });
-      }
+          this.active = "Home";
+          this.openNotificationRemoved("top-right", "success");
+          this.openTooltip[index] = false;
+        }
+      });
     },
     openNotification(position = null, color) {
       const noti = this.$vs.notification({
         color,
         position,
         title: "Success",
-        text: "data successfuly created",
+        text: "Data Set successfuly created",
       });
     },
-
+    openNotificationRemoved(position = null, color) {
+      const noti = this.$vs.notification({
+        color,
+        position,
+        title: "Success",
+        text: "Data Set successfuly removed",
+      });
+    },
+    openNotificationFailed(position = null, color) {
+      const noti = this.$vs.notification({
+        color,
+        position,
+        title: "Failed",
+        text: "Data Set name already exists",
+      });
+    },
     refreshdatas() {
       this.$store.dispatch("setdatas");
     },
@@ -185,7 +238,8 @@ export default {
       this.account = Auth.account;
     }
 
-    //this.refreshdatas();
+    for(let i=0; i<50; i++) this.openTooltip[i] = false;
+    console.log(this.openTooltip);
 
     Observer.$on("login", ({ account }) => {
       this.blockies = Auth.blockies();

@@ -2,7 +2,7 @@
   <div class="home">
     <CHeader title="Home" />
     <div class="main-body">
-      <div v-if="photos.length > 0" class="flex flex-wrap justify-center">
+      <div v-if="photos.length > 0" class="flex flex-wrap justify-left">
         <div v-for="photo in photos" :key="photo.hash" class="image-relative">
           <div class="comment">
             <CImage

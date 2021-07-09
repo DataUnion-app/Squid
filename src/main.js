@@ -12,7 +12,7 @@ import './component';
 import 'viewerjs/dist/viewer.css'
 import VueViewer from 'v-viewer'
 import vClickOutside from 'v-click-outside'
- 
+
 Vue.use(vClickOutside)
 Vue.use(VueViewer)
 Vue.use(Vuesax, {

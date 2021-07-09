@@ -66,7 +66,7 @@ body {
 
 .header-title {
   padding: 20px;
-  margin-left: 100px;
+  margin-left: 40px;
   font-weight: bold;
 }
 
@@ -80,8 +80,8 @@ body {
 }
 
 .header-icon {
-  position: fixed;
-  right: 50px;
+  position: absolute;
+  right: 10%;
   top: 5px;
   padding: 30px;
 }
@@ -157,7 +157,6 @@ body {
   width: 103%;
   margin-left:-20px;
   height: 100vh;
-  overflow-y: hidden;
 }
 
 .select-body {
@@ -166,6 +165,7 @@ body {
 }
 
 .vs-body {
+  margin-top:10px;
   margin-left:40px;
 }
 </style>
