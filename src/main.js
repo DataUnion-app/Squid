@@ -12,9 +12,11 @@ import './component';
 import 'viewerjs/dist/viewer.css'
 import VueViewer from 'v-viewer'
 import vClickOutside from 'v-click-outside'
+import vuetify from '@/plugins/vuetify' // path to vuetify export
 
 Vue.use(vClickOutside)
 Vue.use(VueViewer)
+Vue.use
 Vue.use(Vuesax, {
 })
 
@@ -23,6 +25,7 @@ Vue.config.productionTip = false
 const app = new Vue({
   router,
   store,
+  vuetify,
   render: h => h(App)
 }).$mount('#app')
 

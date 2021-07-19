@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <CHeader title="Home" />
+    <CPopMenu :flag="1"/>
     <div class="main-body">
       <div v-if="photos.length > 0" class="flex flex-wrap justify-left">
         <div v-for="photo in photos" :key="photo.hash" class="image-relative">
@@ -17,15 +18,25 @@
   </div>
 </template>
 
+<style>
+  /* This is for documentation purposes and will not be needed in your application */
+  .v-speed-dial {
+    position: absolute;
+  }
+
+</style>
+
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import API from "@/utils/api";
 
 export default {
   name: "Home",
   components: {},
   computed: {},
-  methods: {},
+  methods: {
+    ...mapActions(["initClickImage"]),
+  },
   data() {
     return {
       photos: [],
@@ -36,6 +47,8 @@ export default {
     API.myImages().then((photos) => {
       this.photos = photos;
     });
+    this.initClickImage();
   },
+  
 };
 </script>

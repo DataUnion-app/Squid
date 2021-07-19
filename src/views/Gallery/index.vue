@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <CHeader title="Gallery" :flag="2" />
+    <CPopMenu :flag="1"/>
     <div class="main-body">
       <div v-if="photos.length > 0" class="flex flex-wrap justify-left">
         <div v-for="photo in photos" :key="photo.hash" class="image-relative">
@@ -18,7 +19,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import API from "@/utils/api";
 
 export default {
@@ -27,7 +28,9 @@ export default {
   computed: {
     ...mapState(["tags", "selectTag"]),
   },
-  methods: {},
+  methods: {
+    ...mapActions(["initClickImage"]),
+  },
   data() {
     return {
       photos: [],
@@ -47,6 +50,7 @@ export default {
     API.photos({ tag: this.$store.state.selectTag }).then((photos) => {
       this.photos = photos;
     });
+    this.initClickImage();
   },
 };
 </script>

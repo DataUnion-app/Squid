@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <vs-sidebar background="dark" textWhite v-model="active" open>
+    <vs-sidebar background="dark" textWhite v-model="active" open :key="force">
       <template #logo>
         <img class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg" />
         <div class="text-5xl font-extrabold text-purple-600">Squid</div>
@@ -44,31 +44,43 @@
             </template>
             <div class="sidebar">
               {{ data.name }}
-<vs-tooltip right shadow not-hover v-model="openTooltip[index]">
-              <i
-                @click="openTooltip[index] = !openTooltip[index]"
-                class="bx bx-trash sidebar-item"
-              >
-              </i>
-        <template #tooltip>
-          <div class="content-tooltip">
-            <h4 class="center">
-              Confirm
-            </h4>
-            <p>
-              You are sure to delete this user, by doing so you cannot recover the data
-            </p>
-            <footer class="flex">
-              <vs-button v-on:click.stop="removeData(index)" danger block>
-                Delete
-              </vs-button>
-              <vs-button @click="openTooltip[index]=false" transparent dark block>
-                Cancel
-              </vs-button>
-            </footer>
-          </div>
-        </template>
-      </vs-tooltip>
+               <i
+                  v-on:click.stop="removeData(index)"
+                  class="bx bx-trash sidebar-item"
+                ></i>
+              <!-- <vs-tooltip right shadow not-hover v-model="openTooltip[index]">
+                <i
+                  @click="openTooltip[index] = !openTooltip[index]"
+                  class="bx bx-trash sidebar-item"
+                >
+                </i>
+                <template #tooltip>
+                  <div class="content-tooltip">
+                    <h4 class="center">Confirm</h4>
+                    <p>
+                      You are sure to delete this user, by doing so you cannot
+                      recover the data
+                    </p>
+                    <footer class="flex">
+                      <vs-button
+                        v-on:click.stop="removeData(index)"
+                        danger
+                        block
+                      >
+                        Delete
+                      </vs-button>
+                      <vs-button
+                        @click="openTooltip[index] = false"
+                        transparent
+                        dark
+                        block
+                      >
+                        Cancel
+                      </vs-button>
+                    </footer>
+                  </div>
+                </template>
+              </vs-tooltip> -->
             </div>
           </vs-sidebar-item>
         </vs-sidebar-group>
@@ -130,7 +142,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 import Observer from "@/utils/observer";
 import Auth from "@/utils/auth";
@@ -154,6 +166,7 @@ export default {
         if (i == this.datas.length) this.$router.push({ name: this.active });
         else {
           const param = this.active;
+          this.initClickImage();
           this.$router
             .push({ name: "datas", params: { id: param } })
             .catch(() => {});
@@ -169,12 +182,14 @@ export default {
       showdatas: false,
       dataName: "",
       openTooltip: [],
+      force: 0,
     };
   },
   computed: {
     ...mapState(["datas"]),
   },
   methods: {
+    ...mapActions(["initClickImage"]),
     createData() {
       this.showdatas = true;
       if (this.dataName !== "") {
@@ -184,6 +199,7 @@ export default {
             this.dataName = "";
             this.showdatas = false;
             this.openNotification("top-right", "success");
+            this.force ++;
             // vm.$forceUpdate();
           } else {
             this.showdatas = true;
@@ -201,6 +217,7 @@ export default {
           this.active = "Home";
           this.openNotificationRemoved("top-right", "success");
           this.openTooltip[index] = false;
+          this.force --;
         }
       });
     },
@@ -238,9 +255,7 @@ export default {
       this.account = Auth.account;
     }
 
-    for(let i=0; i<50; i++) this.openTooltip[i] = false;
-    console.log(this.openTooltip);
-
+    for (let i = 0; i < 50; i++) this.openTooltip[i] = false;
     Observer.$on("login", ({ account }) => {
       this.blockies = Auth.blockies();
       this.account = account;

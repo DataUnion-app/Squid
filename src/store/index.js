@@ -12,6 +12,7 @@ const store = new Vuex.Store({
     datas: [],
     imageWorld: "",
     selectTag: "",
+    click_images: [],
   },
   actions: {
     init({commit}) {
@@ -46,16 +47,32 @@ const store = new Vuex.Store({
         commit('set', ['datas', datas])
       });
     },
+    setClickImage({commit}, hash) {
+      commit('setImage', ['click_images', hash])
+    },
+    removeClickImage({commit}, hash) {
+       commit('removeImage', ['click_images', hash])
+    },
     setImageWorld({commit}, hash) {
       commit('set', ['imageWorld', hash])
     },
     setSelectTag({commit}, tag) {
       commit('set', ['selectTag', tag]);
+    },
+    initClickImage({commit}) {
+      commit('set', ['click_images', []]);
     }
   },
   mutations: {
     set(state, [key, value]) {
       state[key] = value;
+    },
+    setImage(state, [key, value]) {
+      state[key].push(value);
+    },
+    removeImage(state, [key, value]) {
+      const temp_images = state[key].filter(item => item.hash !== value.hash);
+      state[key] = temp_images;
     }
   },
   getters: {
@@ -67,6 +84,9 @@ const store = new Vuex.Store({
     },
     getImageWorld: (state) => {
       return state.imageWorld;
+    },
+    getClickImages: (state) => {
+      return state.click_images;
     }
   }
 })

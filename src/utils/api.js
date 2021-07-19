@@ -221,6 +221,22 @@ class API {
     localStorage.setItem('datas', JSON.stringify(datas));
     return datas[a_index].photos;
   }
+
+  removeSelectDatas = async ({
+    name,
+    images
+  }) => {
+    const datas = JSON.parse(localStorage.getItem('datas')) || [];
+    const a_index = datas.findIndex(item => item.name === name);
+    let i;
+    for(i=0; i<images.length; i++) {
+      const index = datas[a_index].photos.findIndex(item => item === images[i].hash);
+      datas[a_index].photos.splice(index, 1);
+    }
+    localStorage.setItem('datas', JSON.stringify(datas));
+    return true;
+  }
+
   datas = async () => {
     const datas = JSON.parse(localStorage.getItem('datas'));
     if (!datas) {

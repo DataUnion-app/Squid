@@ -4,18 +4,26 @@
     <transition name="fade" mode="out-in">
       <router-view class="p-5 main" />
     </transition>
-    <!-- <router-view class="p-5 main"/> -->
   </div>
 </template>
 
 <script>
 import Sidebar from "@/views/Sidebar.vue";
 import Observer from "@/utils/observer";
+import API from "@/utils/api";
 
 export default {
   name: "App",
   components: {
     Sidebar,
+  },
+  data() {
+    return {
+    };
+  },
+  computed: {
+  },
+  methods: {
   },
   mounted() {
     Observer.$on("login", ({ account }) => {
@@ -52,6 +60,26 @@ body {
 /* For Image Viewer Overlap Sidebar */
 .viewer-container {
   z-index: 99999999 !important;
+}
+
+.icon-detail {
+  margin-left: 100px !important;
+}
+
+.pop-menu {
+  background-color: #1976d2 !important;
+}
+
+.pop-menu-plus {
+  background-color: #4caf50 !important;
+}
+
+.pop-menu-heart {
+  background-color: red !important;
+}
+
+.pop-menu-pencil {
+  background-color: #3f51b5 !important;
 }
 
 .header {
@@ -153,9 +181,9 @@ body {
 }
 
 .map-size {
-  margin-top:-20px;
+  margin-top: -20px;
   width: 103%;
-  margin-left:-20px;
+  margin-left: -20px;
   height: 100vh;
 }
 
@@ -165,7 +193,7 @@ body {
 }
 
 .vs-body {
-  margin-top:10px;
-  margin-left:40px;
+  margin-top: 10px;
+  margin-left: 40px;
 }
 </style>

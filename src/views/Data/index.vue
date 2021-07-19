@@ -5,6 +5,7 @@
       :flag="1"
       @onClickEdit="onClickEdit"
     />
+    <CPopMenu :flag="2"/>
     <div class="main-body">
       <div>
         <div v-if="photos.length > 0" class="flex flex-wrap justify-left">
@@ -43,10 +44,15 @@
 
 <script>
 import API from "@/utils/api";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "datas",
-  components: {},
+  created() {
+    this.$root.$refs.Data = this;
+  },
+  components: {
+  },
   computed: {},
   data() {
     return {
@@ -57,6 +63,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["initClickImage"]),
     onClickChild(value) {
       this.removeData(value);
     },
@@ -93,6 +100,12 @@ export default {
         text: "Successfuly removed",
       });
     },
+    getDatas() {
+      API.getData({ name: this.name }).then((photos) => {
+        this.photos = photos;
+        this.initClickImage();
+      });
+    },
   },
 
   watch: {
@@ -111,9 +124,8 @@ export default {
   mounted() {
     this.name = this.$route.params.id;
     this.dataName = this.name;
-    API.getData({ name: this.name }).then((photos) => {
-      this.photos = photos;
-    });
+    this.getDatas();
+    this.initClickImage();
   },
 };
 </script>

@@ -86,9 +86,11 @@
           <vs-button danger icon @click="goWorldMap">
             <i class="bx bx-world"></i>
           </vs-button>
-          <vs-button danger icon @click="showDetails = !showDetails" style="margin-left: 140px">
+          <vs-button danger icon @click="showDetails = !showDetails" class="icon-detail">
             <i class="bx bx-detail"></i>
           </vs-button>
+          <vs-checkbox success v-model="option">
+          </vs-checkbox>
         </template>
       </vs-card>
       <div v-show="!image" ref="loader" class="relative w-full h-full"></div>
@@ -284,43 +286,15 @@
       </div>
       <template #footer> </template>
     </vs-dialog>
-    <vs-dialog v-model="showDataSet">
-      <template #header>
-        <h1 class="text-3xl not-margin">Add to Data Set</h1>
-      </template>
-
-      <div class="flex">
-        <div class="flex flex-col add-dialog">
-          <div v-if="datas.length > 0" class="p-3 flex justify-center">
-            <vs-select
-              v-if="datas.length > 0"
-              placeholder="Select a Data Set"
-              v-model="data"
-            >
-              <vs-option
-                v-for="item in datas"
-                :key="item.name"
-                :label="item.name"
-                :value="item.name"
-              >
-                {{ item.name }}
-              </vs-option>
-            </vs-select>
-            <vs-button @click="addDataSet"> Save </vs-button>
-          </div>
-          <div v-else class="p-3 flex justify-center">
-            There is no data set yet, Please create one
-            <vs-button @click="connectSidebar"> Create </vs-button>
-          </div>
-        </div>
-      </div>
-      <template #footer> </template>
-    </vs-dialog>
   </div>
 </template>
 <style>
 .vs-select__options {
   z-index: 9999999 !important;
+}
+.vs-checkbox-con {
+  width: 32px !important;
+  height: 32px !important;
 }
 </style>
 <script>
@@ -335,12 +309,22 @@ export default {
     flag: Boolean,
     index: Number,
   },
-  watch: {},
+  watch: {
+    option: function(newValue, oldValue) {
+      if(newValue) {
+        this.setClickImage({hash:this.hash});
+      }
+      else {
+        this.removeClickImage({hash:this.hash});
+      }
+    }
+  },
   data() {
     return {
       image: null,
       showDetails: false,
       showDataSet: false,
+      option: false,
       tags: [],
       comment: "",
       comments: [],
@@ -354,7 +338,7 @@ export default {
   },
   computed: {},
   methods: {
-    ...mapActions(["getImage", "getTags"]),
+    ...mapActions(["getImage", "getTags", "setClickImage", "removeClickImage"]),
     onTooltipOutside(e) {
       console.log(e.srcElement.className);
       if (
