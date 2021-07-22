@@ -82,7 +82,6 @@
             </vs-card>
           </div>
           <div class="mt-3 flex flex-wrap">
-            <div v-for="tag in tags" :key="tag.tag" class="flex">
               <div v-for="tag in tags" :key="tag.tag" class="flex">
                 <vs-tooltip v-if="isUp(tag)" success>
                   <vs-button success flat>
@@ -111,7 +110,6 @@
                   </template>
                 </vs-tooltip>
               </div>
-            </div>
           </div>
         </div>
         <div class="flex flex-col image-detail-right">

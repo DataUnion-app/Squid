@@ -8,7 +8,7 @@
     <CPopMenu :flag="2"/>
     <div class="main-body">
       <div>
-        <div v-if="photos.length > 0" class="flex flex-wrap justify-left">
+        <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
           <div v-for="(photo, index) in photos" :key="photo" class="image-relative">
             <div class="comment">
               <CImage
@@ -21,7 +21,7 @@
             </div>
           </div>
         </div>
-        <div v-else>There is no image</div>
+        <div v-else><h1 class="text-3xl p-3 not-margin">There is no image</h1></div>
       </div>
       <vs-dialog v-model="showModal">
         <template #header>
@@ -79,10 +79,8 @@ export default {
         newname: this.dataName,
       }).then(() => {
         this.showModal = false;
-
         const param = this.dataName;
-
-        this.$router.push({ name: "datas", params: { id: param } });
+        this.$router.push({ name: "datas", params: { id: param } }).catch(()=>{});
         this.$store.dispatch("setdatas");
       });
     },
@@ -90,6 +88,7 @@ export default {
       API.removeData({ name: this.name, index: index }).then((photos) => {
         this.photos = photos;
         this.openNotification("top-right", "success");
+        this.initClickImage();
       });
     },
     openNotification(position = null, color) {

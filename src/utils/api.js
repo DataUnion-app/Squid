@@ -1,5 +1,5 @@
-export const BASE_URL = 'http://206.81.26.71:8081';
-// export const BASE_URL = 'https://alpha.dataunion.app:4430';
+// export const BASE_URL = 'http://206.81.26.71:8081';
+export const BASE_URL = 'https://alpha.dataunion.app:4430';
 // export const BASE_URL = 'https://dev.dataunion.app:8082';
 import Auth from './auth';
 import VM from '../main';
@@ -96,31 +96,31 @@ class API {
 
   myImages = async () => {
     // TODO: Remove mockup data 
-    return Promise.resolve([{
-        hash: "00fcff53017cf800"
-      },
-      {
-        hash: "3f3f0000027fffff"
-      },
-      {
-        hash: "7efdfffff6eeff3f"
-      },
-      {
-        hash: "d7fe3e1014787c70"
-      },
-      {
-        hash: "f8ec5e7c3c1c1810"
-      },
-      {
-        hash: "fd980018141899ff"
-      },
-      {
-        hash: "fff1c0808081c1fb"
-      },
-      {
-        hash: "fffff9800181dbff"
-      }
-    ]);
+    // return Promise.resolve([{
+    //     hash: "00fcff53017cf800"
+    //   },
+    //   {
+    //     hash: "3f3f0000027fffff"
+    //   },
+    //   {
+    //     hash: "7efdfffff6eeff3f"
+    //   },
+    //   {
+    //     hash: "d7fe3e1014787c70"
+    //   },
+    //   {
+    //     hash: "f8ec5e7c3c1c1810"
+    //   },
+    //   {
+    //     hash: "fd980018141899ff"
+    //   },
+    //   {
+    //     hash: "fff1c0808081c1fb"
+    //   },
+    //   {
+    //     hash: "fffff9800181dbff"
+    //   }
+    // ]);
     return this.call('api/v1/my-images', 'GET')
       .then(async response => {
         const result = [];
@@ -270,7 +270,7 @@ class API {
       })
       .then(async response => {
         const result = [];
-        for (let i = 0; i < response.result.length; i++) {
+        for (let i = 0; i < 20; i++) {
           const hash = response.result[i];
           const photo = {
             hash
@@ -291,6 +291,7 @@ class API {
     return this.call(`staticdata/tags?type=${type}`, 'GET')
       .then(response => {
         response.result.unshift('food bounty');
+        console.log(response.result);
         return response.result;
       }).catch(err => {
         return Promise.reject(err);

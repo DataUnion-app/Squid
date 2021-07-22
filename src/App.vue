@@ -35,7 +35,7 @@ export default {
 
 <style>
 body {
-  /* overflow-y: hidden!important; */
+  overflow-y: hidden !important;
   overflow-x: hidden;
 }
 .main {
@@ -98,10 +98,6 @@ body {
   font-weight: bold;
 }
 
-.header-child {
-  width: 70%;
-}
-
 .header-edit-button {
   margin-left: 20px;
   margin-top: 15px;
@@ -111,11 +107,12 @@ body {
   position: absolute;
   right: 10%;
   top: 5px;
-  padding: 30px;
+  padding: 25px;
 }
 
 .header-icon-item {
   margin-left: 20px;
+  cursor: pointer;
 }
 
 .image-relative {
@@ -166,9 +163,8 @@ body {
 }
 
 .main-body {
-  margin-top: 10px;
-  /* overflow-y: auto;
-    height:700px; */
+  margin-top: 25px;
+  overflow-y: hidden;
 }
 
 .sidebar {
@@ -188,7 +184,7 @@ body {
 }
 
 .select-body {
-  width: 100%;
+  /* width: 100%; */
   margin-top: 20px;
 }
 

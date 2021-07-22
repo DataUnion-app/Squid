@@ -13,6 +13,7 @@ const store = new Vuex.Store({
     imageWorld: "",
     selectTag: "",
     click_images: [],
+    page: 1,
   },
   actions: {
     init({commit}) {
@@ -61,7 +62,10 @@ const store = new Vuex.Store({
     },
     initClickImage({commit}) {
       commit('set', ['click_images', []]);
-    }
+    },
+    setPage({commit}, page) {
+      commit('set', ['page', page]);
+    },
   },
   mutations: {
     set(state, [key, value]) {
@@ -85,9 +89,6 @@ const store = new Vuex.Store({
     getImageWorld: (state) => {
       return state.imageWorld;
     },
-    getClickImages: (state) => {
-      return state.click_images;
-    }
   }
 })
 export default store

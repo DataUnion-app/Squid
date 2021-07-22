@@ -9,7 +9,6 @@
           <vs-tooltip
             ref="tooltip"
             v-if="!flag"
-            bottom
             shadow
             :not-hover="true"
             v-model="addDataTooltip"
@@ -59,7 +58,7 @@
               </div>
             </template>
           </vs-tooltip>
-          <vs-tooltip v-else bottom shadow not-hover v-model="removeImage">
+          <vs-tooltip v-else shadow not-hover v-model="removeImage">
             <vs-button danger icon @click="removeImage = !removeImage">
               <i class="bx bx-trash"></i>
             </vs-button>
@@ -86,7 +85,7 @@
           <vs-button danger icon @click="goWorldMap">
             <i class="bx bx-world"></i>
           </vs-button>
-          <vs-button danger icon @click="showDetails = !showDetails" class="icon-detail">
+          <vs-button danger icon @click="details()" class="icon-detail">
             <i class="bx bx-detail"></i>
           </vs-button>
           <vs-checkbox success v-model="option">
@@ -340,7 +339,6 @@ export default {
   methods: {
     ...mapActions(["getImage", "getTags", "setClickImage", "removeClickImage"]),
     onTooltipOutside(e) {
-      console.log(e.srcElement.className);
       if (
         this.addDataTooltip &&
         e.srcElement.className != "vs-select__options__content"
@@ -469,4 +467,5 @@ export default {
     });
   },
 };
+
 </script>

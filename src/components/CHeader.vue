@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div v-if="flag==1" class="header-child">
+    <div v-if="flag==1" class="flex w-2/5">
       <div class="flex">
         <div>
           <h1 class="text-4xl not-margin header-title">{{ title }} Data Set</h1>
@@ -12,7 +12,7 @@
         </div>
       </div>
     </div>
-    <div v-else-if="flag==2" class="header-child flex">
+    <div v-else-if="flag==2" class="flex w-2/5">
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
       </h1>
@@ -20,10 +20,10 @@
       <vs-select
         v-if="tags.length > 0"
         placeholder="Select a tag"
-        v-model="tag"
-      >
+         v-model="tag"
+      > 
         <vs-option
-          v-for="item in tags.slice(0, 20)"
+          v-for="item in tags.slice(0, 30)"
           :key="item"
           :label="item"
           :value="item"
@@ -33,11 +33,19 @@
       </vs-select>
       </div>
     </div>
-    <div v-else class="header-child">
+    <div v-else class="w-2/5 flex">
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
       </h1>
     </div>
+
+    <div v-if= "flag!=1" class="center con-pagination flex">
+      <vs-pagination only-arrows v-model="page" :length="20" />
+      <code class="pt-7">
+        Page: <b>{{ page }}</b>
+      </code>
+    </div>
+
     <div class="header-icon">
       <ul class="flex">
         <li>
@@ -55,7 +63,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "CHeader",
@@ -68,18 +76,24 @@ export default {
       if (newVal == "") {
         return;
       }
+      this.page = 1;
       this.$store.dispatch("setSelectTag", newVal);
+    },
+    page(newVal, oldVal) {
+      this.$store.dispatch("setPage", newVal);
     },
   },
   data() {
     return {
-      tag: "",
+      tag: [],
+      page: 1,
     };
   },
-    computed: {
+  computed: {
     ...mapState(["tags"]),
   },
   methods: {
+    ...mapActions(["setPage"]),
     editClicked(event) {
       this.$emit("onClickEdit");
     },

@@ -57,7 +57,7 @@ router.beforeEach((to, from, next) => {
 })
 
 Observer.$on('login', ({account}) => {
-  router.push({name: 'Home'})
+  router.push({name: 'Home'}).catch(()=>{});
 })
 
 export default router

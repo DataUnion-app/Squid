@@ -113,12 +113,10 @@ export default {
       this.showDataSet = false;
     },
     removeClickedImage() {
-        console.log(this.click_images);
         API.removeSelectDatas({name:this.$route.params.id, images:this.click_images}).then(flag => {
             this.openNotificationSucessRemove("top-right", "success");
             this.removeDataSet = false;
             this.$root.$refs.Data.getDatas();
-            console.log(this.$root.$refs);
         });
     },
     showDataSetDialog() {

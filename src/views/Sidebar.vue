@@ -163,7 +163,7 @@ export default {
         for (var i = 0; i < this.datas.length; i++) {
           if (this.active == this.datas[i].name) break;
         }
-        if (i == this.datas.length) this.$router.push({ name: this.active });
+        if (i == this.datas.length) this.$router.push({ name: this.active }).catch(()=>{});
         else {
           const param = this.active;
           this.initClickImage();
