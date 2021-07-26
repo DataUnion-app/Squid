@@ -213,38 +213,44 @@
               </template>
             </vs-card>
           </div>
-          <div class="mt-3 flex flex-wrap">
-            <div v-for="tag in tags" :key="tag.tag" class="flex">
-              <vs-tooltip v-if="isUp(tag)" success>
-                <vs-button success flat>
-                  {{ tag.tag }}
-                </vs-button>
-                <template #tooltip>
-                  <div>
-                    <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
+          <div class="mt-3 h-40 overflow-auto">
+            <div class="mt-3 flex flex-wrap">
+              <div v-for="(tag, index) in tags" :key="index" class="flex">
+                  <vs-button v-bind:style="styleObject[index]">
+                    {{ tag.tag}}-up:{{tag.up_votes }} down:{{ tag.down_votes }}
+                  </vs-button>
+                <!-- <vs-tooltip v-if="isUp(tag)" success>
+                  <vs-button success flat>
+                    {{ tag.tag}}  <i class="bx bx-upvote"></i>: {{tag.up_votes }}
+                  </vs-button>
+                  <template #tooltip>
                     <div>
-                      <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
+                      <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
+                      <div>
+                        <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
+                      </div>
                     </div>
-                  </div>
-                </template>
-              </vs-tooltip>
-              <vs-tooltip v-else danger>
-                <vs-button danger flat>
-                  {{ tag.tag }}
-                </vs-button>
-                <template #tooltip>
-                  <div>
-                    <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
+                  </template>
+                </vs-tooltip>
+                
+                <vs-tooltip v-else danger>
+                  <vs-button danger flat>
+                    {{ tag.tag }}
+                  </vs-button>
+                  <template #tooltip>
                     <div>
-                      <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
+                      <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
+                      <div>
+                        <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
+                      </div>
                     </div>
-                  </div>
-                </template>
-              </vs-tooltip>
+                  </template>
+                </vs-tooltip> -->
+              </div>
             </div>
           </div>
         </div>
-        <div class="flex flex-col image-detail-right">
+        <!-- <div class="flex flex-col image-detail-right">
           <div class="relative w-full">
             <div class="comment">
               <div
@@ -281,7 +287,7 @@
             <vs-input v-model="comment" placeholder="Input your feedback" />
             <vs-button @click="postComment"> Comment </vs-button>
           </div>
-        </div>
+        </div> -->
       </div>
       <template #footer> </template>
     </vs-dialog>
@@ -325,6 +331,7 @@ export default {
       showDataSet: false,
       option: false,
       tags: [],
+      color_rank: [],
       comment: "",
       comments: [],
       datas: [],
@@ -333,6 +340,7 @@ export default {
       addDataDetailTooltip: false,
       removeImage: false,
       removeImageDetail: false,
+      styleObject: []
     };
   },
   computed: {},
@@ -385,6 +393,41 @@ export default {
     details() {
       this.getTags(this.hash).then((tags) => {
         this.tags = tags;
+        let i;
+        this.color_rank = [];
+        let up_max=0, down_max=0;
+        for(i=0; i<tags.length; i++)
+        {
+          if(up_max < tags[i].up_votes) up_max = tags[i].up_votes;
+          if(down_max < tags[i].down_votes) down_max = tags[i].down_votes;
+        }
+
+        for(i=0; i<tags.length; i++)
+        {
+          if(tags[i].up_votes > tags[i].down_votes) {
+            let d_green = 128+(64/up_max)*(up_max-tags[i].up_votes);
+            this.styleObject[i] = 
+            {
+              backgroundColor: `rgb(0, ${d_green}, 0)`,
+              color: 'white',
+            }
+          }
+          else if(tags[i].up_votes == tags[i].down_votes) {
+            this.styleObject[i] = 
+            {
+              backgroundColor: "rgb(204, 204, 0)",
+              color: 'white',
+            }
+          }
+          else {
+            let d_red = 128+(64/down_max)*(down_max-tags[i].down_votes);
+            this.styleObject[i] = 
+            {
+              backgroundColor: `rgb(${d_red}, 0, 0)`,
+              color: 'white',
+            }
+          }
+        }
         this.showDetails = true;
       });
     },

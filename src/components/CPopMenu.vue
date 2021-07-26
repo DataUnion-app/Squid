@@ -17,7 +17,7 @@
       <v-btn fab dark small class="pop-menu-pencil">
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
-      <v-btn fab dark small class="pop-menu-plus">
+      <v-btn fab dark small class="pop-menu-plus" @click="showDataSetDlg()">
         <v-icon>mdi-plus</v-icon>
       </v-btn>
       <v-btn v-if="flag==1" fab dark small class="pop-menu-heart" @click="showDataSetDialog()">
@@ -71,6 +71,24 @@
         </div>
       <template #footer> </template>
     </vs-dialog>
+    <vs-dialog v-model="showdatas">
+      <template #header>
+        <h1 class="text-3xl not-margin">Create Data Set</h1>
+      </template>
+
+      <div class="flex">
+        <div class="flex flex-col add-dialog">
+          <div class="p-3 flex justify-center">
+            <vs-input
+              v-model="dataName"
+              placeholder="Input your data set name"
+            />
+            <vs-button @click="createData"> Create </vs-button>
+          </div>
+        </div>
+      </div>
+      <template #footer> </template>
+    </vs-dialog>
   </div>
 </template>
 
@@ -97,20 +115,36 @@ export default {
       addDataTooltip: false,
       datas: [],
       data: "",
+      plus_data: false,
       removeDataSet:false,
+      dataName: "",
+      showdatas: false,
     };
   },
   computed: {
-    ...mapState(["click_images"]),
+    ...mapState(["click_images", "page", "selectTag"]),
   },
   methods: {
     addDataSet_m() {
       let i = 0;
-      for (i = 0; i < this.click_images.length; i++) {
-        API.saveData({ name: this.data, hash: this.click_images[i].hash });
+      if(!this.plus_data) {
+        for (i = 0; i < this.click_images.length; i++) {
+          API.saveData({ name: this.data, hash: this.click_images[i].hash });
+        }
+        this.openNotificationSucess("top-right", "success");
+        this.showDataSet = false;
       }
-      this.openNotificationSucess("top-right", "success");
-      this.showDataSet = false;
+      else {
+        API.photos({ tag: this.selectTag, page: this.page }).then(
+        (photos) => {
+            for (i = 0; i < photos.length; i++) {
+              API.saveData({ name: this.data, hash: photos[i].hash });
+            }
+            this.openNotificationSucess("top-right", "success");
+            this.showDataSet = false;
+          }
+        );
+      }
     },
     removeClickedImage() {
         API.removeSelectDatas({name:this.$route.params.id, images:this.click_images}).then(flag => {
@@ -167,6 +201,14 @@ export default {
         text: "Already images exists!",
       });
     },
+    openNotificationAlbumFailed(position = null, color) {
+      const noti = this.$vs.notification({
+        color,
+        position,
+        title: "Failed",
+        text: "Already images exists!",
+      });
+    },
     connectSidebar() {
       this.showDataSet = false;
       this.addDataTooltip = false;
@@ -178,6 +220,35 @@ export default {
         this.datas = datas;
       });
     },
+    showDataSetDlg() {
+      this.showdatas = true;
+    },
+    createData() {
+      if (this.dataName !== "") {
+        API.createData({ name: this.dataName }).then((flag) => {
+          if (flag) {
+            this.refreshDataSet();
+            this.$root.$refs.Sidebar.updateData();
+            API.photos({ tag: this.selectTag, page: this.page }).then(
+            (photos) => {
+              let i;
+                for (i = 0; i < photos.length; i++) {
+                  API.saveData({ name: this.dataName, hash: photos[i].hash });
+                }
+                this.openNotificationSucess("top-right", "success");
+                this.showdatas = false;
+                this.dataName = "";
+              }
+            );
+            /*this.force ++;
+            // vm.$forceUpdate();*/
+          } else {
+            this.showdatas = true;
+            this.openNotificationAlbumFailed("top-right", "danger");
+          }
+        });
+      }
+    }
   },
   mounted() {
     this.refreshDataSet();

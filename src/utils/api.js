@@ -28,11 +28,11 @@ class API {
     }
 
     const timestamp = (new Date()).getTime();
-    if (this.requests.length == 0) {
-      this.loader = VM.$vs.loading({
-        type: 'scale'
-      });
-    }
+    // if (this.requests.length == 0) {
+    //   this.loader = VM.$vs.loading({
+    //     type: 'scale'
+    //   });
+    // }
     this.requests.push(timestamp);
     return fetch(
         `${BASE_URL}/${path}`, param
@@ -60,10 +60,10 @@ class API {
       })
       .finally(() => {
         this.requests = this.requests.filter((request) => request != timestamp);
-        if (this.requests.length == 0) {
-          this.loader.close();
-          this.loader = null;
-        }
+        // if (this.requests.length == 0) {
+        //   this.loader.close();
+        //   this.loader = null;
+        // }
       });
   }
 
@@ -262,21 +262,37 @@ class API {
       return Promise.resolve([]);
     }
     page = page || 1;
+    let real_page = page;
+    page = Math.floor(real_page/5)+1;
     status = status || 'VERIFIABLE';
     return this.call('api/v1/search-images', 'POST', {
         status,
         page,
         tag
-      })
+       })
       .then(async response => {
         const result = [];
-        for (let i = 0; i < 20; i++) {
-          const hash = response.result[i];
-          const photo = {
-            hash
-          };
-          result.push(photo);
-        }
+        if(response.result.length === 0)
+          return result;
+        let i;
+        if(real_page%5 != 0) {
+          for (i = (real_page-1)%5*20; i < real_page%5*20; i++) {
+            const hash = response.result[i];
+            const photo = {
+              hash
+            };
+            result.push(photo);
+          }
+         }
+         else {
+            for(i=80; i<response.result.length; i++) {
+              const hash = response.result[i];
+              const photo = {
+                hash
+              };
+              result.push(photo);
+            }
+         }
         return result;
       }).catch(err => {
         return Promise.reject(err);
@@ -291,7 +307,6 @@ class API {
     return this.call(`staticdata/tags?type=${type}`, 'GET')
       .then(response => {
         response.result.unshift('food bounty');
-        console.log(response.result);
         return response.result;
       }).catch(err => {
         return Promise.reject(err);

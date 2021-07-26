@@ -208,6 +208,10 @@ export default {
         });
       }
     },
+    updateData() {
+      this.refreshdatas();
+      this.force ++;
+    },
     removeData(index) {
       API.removeDataSet({ index: index }).then((flag) => {
         if (flag) {
