@@ -192,4 +192,9 @@ body {
   margin-top: 10px;
   margin-left: 40px;
 }
+
+.tag-width{
+  max-width: 250px !important;
+  width: 250px !important;
+}
 </style>

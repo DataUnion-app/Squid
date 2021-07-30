@@ -19,8 +19,12 @@
       <div class="select-body">
       <vs-select
         v-if="tags.length > 0"
-        placeholder="Select a tag"
-         v-model="tag"
+          placeholder="Select a tag"
+          v-model="tag"
+          filter
+          multiple
+          collapse-chips
+          class="tag-width"
       > 
         <vs-option
           v-for="item in tags.slice(0, 30)"
