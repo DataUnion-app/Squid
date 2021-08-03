@@ -81,55 +81,55 @@
                   </div>
                 </template>
               </vs-tooltip> -->
-            </div>
-          </vs-sidebar-item>
-        </vs-sidebar-group>
-      </div>
-      <div v-else>
-        <vs-sidebar-item @click.native="createData">
-          <template #icon>
-            <i class="bx bx-data"></i>
-          </template>
-          <div class="sidebar">
-            Data Set
-            <i class="bx bx-plus sidebar-item"> </i>
-          </div>
-        </vs-sidebar-item>
-      </div>
-      <vs-sidebar-item id="Map">
-        <template #icon>
-          <i class="bx bx-world"></i>
-        </template>
-        World Map
-      </vs-sidebar-item>
-      <vs-sidebar-item id="Algorithm">
-        <template #icon>
-          <img src="@/assets/algorithm.svg" style="width:20px;" />
-        </template>
-        Algorithms
-      </vs-sidebar-item>
-      <template #footer v-if="blockies">
-        <div class="w-full flex flex-nowrap items-center">
-          <vs-avatar class="mr-3 comment-avatar">
-            <img :src="blockies" alt="" />
-          </vs-avatar>
-          <div
-            class="
-              text-white-600
-              font-bold
-              text-sm
-              overflow-ellipsis overflow-hidden
-            "
-          >
-            {{ account }}
-          </div>
-        </div>
-      </template>
-    </vs-sidebar>
-    <vs-dialog v-model="showdatas">
-      <template #header>
-        <h1 class="text-3xl not-margin">Create Data Set</h1>
-      </template>
+						</div>
+					</vs-sidebar-item>
+				</vs-sidebar-group>
+			</div>
+			<div v-else>
+				<vs-sidebar-item @click.native="createData">
+					<template #icon>
+						<i class="bx bx-data"></i>
+					</template>
+					<div class="sidebar">
+						Data Set
+						<i class="bx bx-plus sidebar-item"> </i>
+					</div>
+				</vs-sidebar-item>
+			</div>
+			<vs-sidebar-item id="Map">
+				<template #icon>
+					<i class="bx bx-world"></i>
+				</template>
+				World Map
+			</vs-sidebar-item>
+			<vs-sidebar-item id="Algorithm">
+				<template #icon>
+					<i class="bx bx-card"></i>
+				</template>
+				Algorithm
+			</vs-sidebar-item>
+			<template #footer v-if="blockies">
+				<div class="w-full flex flex-nowrap items-center">
+					<vs-avatar class="mr-3 comment-avatar">
+						<img :src="blockies" alt="" />
+					</vs-avatar>
+					<div
+						class="
+							text-white-600
+							font-bold
+							text-sm
+							overflow-ellipsis overflow-hidden
+						"
+					>
+						{{ account }}
+					</div>
+				</div>
+			</template>
+		</vs-sidebar>
+		<vs-dialog v-model="showdatas">
+			<template #header>
+				<h1 class="text-3xl not-margin">Create Data Set</h1>
+			</template>
 
 			<div class="flex">
 				<div class="flex flex-col add-dialog">
