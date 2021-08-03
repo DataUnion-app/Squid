@@ -33,6 +33,11 @@ const routes = [
     component: () => import('@/views/Map')
   },
   {
+    path: '/algorithm',
+    name: 'Algorithm',
+    component: () => import('@/views/Algorithm')
+  },
+  {
     path: '/datas/:id',
     name: 'datas',
     // route level code-splitting
@@ -50,14 +55,14 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (!Auth.token() && to.name != 'Welcome') {
-    next({name: 'Welcome'});
+    next({ name: 'Welcome' });
     return;
   }
   next();
 })
 
-Observer.$on('login', ({account}) => {
-  router.push({name: 'Home'}).catch(()=>{});
+Observer.$on('login', ({ account }) => {
+  router.push({ name: 'Home' }).catch(() => { });
 })
 
 export default router
