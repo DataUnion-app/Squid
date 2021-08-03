@@ -102,6 +102,12 @@
         </template>
         World Map
       </vs-sidebar-item>
+      <vs-sidebar-item id="Algorithm">
+        <template #icon>
+          <img src="@/assets/algorithm.svg" style="width:20px;" />
+        </template>
+        Algorithms
+      </vs-sidebar-item>
       <template #footer v-if="blockies">
         <div class="w-full flex flex-nowrap items-center">
           <vs-avatar class="mr-3 comment-avatar">

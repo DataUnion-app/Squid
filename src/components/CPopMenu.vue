@@ -17,13 +17,37 @@
       <v-btn fab dark small class="pop-menu-pencil">
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
-      <v-btn fab dark small class="pop-menu-plus" @click="showDataSetDlg()">
+      <v-btn
+        v-if="flag == 1"
+        fab
+        dark
+        small
+        class="pop-menu-plus"
+        @click="showDataSetDlg()"
+      >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
-      <v-btn v-if="flag==1" fab dark small class="pop-menu-heart" @click="showDataSetDialog()">
+      <v-btn v-else fab dark small class="pop-menu-plus">
+        <v-icon>mdi-minus</v-icon>
+      </v-btn>
+      <v-btn
+        v-if="flag == 1"
+        fab
+        dark
+        small
+        class="pop-menu-heart"
+        @click="showDataSetDialog()"
+      >
         <v-icon>mdi-heart</v-icon>
       </v-btn>
-      <v-btn v-else fab dark small class="pop-menu-heart" @click="showRemoveDialog()">
+      <v-btn
+        v-else
+        fab
+        dark
+        small
+        class="pop-menu-heart"
+        @click="showRemoveDialog()"
+      >
         <v-icon>mdi-delete</v-icon>
       </v-btn>
     </v-speed-dial>
@@ -64,11 +88,11 @@
       <template #header>
         <h1 class="text-3xl not-margin">Confirm</h1>
       </template>
-        <div class="p-2 text-2xl flex justify-center">Are you sure?</div>
-        <div class="p-2 flex justify-center">
-            <vs-button @click="removeClickedImage()">Yes</vs-button>
-            <vs-button @click="removeDataSet = !removeDataSet">No</vs-button>
-        </div>
+      <div class="p-2 text-2xl flex justify-center">Are you sure?</div>
+      <div class="p-2 flex justify-center">
+        <vs-button @click="removeClickedImage()">Yes</vs-button>
+        <vs-button @click="removeDataSet = !removeDataSet">No</vs-button>
+      </div>
       <template #footer> </template>
     </vs-dialog>
     <vs-dialog v-model="showdatas">
@@ -116,7 +140,7 @@ export default {
       datas: [],
       data: "",
       plus_data: false,
-      removeDataSet:false,
+      removeDataSet: false,
       dataName: "",
       showdatas: false,
     };
@@ -127,31 +151,31 @@ export default {
   methods: {
     addDataSet_m() {
       let i = 0;
-      if(!this.plus_data) {
+      if (!this.plus_data) {
         for (i = 0; i < this.click_images.length; i++) {
           API.saveData({ name: this.data, hash: this.click_images[i].hash });
         }
         this.openNotificationSucess("top-right", "success");
         this.showDataSet = false;
-      }
-      else {
-        API.photos({ tag: this.selectTag, page: this.page }).then(
-        (photos) => {
-            for (i = 0; i < photos.length; i++) {
-              API.saveData({ name: this.data, hash: photos[i].hash });
-            }
-            this.openNotificationSucess("top-right", "success");
-            this.showDataSet = false;
+      } else {
+        API.photos({ tag: this.selectTag, page: this.page }).then((photos) => {
+          for (i = 0; i < photos.length; i++) {
+            API.saveData({ name: this.data, hash: photos[i].hash });
           }
-        );
+          this.openNotificationSucess("top-right", "success");
+          this.showDataSet = false;
+        });
       }
     },
     removeClickedImage() {
-        API.removeSelectDatas({name:this.$route.params.id, images:this.click_images}).then(flag => {
-            this.openNotificationSucessRemove("top-right", "success");
-            this.removeDataSet = false;
-            this.$root.$refs.Data.getDatas();
-        });
+      API.removeSelectDatas({
+        name: this.$route.params.id,
+        images: this.click_images,
+      }).then((flag) => {
+        this.openNotificationSucessRemove("top-right", "success");
+        this.removeDataSet = false;
+        this.$root.$refs.Data.getDatas();
+      });
     },
     showDataSetDialog() {
       if (this.click_images.length > 0) {
@@ -162,12 +186,11 @@ export default {
       }
     },
     showRemoveDialog() {
-       if (this.click_images.length > 0) {
+      if (this.click_images.length > 0) {
         this.removeDataSet = true;
-       }
-       else {
-           this.openNotificationNoSelect("top-right", "danger");
-       }
+      } else {
+        this.openNotificationNoSelect("top-right", "danger");
+      }
     },
     openNotificationSucess(position = null, color) {
       const noti = this.$vs.notification({
@@ -229,26 +252,46 @@ export default {
           if (flag) {
             this.refreshDataSet();
             this.$root.$refs.Sidebar.updateData();
-            API.photos({ tag: this.selectTag, page: this.page }).then(
-            (photos) => {
-              let i;
+            let i, timer;
+            if (typeof this.selectTag == "string") {
+              API.photos({ tag: this.selectTag, page: this.page }).then(
+              (photos) => {
                 for (i = 0; i < photos.length; i++) {
                   API.saveData({ name: this.dataName, hash: photos[i].hash });
                 }
                 this.openNotificationSucess("top-right", "success");
                 this.showdatas = false;
                 this.dataName = "";
-              }
-            );
-            /*this.force ++;
-            // vm.$forceUpdate();*/
+              });
+            } 
+            else {
+              const name_temp = this.dataName;
+              i = 0;
+              timer = setInterval(() => {
+                if (i >= this.selectTag.length) {
+                  this.openNotificationSucess("top-right", "success");
+                  this.showdatas = false;
+                  this.dataName = "";
+                  clearInterval(timer);
+                }
+                  const temp_tag = this.selectTag[i];
+                  API.photos({ tag: temp_tag, page: this.page }).then(
+                    (photos) => {
+                      let j;
+                      for (j = 0; j < photos.length; j++) {
+                        API.saveData({ name: name_temp, hash: photos[j].hash });
+                      }
+                    });
+                i++;
+              }, 50);
+            }
           } else {
             this.showdatas = true;
             this.openNotificationAlbumFailed("top-right", "danger");
           }
         });
       }
-    }
+    },
   },
   mounted() {
     this.refreshDataSet();

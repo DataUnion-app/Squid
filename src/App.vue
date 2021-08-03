@@ -87,7 +87,7 @@ body {
   width: 110%;
   margin-left: -45px;
   margin-top: -20px;
-  background-color: RGB(238, 242, 245);
+  background-color: RGB(244, 247, 248);
   display: flex;
   position: relative;
 }
@@ -106,12 +106,11 @@ body {
 .header-icon {
   position: absolute;
   right: 10%;
-  top: 5px;
-  padding: 25px;
+  padding: 20px;
 }
 
 .header-icon-item {
-  margin-left: 20px;
+  margin-left: 5px;
   cursor: pointer;
 }
 
@@ -133,7 +132,6 @@ body {
 
 .image-detail-left {
   width: 50%;
-  min-width: 400px;
 }
 
 .image-detail-right {
@@ -193,8 +191,8 @@ body {
   margin-left: 40px;
 }
 
-.tag-width{
-  max-width: 250px !important;
-  width: 250px !important;
+.select-tag{
+  max-width: 500px !important;
+  width: 270px !important;
 }
 </style>

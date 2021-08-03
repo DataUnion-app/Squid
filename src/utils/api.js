@@ -35,29 +35,29 @@ class API {
     // }
     this.requests.push(timestamp);
     return fetch(
-        `${BASE_URL}/${path}`, param
-      ).then(response => {
-        if (isPure) {
-          return response;
+      `${BASE_URL}/${path}`, param
+    ).then(response => {
+      if (isPure) {
+        return response;
+      }
+      if (response.ok) {
+        return response.json();
+      }
+      const status = response.status;
+      return response.json().then(response => {
+        if (response.msg == 'Token has expired') {
+          return Auth.refreshToken().then(result => {
+            if (result) {
+              return this.call(path, method, data, headers);
+            }
+          });
         }
-        if (response.ok) {
-          return response.json();
-        }
-        const status = response.status;
-        return response.json().then(response => {
-          if (response.msg == 'Token has expired') {
-            return Auth.refreshToken().then(result => {
-              if (result) {
-                return this.call(path, method, data, headers);
-              }
-            });
-          }
-          return Promise.reject({
-            status: status,
-            response: response
-          })
+        return Promise.reject({
+          status: status,
+          response: response
         })
       })
+    })
       .finally(() => {
         this.requests = this.requests.filter((request) => request != timestamp);
         // if (this.requests.length == 0) {
@@ -84,9 +84,9 @@ class API {
 
   imageTag = (id) => {
     return this.call(`api/v1/metadata/query`, 'POST', {
-        image_ids: id,
-        annotations: ['BoundingBox', 'GeoLocation']
-      })
+      image_ids: id,
+      annotations: ['BoundingBox', 'GeoLocation']
+    })
       .then(response => {
         return response.result.GeoLocation;
       }).catch(err => {
@@ -126,10 +126,12 @@ class API {
         const result = [];
         for (let i = 0; i < response.result.length; i++) {
           const hash = response.result[i].hash;
-          const photo = {
-            hash
-          };
-          result.push(photo);
+          if (hash != undefined) {
+            const photo = {
+              hash
+            };
+            result.push(photo);
+          }
         }
         return result;
       }).catch(err => {
@@ -177,7 +179,7 @@ class API {
     return Promise.resolve(false);
   }
 
-  removeDataSet = async( {
+  removeDataSet = async ({
     index
   }) => {
     const datas = JSON.parse(localStorage.getItem('datas')) || [];
@@ -229,7 +231,7 @@ class API {
     const datas = JSON.parse(localStorage.getItem('datas')) || [];
     const a_index = datas.findIndex(item => item.name === name);
     let i;
-    for(i=0; i<images.length; i++) {
+    for (i = 0; i < images.length; i++) {
       const index = datas[a_index].photos.findIndex(item => item === images[i].hash);
       datas[a_index].photos.splice(index, 1);
     }
@@ -263,36 +265,38 @@ class API {
     }
     page = page || 1;
     let real_page = page;
-    page = Math.floor(real_page/5)+1;
+    page = Math.floor(real_page / 5) + 1;
     status = status || 'VERIFIABLE';
     return this.call('api/v1/search-images', 'POST', {
-        status,
-        page,
-        tag
-       })
+      status,
+      page,
+      tag
+    })
       .then(async response => {
         const result = [];
-        if(response.result.length === 0)
+        if (response.result.length === 0)
           return result;
         let i;
-        if(real_page%5 != 0) {
-          for (i = (real_page-1)%5*20; i < real_page%5*20; i++) {
+        if (real_page % 5 != 0) {
+          for (i = (real_page - 1) % 5 * 20; i < real_page % 5 * 20; i++) {
             const hash = response.result[i];
+            if (hash == undefined) break;
             const photo = {
               hash
             };
             result.push(photo);
           }
-         }
-         else {
-            for(i=80; i<response.result.length; i++) {
-              const hash = response.result[i];
-              const photo = {
-                hash
-              };
-              result.push(photo);
-            }
-         }
+        }
+        else {
+          for (i = 80; i < response.result.length; i++) {
+            const hash = response.result[i];
+            if (hash == undefined) break;
+            const photo = {
+              hash
+            };
+            result.push(photo);
+          }
+        }
         return result;
       }).catch(err => {
         return Promise.reject(err);
@@ -315,8 +319,8 @@ class API {
 
   queryTags = (id) => {
     return this.call(`api/v1/query-tags`, 'POST', {
-        image_ids: [id]
-      })
+      image_ids: [id]
+    })
       .then(response => {
         return response.result[0].value;
       }).catch(err => {

@@ -88,8 +88,7 @@
           <vs-button danger icon @click="details()" class="icon-detail">
             <i class="bx bx-detail"></i>
           </vs-button>
-          <vs-checkbox success v-model="option">
-          </vs-checkbox>
+          <vs-checkbox success v-model="option"> </vs-checkbox>
         </template>
       </vs-card>
       <div v-show="!image" ref="loader" class="relative w-full h-full"></div>
@@ -216,9 +215,9 @@
           <div class="mt-3 h-40 overflow-auto">
             <div class="mt-3 flex flex-wrap">
               <div v-for="(tag, index) in tags" :key="index" class="flex">
-                  <vs-button v-bind:style="styleObject[index]">
-                    {{ tag.tag}}-up:{{tag.up_votes }} down:{{ tag.down_votes }}
-                  </vs-button>
+                <vs-button v-bind:style="styleObject[index]">
+                  {{ tag.tag }}-up:{{ tag.up_votes }} down:{{ tag.down_votes }}
+                </vs-button>
                 <!-- <vs-tooltip v-if="isUp(tag)" success>
                   <vs-button success flat>
                     {{ tag.tag}}  <i class="bx bx-upvote"></i>: {{tag.up_votes }}
@@ -250,7 +249,7 @@
             </div>
           </div>
         </div>
-        <!-- <div class="flex flex-col image-detail-right">
+        <div class="flex image-detail-right">
           <div class="relative w-full">
             <div class="comment">
               <div
@@ -258,38 +257,55 @@
                   w-full
                   h-full
                   absolute
-                  p-1
+                  p-2
                   object-contain
-                  pr-5
+                  pl-4
+                  pr-2
                   comment-item
                 "
               >
-                <div v-if="comments.length > 0" class="h-full flex flex-col">
-                  <div class="text-2xl text-center">Comments</div>
-                  <div class="p-3 overflow-y-auto">
-                    <div
-                      v-for="(item, index) in comments"
-                      :key="index"
-                      class="flex items-center m-1"
-                    >
-                      <vs-avatar class="mr-3 comment-avatar">
-                        <img :src="avatar(item.from)" alt="" />
-                      </vs-avatar>
-                      <div>{{ item.comment }}</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="text-xl p-5" v-else>There is no comment yet.</div>
+                <vs-table>
+                  <template #thead>
+                    <vs-tr>
+                      <vs-th> Tag Name </vs-th>
+                      <vs-th> upvotes </vs-th>
+                      <vs-th> downvotes </vs-th>
+                      <vs-th> boxes </vs-th>
+                    </vs-tr>
+                  </template>
+                  <template #tbody>
+                    <vs-tr :key="i" v-for="(tr, i) in tags" :data="tr">
+                      <vs-td>
+                        {{ tr.tag }}
+                      </vs-td>
+                      <vs-td>
+                        {{ tr.up_votes }}
+                      </vs-td>
+                      <vs-td>
+                        {{ tr.down_votes }}
+                      </vs-td>
+                      <vs-td>
+                        {{ tr.up_votes + tr.down_votes }}
+                      </vs-td>
+                    </vs-tr>
+                  </template>
+                </vs-table>
               </div>
             </div>
           </div>
-          <div class="p-3 flex justify-center">
+          <!-- <div class="p-3 flex justify-center">
             <vs-input v-model="comment" placeholder="Input your feedback" />
             <vs-button @click="postComment"> Comment </vs-button>
-          </div>
-        </div> -->
+          </div> -->
+        </div>
       </div>
-      <template #footer> </template>
+      <template #footer>
+        <div class="flex flex-col rounded-xl border-gray-500 border mt-4 p-3">
+          <div class="pl-3">Sales-price-usage information</div>
+          <div class="text-center">Placeholder</div>
+          <div class="text-right pr-3">coming soon...</div>
+        </div>
+      </template>
     </vs-dialog>
   </div>
 </template>
@@ -300,6 +316,22 @@
 .vs-checkbox-con {
   width: 32px !important;
   height: 32px !important;
+}
+.vs-table table {
+  min-width: auto;
+}
+.vs-table-content {
+  height: 100%;
+  overflow: auto;
+  border: 1px solid gray;
+}
+.vs-card {
+  max-width: auto;
+}
+.vs-table tr {
+  border-bottom: 1px;
+  border-color: rgba(229, 231, 235, var(--tw-border-opacity));;
+  border-style: solid;
 }
 </style>
 <script>
@@ -315,14 +347,13 @@ export default {
     index: Number,
   },
   watch: {
-    option: function(newValue, oldValue) {
-      if(newValue) {
-        this.setClickImage({hash:this.hash});
+    option: function (newValue, oldValue) {
+      if (newValue) {
+        this.setClickImage({ hash: this.hash });
+      } else {
+        this.removeClickImage({ hash: this.hash });
       }
-      else {
-        this.removeClickImage({hash:this.hash});
-      }
-    }
+    },
   },
   data() {
     return {
@@ -340,7 +371,79 @@ export default {
       addDataDetailTooltip: false,
       removeImage: false,
       removeImageDetail: false,
-      styleObject: []
+      styleObject: [],
+      users: [
+        {
+          id: 1,
+          name: "Leanne Graham",
+          username: "Bret",
+          email: "Sincere@april.biz",
+          website: "hildegard.org",
+        },
+        {
+          id: 2,
+          name: "Ervin Howell",
+          username: "Antonette",
+          email: "Shanna@melissa.tv",
+          website: "anastasia.net",
+        },
+        {
+          id: 3,
+          name: "Clementine Bauch",
+          username: "Samantha",
+          email: "Nathan@yesenia.net",
+          website: "ramiro.info",
+        },
+        {
+          id: 4,
+          name: "Patricia Lebsack",
+          username: "Karianne",
+          email: "Julianne.OConner@kory.org",
+          website: "kale.biz",
+        },
+        {
+          id: 5,
+          name: "Chelsey Dietrich",
+          username: "Kamren",
+          email: "Lucio_Hettinger@annie.ca",
+          website: "demarco.info",
+        },
+        {
+          id: 6,
+          name: "Mrs. Dennis Schulist",
+          username: "Leopoldo_Corkery",
+          email: "Karley_Dach@jasper.info",
+          website: "ola.org",
+        },
+        {
+          id: 7,
+          name: "Kurtis Weissnat",
+          username: "Elwyn.Skiles",
+          email: "Telly.Hoeger@billy.biz",
+          website: "elvis.io",
+        },
+        {
+          id: 8,
+          name: "Nicholas Runolfsdottir V",
+          username: "Maxime_Nienow",
+          email: "Sherwood@rosamond.me",
+          website: "jacynthe.com",
+        },
+        {
+          id: 9,
+          name: "Glenna Reichert",
+          username: "Delphine",
+          email: "Chaim_McDermott@dana.io",
+          website: "conrad.com",
+        },
+        {
+          id: 10,
+          name: "Clementina DuBuque",
+          username: "Moriah.Stanton",
+          email: "Rey.Padberg@karina.biz",
+          website: "ambrose.net",
+        },
+      ],
     };
   },
   computed: {},
@@ -395,37 +498,31 @@ export default {
         this.tags = tags;
         let i;
         this.color_rank = [];
-        let up_max=0, down_max=0;
-        for(i=0; i<tags.length; i++)
-        {
-          if(up_max < tags[i].up_votes) up_max = tags[i].up_votes;
-          if(down_max < tags[i].down_votes) down_max = tags[i].down_votes;
+        let up_max = 0,
+          down_max = 0;
+        for (i = 0; i < tags.length; i++) {
+          if (up_max < tags[i].up_votes) up_max = tags[i].up_votes;
+          if (down_max < tags[i].down_votes) down_max = tags[i].down_votes;
         }
 
-        for(i=0; i<tags.length; i++)
-        {
-          if(tags[i].up_votes > tags[i].down_votes) {
-            let d_green = 128+(64/up_max)*(up_max-tags[i].up_votes);
-            this.styleObject[i] = 
-            {
+        for (i = 0; i < tags.length; i++) {
+          if (tags[i].up_votes > tags[i].down_votes) {
+            let d_green = 128 + (64 / up_max) * (up_max - tags[i].up_votes);
+            this.styleObject[i] = {
               backgroundColor: `rgb(0, ${d_green}, 0)`,
-              color: 'white',
-            }
-          }
-          else if(tags[i].up_votes == tags[i].down_votes) {
-            this.styleObject[i] = 
-            {
+              color: "white",
+            };
+          } else if (tags[i].up_votes == tags[i].down_votes) {
+            this.styleObject[i] = {
               backgroundColor: "rgb(204, 204, 0)",
-              color: 'white',
-            }
-          }
-          else {
-            let d_red = 128+(64/down_max)*(down_max-tags[i].down_votes);
-            this.styleObject[i] = 
-            {
+              color: "white",
+            };
+          } else {
+            let d_red = 128 + (64 / down_max) * (down_max - tags[i].down_votes);
+            this.styleObject[i] = {
               backgroundColor: `rgb(${d_red}, 0, 0)`,
-              color: 'white',
-            }
+              color: "white",
+            };
           }
         }
         this.showDetails = true;
@@ -510,5 +607,4 @@ export default {
     });
   },
 };
-
 </script>

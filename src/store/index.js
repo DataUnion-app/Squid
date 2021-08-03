@@ -16,7 +16,7 @@ const store = new Vuex.Store({
     page: 1,
   },
   actions: {
-    init({commit}) {
+    init({ commit }) {
       console.log('initing');
       API.tags().then(tags => {
         commit('set', ['tags', tags])
@@ -25,7 +25,7 @@ const store = new Vuex.Store({
         commit('set', ['datas', datas])
       });
     },
-    getImage({state}, id) {
+    getImage({ state }, id) {
       if (state.imageCache[id]) {
         return Promise.resolve(state.imageCache[id]);
       }
@@ -34,7 +34,7 @@ const store = new Vuex.Store({
         return thumbnail;
       });
     },
-    getTags({state}, id) {
+    getTags({ state }, id) {
       if (state.tagsCache[id]) {
         return Promise.resolve(state.tagsCache[id]);
       }
@@ -43,27 +43,27 @@ const store = new Vuex.Store({
         return response;
       });
     },
-    setdatas({commit}) {
+    setdatas({ commit }) {
       API.datas().then(datas => {
         commit('set', ['datas', datas])
       });
     },
-    setClickImage({commit}, hash) {
+    setClickImage({ commit }, hash) {
       commit('setImage', ['click_images', hash])
     },
-    removeClickImage({commit}, hash) {
-       commit('removeImage', ['click_images', hash])
+    removeClickImage({ commit }, hash) {
+      commit('removeImage', ['click_images', hash])
     },
-    setImageWorld({commit}, hash) {
+    setImageWorld({ commit }, hash) {
       commit('set', ['imageWorld', hash])
     },
-    setSelectTag({commit}, tag) {
+    setSelectTag({ commit }, tag) {
       commit('set', ['selectTag', tag]);
     },
-    initClickImage({commit}) {
+    initClickImage({ commit }) {
       commit('set', ['click_images', []]);
     },
-    setPage({commit}, page) {
+    setPage({ commit }, page) {
       commit('set', ['page', page]);
     },
   },

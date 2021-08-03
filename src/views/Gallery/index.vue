@@ -8,14 +8,14 @@
         :totalHeight="800"
         :defaultHeight="80"
         > -->
-          <div v-for="photo in photos" :key="photo.hash" class="image-relative">
-            <div class="comment">
-              <CImage
-                :hash="photo.hash"
-                class="w-full h-full absolute p-1 comment-item"
-              />
-            </div>
+        <div v-for="photo in photos" :key="photo.hash" class="image-relative">
+          <div class="comment">
+            <CImage
+              :hash="photo.hash"
+              class="w-full h-full absolute p-1 comment-item"
+            />
           </div>
+        </div>
         <!-- </VueAutoVirtualScrollList> -->
       </div>
       <div v-else>
@@ -27,7 +27,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import VueAutoVirtualScrollList from 'vue-auto-virtual-scroll-list'
+import VueAutoVirtualScrollList from "vue-auto-virtual-scroll-list";
 import API from "@/utils/api";
 
 export default {
@@ -46,13 +46,17 @@ export default {
   },
   watch: {
     selectTag(newVal, oldVal) {
-      let i;
+      let i, timer;
       if (typeof newVal == "string") {
         API.photos({ tag: newVal }).then((photos) => {
           this.photos = photos;
         });
       } else {
-        for (i = 0; i < newVal.length; i++) {
+        i = 0;
+        timer = setInterval(() => {
+          if (i >= newVal.length - 1) {
+            clearInterval(timer);
+          }
           if (i == 0) {
             API.photos({ tag: newVal[i] }).then((photos) => {
               this.photos = photos;
@@ -69,25 +73,63 @@ export default {
               }
             });
           }
-        }
+          i++;
+        }, 50);
       }
     },
     page(newVal, oldVal) {
-      API.photos({ tag: this.$store.state.selectTag, page: newVal }).then(
-        (photos) => {
-          this.photos = photos;
-        }
-      );
+      let i, timer;
+      if (typeof this.$store.state.selectTag == "string") {
+        API.photos({ tag: this.$store.state.selectTag, page: newVal }).then(
+          (photos) => {
+            this.photos = photos;
+          }
+        );
+      } else {
+        i = 0;
+        timer = setInterval(() => {
+          if (i >= this.$store.state.selectTag.length - 1) {
+            clearInterval(timer);
+          }
+          if (i == 0) {
+            API.photos({
+              tag: this.$store.state.selectTag[i],
+              page: newVal,
+            }).then((photos) => {
+              this.photos = photos;
+            });
+          } else {
+            API.photos({
+              tag: this.$store.state.selectTag[i],
+              page: newVal,
+            }).then((photos) => {
+              let j = 0;
+              for (j = 0; j < photos.length; j++) {
+                if (
+                  !this.photos.filter((item) => item.hash == photos[j].hash)
+                    .length
+                )
+                  this.photos.push(photos[j]);
+              }
+            });
+          }
+          i++;
+        }, 50);
+      }
     },
   },
   mounted() {
-    let i;
+    let i, timer;
     if (typeof this.$store.state.selectTag == "string") {
       API.photos({ tag: this.$store.state.selectTag }).then((photos) => {
         this.photos = photos;
       });
     } else {
-      for (i = 0; i < this.$store.state.selectTag.length; i++) {
+      i = 0;
+      timer = setInterval(() => {
+        if (i >= this.$store.state.selectTag.length - 1) {
+          clearInterval(timer);
+        }
         if (i == 0) {
           API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
             this.photos = photos;
@@ -104,7 +146,8 @@ export default {
             }
           });
         }
-      }
+        i++;
+      }, 50);
     }
 
     this.initClickImage();

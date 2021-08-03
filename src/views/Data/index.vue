@@ -1,15 +1,15 @@
 <template>
   <div>
-    <CHeader
-      :title="$route.params.id"
-      :flag="1"
-      @onClickEdit="onClickEdit"
-    />
-    <CPopMenu :flag="2"/>
+    <CHeader :title="$route.params.id" :flag="1" @onClickEdit="onClickEdit" />
+    <CPopMenu :flag="2" />
     <div class="main-body">
       <div>
         <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
-          <div v-for="(photo, index) in photos" :key="photo" class="image-relative">
+          <div
+            v-for="(photo, index) in photos"
+            :key="photo"
+            class="image-relative"
+          >
             <div class="comment">
               <CImage
                 :hash="photo"
@@ -21,7 +21,9 @@
             </div>
           </div>
         </div>
-        <div v-else><h1 class="text-3xl p-3 not-margin">There is no image</h1></div>
+        <div v-else>
+          <h1 class="text-3xl p-3 not-margin">There is no image</h1>
+        </div>
       </div>
       <vs-dialog v-model="showModal">
         <template #header>
@@ -51,8 +53,7 @@ export default {
   created() {
     this.$root.$refs.Data = this;
   },
-  components: {
-  },
+  components: {},
   computed: {},
   data() {
     return {
@@ -80,7 +81,9 @@ export default {
       }).then(() => {
         this.showModal = false;
         const param = this.dataName;
-        this.$router.push({ name: "datas", params: { id: param } }).catch(()=>{});
+        this.$router
+          .push({ name: "datas", params: { id: param } })
+          .catch(() => {});
         this.$store.dispatch("setdatas");
       });
     },

@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div v-if="flag==1" class="flex w-2/5">
+    <div v-if="flag == 1" class="flex w-2/5">
       <div class="flex">
         <div>
           <h1 class="text-4xl not-margin header-title">{{ title }} Data Set</h1>
@@ -12,29 +12,29 @@
         </div>
       </div>
     </div>
-    <div v-else-if="flag==2" class="flex w-2/5">
+    <div v-else-if="flag == 2" class="flex w-2/5">
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
       </h1>
       <div class="select-body">
-      <vs-select
-        v-if="tags.length > 0"
+        <vs-select
+          v-if="tags.length > 0"
           placeholder="Select a tag"
           v-model="tag"
+          class="select-tag"
           filter
           multiple
           collapse-chips
-          class="tag-width"
-      > 
-        <vs-option
-          v-for="item in tags.slice(0, 30)"
-          :key="item"
-          :label="item"
-          :value="item"
         >
-          {{ item }}
-        </vs-option>
-      </vs-select>
+          <vs-option
+            v-for="item in tags.slice(0, 30)"
+            :key="item"
+            :label="item"
+            :value="item"
+          >
+            {{ item }}
+          </vs-option>
+        </vs-select>
       </div>
     </div>
     <div v-else class="w-2/5 flex">
@@ -43,7 +43,7 @@
       </h1>
     </div>
 
-    <div v-if= "flag!=1" class="center con-pagination flex">
+    <div v-if="flag != 1" class="center con-pagination flex">
       <vs-pagination only-arrows v-model="page" :length="20" />
       <code class="pt-7">
         Page: <b>{{ page }}</b>
@@ -52,14 +52,20 @@
 
     <div class="header-icon">
       <ul class="flex">
-        <li>
-          <i class="bx bx-code-alt header-icon-item"></i>
+        <li class="header-icon-item">
+          <vs-avatar>
+            <i class="bx bx-code-alt"></i>
+          </vs-avatar>
         </li>
-        <li>
-          <i class="bx bxl-telegram header-icon-item"></i>
+        <li class="header-icon-item">
+          <vs-avatar>
+            <i class="bx bxl-telegram"></i>
+          </vs-avatar>
         </li>
-        <li>
-          <i class="bx bxl-discord header-icon-item"></i>
+        <li class="header-icon-item">
+          <vs-avatar>
+            <i class="bx bxl-discord"></i>
+          </vs-avatar>
         </li>
       </ul>
     </div>
@@ -103,11 +109,13 @@ export default {
     },
   },
   mounted() {
-    if(this.$store.state.selectTag == "" || this.$store.state.selectTag == undefined) {
+    if (
+      this.$store.state.selectTag == "" ||
+      this.$store.state.selectTag == undefined
+    ) {
       this.tag = this.$store.state.tags[0];
       this.$store.dispatch("setSelectTag", this.tag);
-    }
-    else {
+    } else {
       this.tag = this.$store.state.selectTag;
     }
   },
