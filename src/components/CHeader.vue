@@ -36,6 +36,7 @@
           </vs-option>
         </vs-select>
       </div>
+      <div class="pl-5 flex items-center">Select All: <vs-checkbox v-model="select_all" class="pl-2"/></div>
     </div>
     <div v-else class="w-2/5 flex">
       <h1 class="text-4xl not-margin header-title">
@@ -91,12 +92,18 @@ export default {
     },
     page(newVal, oldVal) {
       this.$store.dispatch("setPage", newVal);
+      this.$store.dispatch("selectAll", false);
+      this.select_all = false;
     },
+    select_all(newVal, oldVal) {
+      this.$store.dispatch("selectAll", newVal);
+    }
   },
   data() {
     return {
       tag: [],
       page: 1,
+      select_all: false,
     };
   },
   computed: {
@@ -118,6 +125,7 @@ export default {
     } else {
       this.tag = this.$store.state.selectTag;
     }
+    this.$store.dispatch("selectAll", false);
   },
 };
 </script>

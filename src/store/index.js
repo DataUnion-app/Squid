@@ -14,6 +14,7 @@ const store = new Vuex.Store({
     selectTag: "",
     click_images: [],
     page: 1,
+    select_all: false,
   },
   actions: {
     init({ commit }) {
@@ -66,6 +67,9 @@ const store = new Vuex.Store({
     setPage({ commit }, page) {
       commit('set', ['page', page]);
     },
+    selectAll({commit}, check) {
+      commit('set', ['select_all', check]);
+    }
   },
   mutations: {
     set(state, [key, value]) {
