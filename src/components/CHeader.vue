@@ -16,9 +16,12 @@
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
       </h1>
-      <div class="select-body">
+      <p>
+        {{ description }}
+      </p>
+      <div v-if="tags != undefined" class="select-body">
         <vs-select
-          v-if="tags.length > 0"
+          v-if="tags.length != 0"
           placeholder="Select a tag"
           v-model="tag"
           class="select-tag"
@@ -35,6 +38,7 @@
             {{ item }}
           </vs-option>
         </vs-select>
+
       </div>
       <div class="pl-5 flex items-center">Select All: <vs-checkbox v-model="select_all" class="pl-2"/></div>
     </div>
@@ -80,6 +84,7 @@ export default {
   name: "CHeader",
   props: {
     title: String,
+    description: String,
     flag: Number,
   },
   watch: {
@@ -120,7 +125,7 @@ export default {
       this.$store.state.selectTag == "" ||
       this.$store.state.selectTag == undefined
     ) {
-      this.tag = this.$store.state.tags[0];
+      if (this.$store.state.tags) this.tag = this.$store.state.tags[0];
       this.$store.dispatch("setSelectTag", this.tag);
     } else {
       this.tag = this.$store.state.selectTag;

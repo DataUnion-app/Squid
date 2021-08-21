@@ -1,27 +1,31 @@
 <template>
   <div class="home">
-    <CHeader title="Gallery" :flag="2" />
+    <CHeader title="Gallery" description="View all images publicly uploaded" :flag="2" />
     <CPopMenu :flag="1" />
+    
     <div class="main-body">
-      <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
-        <!-- <VueAutoVirtualScrollList
-        :totalHeight="800"
-        :defaultHeight="80"
-        > -->
-        <div v-for="photo in photos" :key="photo.hash" class="image-relative">
-          <div class="comment">
-            <CImage
-              :hash="photo.hash"
-              class="w-full h-full absolute p-1 comment-item"
-            />
+      <div v-if="photos" >
+        <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
+          <!-- <VueAutoVirtualScrollList
+          :totalHeight="800"
+          :defaultHeight="80"
+          > -->
+          <div v-for="photo in photos" :key="photo.hash" class="image-relative">
+            <div class="comment">
+              <CImage
+                :hash="photo.hash"
+                class="w-full h-full absolute p-1 comment-item"
+              />
+            </div>
           </div>
+          <!-- </VueAutoVirtualScrollList> -->
         </div>
-        <!-- </VueAutoVirtualScrollList> -->
       </div>
       <div v-else>
         <h1 class="text-3xl p-3 not-margin">There is no image</h1>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -118,35 +122,38 @@ export default {
       }
     },
   },
+
   mounted() {
     let i, timer;
     if (typeof this.$store.state.selectTag == "string") {
       API.photos({ tag: this.$store.state.selectTag }).then((photos) => {
         this.photos = photos;
       });
-    } else {
       i = 0;
       timer = setInterval(() => {
-        if (i >= this.$store.state.selectTag.length - 1) {
-          clearInterval(timer);
+        if (this.$store.state.selectTag) {
+          if (i >= this.$store.state.selectTag.length - 1) {
+            clearInterval(timer);
+          }
+          if (i == 0) {
+            API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
+              this.photos = photos;
+            });
+          } else {
+            API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
+              let j = 0;
+              for (j = 0; j < photos.length; j++) {
+                if (
+                  !this.photos.filter((item) => item.hash == photos[j].hash)
+                    .length
+                )
+                  this.photos.push(photos[j]);
+              }
+            });
+          }
+          i++;
         }
-        if (i == 0) {
-          API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
-            this.photos = photos;
-          });
-        } else {
-          API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
-            let j = 0;
-            for (j = 0; j < photos.length; j++) {
-              if (
-                !this.photos.filter((item) => item.hash == photos[j].hash)
-                  .length
-              )
-                this.photos.push(photos[j]);
-            }
-          });
-        }
-        i++;
+        
       }, 50);
     }
 

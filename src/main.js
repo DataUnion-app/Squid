@@ -1,24 +1,28 @@
+import vuetify from '@/plugins/vuetify'
+import Auth from '@/utils/auth';
+import vClickOutside from 'v-click-outside'
+import VueViewer from 'v-viewer'
 import Vue from 'vue'
-import App from './App.vue'
 import Vuesax from 'vuesax'
-import 'boxicons';
-import 'boxicons/css/boxicons.css'
-import '@/index.css'
-import 'vuesax/dist/vuesax.css' //Vuesax styles
+
+import App from './App.vue'
+//Vuesax styles
 import router from './router';
 import store from './store';
-import Auth from '@/utils/auth';
+
 import './component';
+import '@/index.css'
+import 'boxicons';
+import 'boxicons/css/boxicons.css'
 import 'viewerjs/dist/viewer.css'
-import VueViewer from 'v-viewer'
-import vClickOutside from 'v-click-outside'
-import vuetify from '@/plugins/vuetify' // path to vuetify export
+import 'vuesax/dist/vuesax.css'
+
+// path to vuetify export
 
 Vue.use(vClickOutside)
 Vue.use(VueViewer)
 Vue.use
-Vue.use(Vuesax, {
-})
+Vue.use(Vuesax, {})
 
 Vue.config.productionTip = false
 

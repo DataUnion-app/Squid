@@ -1,8 +1,17 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+
 import API from '../utils/api';
 
 Vue.use(Vuex);
+
+const event = new Date();
+const date = event.toLocaleString(`en`);
+const splitDate = date.split(`, `)[0].split(`/`);
+const currentDate = [splitDate[1], splitDate[0], splitDate[2]].join(`-`);
+
+const start_date = "14-05-2021";
+const end_date = currentDate;
 
 const store = new Vuex.Store({
   state: {
@@ -19,8 +28,11 @@ const store = new Vuex.Store({
   actions: {
     init({ commit }) {
       console.log('initing');
-      API.tags().then(tags => {
-        commit('set', ['tags', tags])
+      API.tags(start_date, end_date).then(tags => {
+        console.log(tags)
+        if (tags) {
+          commit('set', ['tags', tags])
+        }
       });
       API.datas().then(datas => {
         commit('set', ['datas', datas])
