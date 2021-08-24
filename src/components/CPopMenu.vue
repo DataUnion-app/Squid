@@ -59,7 +59,7 @@
 
       <div class="flex">
         <div class="flex flex-col add-dialog">
-          <div v-if="datas.length > 0" class="p-3 flex justify-center">
+          <div v-if="datas !== undefined" class="p-3 flex justify-center">
             <vs-select
               v-if="datas.length > 0"
               placeholder="Select a Data Set"

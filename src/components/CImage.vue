@@ -18,7 +18,7 @@
             </vs-button>
             <template #tooltip>
               <div class="content-tooltip" v-click-outside="onTooltipOutside">
-                <div v-if="datas.length > 0">
+                <div v-if="datas !== undefined && datas.length > 0">
                   <h4 class="center">Please select a Data Set</h4>
                   <vs-select
                     class="vs-body"
@@ -129,7 +129,7 @@
                       class="content-tooltip"
                       v-click-outside="onTooltipOutside"
                     >
-                      <div v-if="datas.length > 0">
+                      <div v-if="datas !== undefined && datas.length > 0">
                         <h4>Please select a Data Set</h4>
                         <vs-select
                           class="vs-body"

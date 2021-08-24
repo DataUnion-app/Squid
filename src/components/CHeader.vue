@@ -13,18 +13,18 @@
       </div>
     </div>
     <div v-else-if="flag == 2" class="flex w-2/5">
-      <div class="header-title">
-        <h1 class="text-4xl not-margin header-title">
+      <div class="header-title-div">
+        <h5 class="text-4xl not-margin header-title">
           {{ title }}
-        </h1>
+        </h5>
         <p class="header-description">
           {{ description }}
         </p>
       </div>
 
-      <div v-if="tags != undefined" class="select-body">
+      <div v-if="tags != undefined && tags.length > 0" class="select-body">
         <vs-select
-          v-if="tags.length != 0"
+          v-if="tags.length > 0"
           placeholder="Select a tag"
           v-model="tag"
           class="select-tag"
@@ -124,15 +124,14 @@ export default {
     },
   },
   mounted() {
-    if (
-      this.$store.state.selectTag == "" ||
-      this.$store.state.selectTag == undefined
-    ) {
+    console.log(this.$store.state.tags)
+    if (this.$store.state.selectTag == "" || this.$store.state.selectTag == undefined) {
       if (this.$store.state.tags) this.tag = this.$store.state.tags[0];
-      this.$store.dispatch("setSelectTag", this.tag);
-    } else {
+    } 
+    else {
       this.tag = this.$store.state.selectTag;
     }
+    this.$store.dispatch("setSelectTag", this.tag);
     this.$store.dispatch("selectAll", false);
   },
 };

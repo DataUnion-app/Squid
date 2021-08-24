@@ -1,8 +1,8 @@
 <template>
   <div class="home">
-    <CHeader title="Gallery" description="View all images publicly uploaded" :flag="2" />
+    <CHeader v-if="this.$store.state.tags" title="Gallery" description="View all images publicly uploaded" :flag="2" />
     <CPopMenu :flag="1" />
-    
+ 
     <div class="main-body">
       <div v-if="photos" >
         <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">

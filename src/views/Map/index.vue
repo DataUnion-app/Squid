@@ -36,9 +36,10 @@
                       class="content-tooltip"
                       v-click-outside="onTooltipOutside"
                     >
-                      <div v-if="datas.length > 0">
+                      <div v-if="datas !== undefined">
                         <h4 class="center">Please select a Data Set</h4>
                         <vs-select
+                          v-if="datas != undefined"
                           class="vs-body"
                           placeholder="Select a Data Set"
                           v-model="data"

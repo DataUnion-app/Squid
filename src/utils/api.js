@@ -273,6 +273,9 @@ class API {
     console.log(`page = ${page}`)
     console.log(`Math.floor(real_page / 5) = ${Math.floor(real_page / 5)}`)
 
+    console.log(`STATUS = ${status}`)
+    console.log(`PAGE = ${page}`)
+    console.log(`TAG = ${tag}`)
     if (callBothStatuses) {
       status = 'VERIFIABLE'
       return this.call('api/v1/search-images', 'POST', {

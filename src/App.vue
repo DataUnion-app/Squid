@@ -83,7 +83,7 @@ body {
 }
 
 .header {
-  height: 80px;
+  height: 110px;
   width: 110%;
   margin-left: -45px;
   margin-top: -20px;
@@ -92,9 +92,22 @@ body {
   position: relative;
 }
 
-.header-title {
-  padding: 20px;
+.header-description {
+  margin-left: 15px;
+  margin-right: 15px;
+  text-align: center;
+}
+
+.header-title-div {
   margin-left: 40px;
+  margin-right: 15px;
+  margin-top: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.header-title {
+  text-align: center;
   font-weight: bold;
 }
 
