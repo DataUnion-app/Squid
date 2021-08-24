@@ -13,12 +13,15 @@
       </div>
     </div>
     <div v-else-if="flag == 2" class="flex w-2/5">
-      <h1 class="text-4xl not-margin header-title">
-        {{ title }}
-      </h1>
-      <p>
-        {{ description }}
-      </p>
+      <div class="header-title">
+        <h1 class="text-4xl not-margin header-title">
+          {{ title }}
+        </h1>
+        <p class="header-description">
+          {{ description }}
+        </p>
+      </div>
+
       <div v-if="tags != undefined" class="select-body">
         <vs-select
           v-if="tags.length != 0"
