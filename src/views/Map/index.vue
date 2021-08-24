@@ -221,7 +221,7 @@ export default {
       let tempImage = [];
       for (i = 0; i < length; i++) tempImage.push(photos[i].hash);
 
-      API.imageTag(tempImage).then((images) => {
+      API.imageTag(tempImage, "GeoLocation").then((images) => {
         this.markers = images;
         let marker;
 

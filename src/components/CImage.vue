@@ -285,7 +285,7 @@
                         {{ tr.down_votes }}
                       </vs-td>
                       <vs-td>
-                        {{ tr.up_votes + tr.down_votes }}
+                        {{ groupedImages[tr.tag] ? groupedImages[tr.tag].length : 0 }}
                       </vs-td>
                     </vs-tr>
                   </template>
@@ -330,7 +330,7 @@
 }
 .vs-table tr {
   border-bottom: 1px;
-  border-color: rgba(229, 231, 235, var(--tw-border-opacity));;
+  border-color: rgba(229, 231, 235, var(--tw-border-opacity));
   border-style: solid;
 }
 </style>
@@ -368,6 +368,7 @@ export default {
       showDataSet: false,
       option: false,
       tags: [],
+      groupedImages: [],
       color_rank: [],
       comment: "",
       comments: [],
@@ -426,40 +427,54 @@ export default {
         text: "Already photo exists",
       });
     },
+    groupBy(dataArray, key) {
+      return dataArray.reduce(function (data, x) {
+        (data[x["value"][key]] = data[x["value"][key]] || []).push(x);
+        return data;
+      }, {});
+    },
     details() {
-      this.getTags(this.hash).then((tags) => {
-        this.tags = tags;
-        let i;
-        this.color_rank = [];
-        let up_max = 0,
-          down_max = 0;
-        for (i = 0; i < tags.length; i++) {
-          if (up_max < tags[i].up_votes) up_max = tags[i].up_votes;
-          if (down_max < tags[i].down_votes) down_max = tags[i].down_votes;
-        }
-
-        for (i = 0; i < tags.length; i++) {
-          if (tags[i].up_votes > tags[i].down_votes) {
-            let d_green = 128 + (64 / up_max) * (up_max - tags[i].up_votes);
-            this.styleObject[i] = {
-              backgroundColor: `rgb(0, ${d_green}, 0)`,
-              color: "white",
-            };
-          } else if (tags[i].up_votes == tags[i].down_votes) {
-            this.styleObject[i] = {
-              backgroundColor: "rgb(204, 204, 0)",
-              color: "white",
-            };
-          } else {
-            let d_red = 128 + (64 / down_max) * (down_max - tags[i].down_votes);
-            this.styleObject[i] = {
-              backgroundColor: `rgb(${d_red}, 0, 0)`,
-              color: "white",
-            };
+      this.getTags(this.hash)
+        .then((tags) => {
+          this.tags = tags;
+          let i;
+          this.color_rank = [];
+          let up_max = 0,
+            down_max = 0;
+          for (i = 0; i < tags.length; i++) {
+            if (up_max < tags[i].up_votes) up_max = tags[i].up_votes;
+            if (down_max < tags[i].down_votes) down_max = tags[i].down_votes;
           }
-        }
-        this.showDetails = true;
+
+          for (i = 0; i < tags.length; i++) {
+            if (tags[i].up_votes > tags[i].down_votes) {
+              let d_green = 128 + (64 / up_max) * (up_max - tags[i].up_votes);
+              this.styleObject[i] = {
+                backgroundColor: `rgb(0, ${d_green}, 0)`,
+                color: "white",
+              };
+            } else if (tags[i].up_votes == tags[i].down_votes) {
+              this.styleObject[i] = {
+                backgroundColor: "rgb(204, 204, 0)",
+                color: "white",
+              };
+            } else {
+              let d_red =
+                128 + (64 / down_max) * (down_max - tags[i].down_votes);
+              this.styleObject[i] = {
+                backgroundColor: `rgb(${d_red}, 0, 0)`,
+                color: "white",
+              };
+            }
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      API.imageTag(this.hash, "BoundingBox").then((images) => {
+        this.groupedImages = this.groupBy(images, "tag");
       });
+      this.showDetails = true;
     },
     showDataDialog() {
       this.refreshDataSet();
