@@ -203,6 +203,7 @@ export default {
       showDetails: false,
       showDataSet: false,
       tags: [],
+      tagData: [],
       comment: "",
       comments: [],
       markers: [],

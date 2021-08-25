@@ -256,10 +256,9 @@ class API {
   }
 
   photos = async ({
-    status,
     tag,
     page,
-    callBothStatuses
+    status
   }) => {
     if (!tag) {
       return Promise.resolve([]);
@@ -267,24 +266,23 @@ class API {
     page = page || 1;
     let real_page = page;
     page = Math.floor(real_page / 5) + 1;
-    callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
+    let callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
 
     console.log(`real_page = ${real_page}`)
     console.log(`page = ${page}`)
     console.log(`Math.floor(real_page / 5) = ${Math.floor(real_page / 5)}`)
 
-    console.log(`STATUS = ${status}`)
     console.log(`PAGE = ${page}`)
     console.log(`TAG = ${tag}`)
     if (callBothStatuses) {
-      status = 'VERIFIABLE'
+      let status = "VERIFIABLE"
       return this.call('api/v1/search-images', 'POST', {
         status,
         page,
         tag
       })
         .then(async verifiableResponse => {
-          status = 'VERIFIED'
+          let status = "VERIFIED"
           this.call('api/v1/search-images', 'POST', {
             status,
             page,
@@ -330,9 +328,7 @@ class API {
       })
         .then(async verifiableResponse => {
           const result = [];
-          if (verifiableResponse.result.length === 0)
-            // TODO: Set "no VERIFIED results here."
-            // 
+          if (verifiableResponse.result.length === 0) 
             return result;
           let i;
           if (real_page % 5 != 0) {
@@ -364,14 +360,9 @@ class API {
   }
 
   tags = (start_date, end_date) => {
-    // return Promise.resolve([
-    //   'food bounty'
-    // ]);
     return this.call(`/api/v1/stats/overall-tags?start_date=${start_date}&end_date=${end_date}`, 'GET')
       .then(response => {
-        console.log(response)
-        const tags = Object.keys(response.result);
-        return tags;
+        return response.result;
       }).catch(err => {
         return Promise.reject(err);
       });
@@ -382,6 +373,8 @@ class API {
       image_ids: [id]
     })
       .then(response => {
+        console.log(`queryTags RESPONSE`)
+        console.log(response)
         return response.result[0].value;
       }).catch(err => {
         return Promise.reject(err);

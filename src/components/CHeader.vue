@@ -1,6 +1,10 @@
 <template>
   <div class="header">
-    <div v-if="flag == 1" class="flex w-2/5">
+    <div v-if="this.$store.state.tags.length === 0" class="center">
+      <CLoader message="Loading tags..." />
+    </div>
+
+    <div v-if="flag == 1 && this.$store.state.tags.length > 0" class="flex w-2/5">
       <div class="flex">
         <div>
           <h1 class="text-4xl not-margin header-title">{{ title }} Data Set</h1>
@@ -12,7 +16,9 @@
         </div>
       </div>
     </div>
-    <div v-else-if="flag == 2" class="flex w-2/5">
+
+    <div v-else-if="flag == 2 && this.$store.state.tagData.length > 0 && this.$store.state.tags.length > 0" class="flex w-2/5">
+      
       <div class="header-title-div">
         <h5 class="text-4xl not-margin header-title">
           {{ title }}
@@ -22,9 +28,9 @@
         </p>
       </div>
 
-      <div v-if="tags != undefined && tags.length > 0" class="select-body">
+      <div class="select-body">
         <vs-select
-          v-if="tags.length > 0"
+          v-if="this.$store.state.tagData.length > 0"
           placeholder="Select a tag"
           v-model="tag"
           class="select-tag"
@@ -33,7 +39,7 @@
           collapse-chips
         >
           <vs-option
-            v-for="item in tags.slice(0, 30)"
+            v-for="item in this.$store.state.tags.slice(0, 30)"
             :key="item"
             :label="item"
             :value="item"
@@ -41,13 +47,21 @@
             {{ item }}
           </vs-option>
         </vs-select>
-
       </div>
-      <div class="pl-5 flex items-center">Select All: <vs-checkbox v-model="select_all" class="pl-2"/></div>
+
+      <div class="pl-5 flex items-center">
+        Select All: <vs-checkbox v-model="select_all" class="pl-2"/>
+      </div>
     </div>
+
     <div v-else class="w-2/5 flex">
-      <h1 class="text-4xl not-margin header-title">
-        {{ title }}
+      <h1 class="text-4xl not-margin header-title-div">
+        <h5 class="text-4xl not-margin header-title">
+          {{ title }}
+        </h5>
+        <p class="header-description">
+          {{ description }}
+        </p>
       </h1>
     </div>
 
@@ -124,9 +138,17 @@ export default {
     },
   },
   mounted() {
+    console.log(`mounted`);
+    console.log(`tags != undefined && tags.length > 0 = ${this.$store.state.tags != undefined && this.$store.state.tags.length > 0}`);
+    
     console.log(this.$store.state.tags)
+    console.log(this.$store.state.tagData)
+    console.log(this.$store.state.tagData[this.$store.state.tags[0]])
+    
     if (this.$store.state.selectTag == "" || this.$store.state.selectTag == undefined) {
-      if (this.$store.state.tags) this.tag = this.$store.state.tags[0];
+      if (this.$store.state.tags) {
+        this.tag = this.$store.state.tags[0]; 
+      }
     } 
     else {
       this.tag = this.$store.state.selectTag;

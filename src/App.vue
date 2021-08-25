@@ -93,9 +93,8 @@ body {
 }
 
 .header-description {
-  margin-left: 15px;
-  margin-right: 15px;
   text-align: center;
+  font-size: small;
 }
 
 .header-title-div {
@@ -109,6 +108,16 @@ body {
 .header-title {
   text-align: center;
   font-weight: bold;
+}
+
+.option-inner-grid {
+  
+}
+
+.center {
+  text-align: center;
+  align-content: center;
+  align-items: center;
 }
 
 .header-edit-button {

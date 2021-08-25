@@ -67,11 +67,12 @@ export default {
             });
           } else {
             API.photos({ tag: newVal[i] }).then((photos) => {
+              console.log(`[INDEX GALLERY] photos = `);
+              console.log(photos);
               let j = 0;
               for (j = 0; j < photos.length; j++) {
                 if (
-                  !this.photos.filter((item) => item.hash == photos[j].hash)
-                    .length
+                  !this.photos.filter((item) => item.hash == photos[j].hash).length
                 )
                   this.photos.push(photos[j]);
               }
@@ -110,8 +111,7 @@ export default {
               let j = 0;
               for (j = 0; j < photos.length; j++) {
                 if (
-                  !this.photos.filter((item) => item.hash == photos[j].hash)
-                    .length
+                  !this.photos.filter((item) => item.hash == photos[j].hash).length
                 )
                   this.photos.push(photos[j]);
               }
@@ -144,8 +144,7 @@ export default {
               let j = 0;
               for (j = 0; j < photos.length; j++) {
                 if (
-                  !this.photos.filter((item) => item.hash == photos[j].hash)
-                    .length
+                  !this.photos.filter((item) => item.hash == photos[j].hash).length
                 )
                   this.photos.push(photos[j]);
               }

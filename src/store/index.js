@@ -27,11 +27,11 @@ const store = new Vuex.Store({
   },
   actions: {
     init({ commit }) {
-      console.log('initing');
+      // console.log('initing');
       API.tags(start_date, end_date).then(tags => {
-        console.log(tags)
         if (tags) {
-          commit('set', ['tags', tags])
+          commit('set', ['tags', Object.keys(tags)])
+          commit('set', ['tagData', tags])
         }
       });
       API.datas().then(datas => {
@@ -52,6 +52,8 @@ const store = new Vuex.Store({
         return Promise.resolve(state.tagsCache[id]);
       }
       return API.queryTags(id).then(response => {
+        console.log(`getTags RESPONSE = `)
+        console.log(response)
         state.tagsCache[id] = response;
         return response;
       });
