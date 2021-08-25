@@ -268,12 +268,15 @@ class API {
     page = Math.floor(real_page / 5) + 1;
     let callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
 
-    console.log(`real_page = ${real_page}`)
-    console.log(`page = ${page}`)
-    console.log(`Math.floor(real_page / 5) = ${Math.floor(real_page / 5)}`)
+    console.log(`callBothStatuses = ${callBothStatuses}`);
+    
+    // console.log(`real_page = ${real_page}`)
+    // console.log(`page = ${page}`)
+    // console.log(`Math.floor(real_page / 5) = ${Math.floor(real_page / 5)}`)
 
-    console.log(`PAGE = ${page}`)
+    // console.log(`PAGE = ${page}`)
     console.log(`TAG = ${tag}`)
+
     if (callBothStatuses) {
       let status = "VERIFIABLE"
       return this.call('api/v1/search-images', 'POST', {
@@ -282,12 +285,16 @@ class API {
         tag
       })
         .then(async verifiableResponse => {
+          console.log(`VERIFIABLERESPONSE`);
+          console.log(verifiableResponse);
           let status = "VERIFIED"
           this.call('api/v1/search-images', 'POST', {
             status,
             page,
             tag
           }).then(verifiedResponse => {
+            console.log(`VERIFIEDRESPONSE`);
+            console.log(verifiedResponse);
             const result = [];
             if (verifiableResponse.result.length === 0 && verifiedResponse.result.length === 0)
               return result;
@@ -312,6 +319,7 @@ class API {
                   if (hash2) result.push({hash: hash2, status: 'VERIFIED'});
                 }
               }
+              console.log(result);
               return result;
         }).catch(err => {
           return Promise.reject(err);

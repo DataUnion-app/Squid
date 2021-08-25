@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div v-else-if="flag == 2 && this.$store.state.tagData.length > 0 && this.$store.state.tags.length > 0" class="flex w-2/5">
+    <div v-else-if="flag == 2 && this.$store.state.tags.length > 0" class="flex w-2/5">
       
       <div class="header-title-div">
         <h5 class="text-4xl not-margin header-title">
@@ -30,7 +30,7 @@
 
       <div class="select-body">
         <vs-select
-          v-if="this.$store.state.tagData.length > 0"
+          v-if="this.$store.state.tags.length > 0 && this.tagData !== []"
           placeholder="Select a tag"
           v-model="tag"
           class="select-tag"
@@ -39,12 +39,13 @@
           collapse-chips
         >
           <vs-option
-            v-for="item in this.$store.state.tags.slice(0, 30)"
+            v-for="item in tags.slice(0, 30)"
             :key="item"
             :label="item"
             :value="item"
           >
             {{ item }}
+            <span> {{ tagData[item].value }}</span>
           </vs-option>
         </vs-select>
       </div>
@@ -124,6 +125,7 @@ export default {
   data() {
     return {
       tag: [],
+      tagData: [],
       page: 1,
       select_all: false,
     };
@@ -141,9 +143,9 @@ export default {
     console.log(`mounted`);
     console.log(`tags != undefined && tags.length > 0 = ${this.$store.state.tags != undefined && this.$store.state.tags.length > 0}`);
     
-    console.log(this.$store.state.tags)
-    console.log(this.$store.state.tagData)
-    console.log(this.$store.state.tagData[this.$store.state.tags[0]])
+    console.log(this.$store.state.tags);
+    if (this.$store.state.tagData) this.tagData = this.$store.state.tagData;
+    console.log(this.tagData);
     
     if (this.$store.state.selectTag == "" || this.$store.state.selectTag == undefined) {
       if (this.$store.state.tags) {

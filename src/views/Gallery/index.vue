@@ -45,7 +45,7 @@ export default {
   },
   data() {
     return {
-      photos: [],
+      photoIds: [],
     };
   },
   watch: {
@@ -66,15 +66,13 @@ export default {
               this.photos = photos;
             });
           } else {
-            API.photos({ tag: newVal[i] }).then((photos) => {
+            API.photos({ tag: newVal[i] }).then(photos => {
               console.log(`[INDEX GALLERY] photos = `);
               console.log(photos);
               let j = 0;
-              for (j = 0; j < photos.length; j++) {
-                if (
-                  !this.photos.filter((item) => item.hash == photos[j].hash).length
-                )
-                  this.photos.push(photos[j]);
+              for (j = 0; j < photos.result.length; j++) {
+                if (!this.photoIds.filter((item) => item.hash == photos.result[j].hash))
+                  this.photoIds.push(photos.result[j]);
               }
             });
           }
