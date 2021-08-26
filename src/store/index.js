@@ -23,6 +23,7 @@ const store = new Vuex.Store({
     selectTag: "",
     click_images: [],
     page: 1,
+    totalPage: 20,
     select_all: false,
   },
   actions: {
@@ -112,6 +113,9 @@ const store = new Vuex.Store({
     removeImage(state, [key, value]) {
       const temp_images = state[key].filter(item => item.hash !== value.hash);
       state[key] = temp_images;
+    },
+    setTotalPage(state, value) {
+      state.totalPage = value;
     }
   },
   getters: {

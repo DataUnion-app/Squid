@@ -34,7 +34,9 @@ import API from "@/utils/api";
 export default {
   name: "Home",
   components: {},
-  computed: {},
+  computed: {
+    ...mapState(["page", "totalPage"]),
+  },
   methods: {
     ...mapActions(["initClickImage"]),
   },
@@ -43,10 +45,25 @@ export default {
       photos: [],
     };
   },
-  watch: {},
+  watch: {
+    page(newVal, oldVal) {
+      API.myImages({ page: newVal }).then((photos) => {
+        this.photos = photos;
+        if (this.photos.length === 0) {
+          this.$store.commit("setTotalPage", this.page);
+        } else {
+          this.$store.commit("setTotalPage", this.page + 1);
+        }
+      });
+    },
+  },
   mounted() {
-    API.myImages().then((photos) => {
+    this.$store.commit("setTotalPage", 1);
+    API.myImages({ page: 1 }).then((photos) => {
       this.photos = photos;
+      if (photos.length === 0) {
+        this.$store.commit("setTotalPage", 1);
+      }
     });
     this.initClickImage();
   },

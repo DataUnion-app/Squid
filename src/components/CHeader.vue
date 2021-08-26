@@ -50,7 +50,7 @@
     </div>
 
     <div v-if="flag != 1" class="center con-pagination flex">
-      <vs-pagination only-arrows v-model="page" :length="20" />
+      <vs-pagination only-arrows v-model="page" :length="this.totalPage" />
       <code class="pt-7">
         Page: <b>{{ page }}</b>
       </code>
@@ -104,7 +104,7 @@ export default {
     },
     select_all(newVal, oldVal) {
       this.$store.dispatch("selectAll", newVal);
-    }
+    },
   },
   data() {
     return {
@@ -114,7 +114,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["tags"]),
+    ...mapState(["tags", "totalPage"])
   },
   methods: {
     ...mapActions(["setPage"]),

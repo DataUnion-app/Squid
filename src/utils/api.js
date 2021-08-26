@@ -1,6 +1,6 @@
 // export const BASE_URL = 'http://206.81.26.71:8081';
-// export const BASE_URL = 'https://alpha.dataunion.app:4430';
-export const BASE_URL = 'https://dev.dataunion.app:8082';
+export const BASE_URL = 'https://alpha.dataunion.app:4430';
+// export const BASE_URL = 'https://dev.dataunion.app:8082';
 import Auth from './auth';
 import VM from '../main';
 
@@ -96,7 +96,9 @@ class API {
 
 
 
-  myImages = async () => {
+  myImages = async ({
+    page
+  }) => {
     // TODO: Remove mockup data 
     // return Promise.resolve([{
     //     hash: "00fcff53017cf800"
@@ -123,7 +125,7 @@ class API {
     //     hash: "fffff9800181dbff"
     //   }
     // ]);
-    return this.call('api/v1/my-images', 'GET')
+    return this.call(`api/v1/my-images?page=${page}`, 'GET')
       .then(async response => {
         const result = [];
         for (let i = 0; i < response.result.length; i++) {
