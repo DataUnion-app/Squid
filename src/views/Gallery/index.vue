@@ -50,6 +50,11 @@ export default {
       if (typeof newVal == "string") {
         API.photos({ tag: newVal }).then((photos) => {
           this.photos = photos;
+          if (this.photos.length === 0) {
+            this.$store.commit("setTotalPage", this.page);
+          } else {
+            this.$store.commit("setTotalPage", this.page + 1);
+          }
         });
       } else {
         i = 0;
@@ -60,6 +65,11 @@ export default {
           if (i == 0) {
             API.photos({ tag: newVal[i] }).then((photos) => {
               this.photos = photos;
+              if (this.photos.length === 0) {
+                this.$store.commit("setTotalPage", this.page);
+              } else {
+                this.$store.commit("setTotalPage", this.page + 1);
+              }
             });
           } else {
             API.photos({ tag: newVal[i] }).then((photos) => {
@@ -70,6 +80,11 @@ export default {
                     .length
                 )
                   this.photos.push(photos[j]);
+                if (this.photos.length === 0) {
+                  this.$store.commit("setTotalPage", this.page);
+                } else {
+                  this.$store.commit("setTotalPage", this.page + 1);
+                }
               }
             });
           }
@@ -83,6 +98,11 @@ export default {
         API.photos({ tag: this.$store.state.selectTag, page: newVal }).then(
           (photos) => {
             this.photos = photos;
+            if (this.photos.length === 0) {
+              this.$store.commit("setTotalPage", this.page);
+            } else {
+              this.$store.commit("setTotalPage", this.page + 1);
+            }
           }
         );
       } else {
@@ -97,6 +117,11 @@ export default {
               page: newVal,
             }).then((photos) => {
               this.photos = photos;
+              if (this.photos.length === 0) {
+                this.$store.commit("setTotalPage", this.page);
+              } else {
+                this.$store.commit("setTotalPage", this.page + 1);
+              }
             });
           } else {
             API.photos({
@@ -110,6 +135,11 @@ export default {
                     .length
                 )
                   this.photos.push(photos[j]);
+                if (this.photos.length === 0) {
+                  this.$store.commit("setTotalPage", this.page);
+                } else {
+                  this.$store.commit("setTotalPage", this.page + 1);
+                }
               }
             });
           }
@@ -123,6 +153,11 @@ export default {
     if (typeof this.$store.state.selectTag == "string") {
       API.photos({ tag: this.$store.state.selectTag }).then((photos) => {
         this.photos = photos;
+        if (this.photos.length === 0) {
+          this.$store.commit("setTotalPage", this.page);
+        } else {
+          this.$store.commit("setTotalPage", this.page + 1);
+        }
       });
     } else {
       i = 0;
@@ -133,6 +168,11 @@ export default {
         if (i == 0) {
           API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
             this.photos = photos;
+            if (this.photos.length === 0) {
+              this.$store.commit("setTotalPage", this.page);
+            } else {
+              this.$store.commit("setTotalPage", this.page + 1);
+            }
           });
         } else {
           API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
@@ -143,6 +183,11 @@ export default {
                   .length
               )
                 this.photos.push(photos[j]);
+              if (this.photos.length === 0) {
+                this.$store.commit("setTotalPage", this.page);
+              } else {
+                this.$store.commit("setTotalPage", this.page + 1);
+              }
             }
           });
         }

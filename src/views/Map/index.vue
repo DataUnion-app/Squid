@@ -82,34 +82,34 @@
             </vs-card>
           </div>
           <div class="mt-3 flex flex-wrap">
-              <div v-for="tag in tags" :key="tag.tag" class="flex">
-                <vs-tooltip v-if="isUp(tag)" success>
-                  <vs-button success flat>
-                    {{ tag.tag }}
-                  </vs-button>
-                  <template #tooltip>
+            <div v-for="tag in tags" :key="tag.tag" class="flex">
+              <vs-tooltip v-if="isUp(tag)" success>
+                <vs-button success flat>
+                  {{ tag.tag }}
+                </vs-button>
+                <template #tooltip>
+                  <div>
+                    <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
                     <div>
-                      <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
-                      <div>
-                        <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
-                      </div>
+                      <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
                     </div>
-                  </template>
-                </vs-tooltip>
-                <vs-tooltip v-else danger>
-                  <vs-button danger flat>
-                    {{ tag.tag }}
-                  </vs-button>
-                  <template #tooltip>
+                  </div>
+                </template>
+              </vs-tooltip>
+              <vs-tooltip v-else danger>
+                <vs-button danger flat>
+                  {{ tag.tag }}
+                </vs-button>
+                <template #tooltip>
+                  <div>
+                    <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
                     <div>
-                      <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
-                      <div>
-                        <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
-                      </div>
+                      <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
                     </div>
-                  </template>
-                </vs-tooltip>
-              </div>
+                  </div>
+                </template>
+              </vs-tooltip>
+            </div>
           </div>
         </div>
         <div class="flex flex-col image-detail-right">
@@ -215,7 +215,7 @@ export default {
   },
   mounted() {
     let imageHash = this.getImageWorld;
-    API.myImages().then((photos) => {
+    API.myImages({ page: 1 }).then((photos) => {
       let i,
         length = photos.length;
       let tempImage = [];
