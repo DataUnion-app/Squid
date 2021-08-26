@@ -296,9 +296,9 @@ class API {
             console.log(`VERIFIEDRESPONSE`);
             console.log(verifiedResponse);
             const result = [];
-            if (verifiableResponse.result.length === 0 && verifiedResponse.result.length === 0)
-              return result;
-            
+            if (verifiableResponse.result.length === 0 && verifiedResponse.result.length === 0) {
+              return Promise.resolve(result);
+            }
               let i;
               if (real_page % 5 != 0) {
                 for (i = (real_page - 1) % 5 * 20; i < real_page % 5 * 20; i++) {
@@ -320,7 +320,7 @@ class API {
                 }
               }
               console.log(result);
-              return result;
+              return Promise.resolve(result);
         }).catch(err => {
           return Promise.reject(err);
         });
@@ -337,7 +337,7 @@ class API {
         .then(async verifiableResponse => {
           const result = [];
           if (verifiableResponse.result.length === 0) 
-            return result;
+            return Promise.resolve(result);
           let i;
           if (real_page % 5 != 0) {
             for (i = (real_page - 1) % 5 * 20; i < real_page % 5 * 20; i++) {
