@@ -99,7 +99,10 @@
         <h1 class="text-3xl not-margin">Details</h1>
       </template>
 
-      <div class="flex">
+      <div class="flex position-relative">
+        <div v-show="!tags.length" class="smt-spinner-circle">
+          <div class="smt-spinner"></div>
+        </div>
         <div class="image-detail-left">
           <div class="relative w-full">
             <vs-card>
@@ -274,6 +277,7 @@
                     </vs-tr>
                   </template>
                   <template #tbody>
+                    <p v-show="!tags.length"></p>
                     <vs-tr :key="i" v-for="(tr, i) in tags" :data="tr">
                       <vs-td>
                         {{ tr.tag }}
@@ -285,7 +289,11 @@
                         {{ tr.down_votes }}
                       </vs-td>
                       <vs-td>
-                        {{ groupedImages[tr.tag] ? groupedImages[tr.tag].length : 0 }}
+                        {{
+                          groupedImages[tr.tag]
+                            ? groupedImages[tr.tag].length
+                            : 0
+                        }}
                       </vs-td>
                     </vs-tr>
                   </template>
@@ -332,6 +340,32 @@
   border-bottom: 1px;
   border-color: rgba(229, 231, 235, var(--tw-border-opacity));
   border-style: solid;
+}
+.smt-spinner-circle {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: calc(50% - 25px);
+  top: calc(40% - 25px);
+}
+.smt-spinner {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
+  border-top: 2px solid grey;
+  border-left: 2px solid grey;
+  border-bottom: 2px solid grey;
+  animation: rotate--spinner 1.6s infinite;
+}
+
+@keyframes rotate--spinner {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
 <script>
