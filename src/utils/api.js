@@ -95,32 +95,6 @@ class API {
   }
 
   myImages = async () => {
-    // TODO: Remove mockup data 
-    // return Promise.resolve([{
-    //     hash: "00fcff53017cf800"
-    //   },
-    //   {
-    //     hash: "3f3f0000027fffff"
-    //   },
-    //   {
-    //     hash: "7efdfffff6eeff3f"
-    //   },
-    //   {
-    //     hash: "d7fe3e1014787c70"
-    //   },
-    //   {
-    //     hash: "f8ec5e7c3c1c1810"
-    //   },
-    //   {
-    //     hash: "fd980018141899ff"
-    //   },
-    //   {
-    //     hash: "fff1c0808081c1fb"
-    //   },
-    //   {
-    //     hash: "fffff9800181dbff"
-    //   }
-    // ]);
     return this.call('api/v1/my-images', 'GET')
       .then(async response => {
         const result = [];
@@ -255,6 +229,7 @@ class API {
     return datas[index].photos;
   }
 
+  /*
   photos = async ({
     tag,
     page,
@@ -266,7 +241,7 @@ class API {
     page = page || 1;
     let real_page = page;
     page = Math.floor(real_page / 5) + 1;
-    let callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
+    let callBothStatuses = status ? false : true;      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
 
     console.log(`callBothStatuses = ${callBothStatuses}`);
     
@@ -365,6 +340,54 @@ class API {
         });
     }
     
+  }*/
+
+  photos = async ({
+    status,
+    tag,
+    page
+  }) => {
+    if (!tag) {
+      return Promise.resolve([]);
+    }
+    page = page || 1;
+    let real_page = page;
+    page = Math.floor(real_page / 5) + 1;
+    status = status || 'VERIFIABLE';
+    return this.call('api/v1/search-images', 'POST', {
+      status,
+      page,
+      tag
+    })
+      .then(async response => {
+        const result = [];
+        if (response.result.length === 0)
+          return result;
+        let i;
+        if (real_page % 5 != 0) {
+          for (i = (real_page - 1) % 5 * 20; i < real_page % 5 * 20; i++) {
+            const hash = response.result[i];
+            if (hash == undefined) break;
+            const photo = {
+              hash
+            };
+            result.push(photo);
+          }
+        }
+        else {
+          for (i = 80; i < response.result.length; i++) {
+            const hash = response.result[i];
+            if (hash == undefined) break;
+            const photo = {
+              hash
+            };
+            result.push(photo);
+          }
+        }
+        return result;
+      }).catch(err => {
+        return Promise.reject(err);
+      });
   }
 
   tags = (start_date, end_date) => {

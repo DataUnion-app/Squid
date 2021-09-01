@@ -39,7 +39,7 @@
           collapse-chips
         >
           <vs-option
-            v-for="item in tags.slice(0, 30)"
+            v-for="item in tags.slice(0, 100)"
             :key="item"
             :label="item"
             :value="item"
