@@ -30,7 +30,7 @@
           collapse-chips
         >
           <vs-option
-            v-for="item in tags.slice(0, 30)"
+            v-for="item in tags.slice(0, 100)"
             :key="item"
             :label="item"
             :value="item"
@@ -38,9 +38,10 @@
             {{ item }}
           </vs-option>
         </vs-select>
-
       </div>
-      <div class="pl-5 flex items-center">Select All: <vs-checkbox v-model="select_all" class="pl-2"/></div>
+      <div class="pl-5 flex items-center">
+        Select All: <vs-checkbox v-model="select_all" class="pl-2" />
+      </div>
     </div>
     <div v-else class="w-2/5 flex">
       <h1 class="text-4xl not-margin header-title">
@@ -79,6 +80,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import API from "../utils/api";
 
 export default {
   name: "CHeader",
@@ -119,14 +121,28 @@ export default {
     editClicked(event) {
       this.$emit("onClickEdit");
     },
+    async init() {
+      const event = new Date();
+      const date = event.toLocaleString(`en`);
+      const splitDate = date.split(`, `)[0].split(`/`);
+      const currentDate = [splitDate[1], splitDate[0], splitDate[2]].join(`-`);
+
+      const start_date = "14-05-2021";
+      const end_date = currentDate;
+
+      const apiTags = await API.tags(start_date, end_date);
+      this.$store.dispatch("setTags", apiTags);
+    },
   },
-  mounted() {
+  async mounted() {
+    await this.init();
+
     if (
       this.$store.state.selectTag == "" ||
       this.$store.state.selectTag == undefined
     ) {
       if (this.$store.state.tags) this.tag = this.$store.state.tags[0];
-      this.$store.dispatch("setSelectTag", this.tag);
+      this.$store.dispatch("setSelectTag", this.tag || "dataunion");
     } else {
       this.tag = this.$store.state.selectTag;
     }

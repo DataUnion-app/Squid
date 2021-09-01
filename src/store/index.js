@@ -31,7 +31,13 @@ const store = new Vuex.Store({
       API.tags(start_date, end_date).then(tags => {
         console.log(tags)
         if (tags) {
-          commit('set', ['tags', tags])
+          const defaultTag = 'dataunion';
+          const tagKeys = Object.keys(tags);
+          tagKeys.sort((x, y) => {
+            return x == defaultTag ? -1 : y == defaultTag ? 1 : 0;
+          });
+          commit('set', ['tags', tagKeys])
+          commit('set', ['tagData', tags])
         }
       });
       API.datas().then(datas => {
@@ -61,6 +67,19 @@ const store = new Vuex.Store({
         commit('set', ['datas', datas])
       });
     },
+    setTags({ commit }) {
+      API.tags(start_date, end_date).then(tags => {
+        if (tags) {
+          const defaultTag = 'dataunion';
+          const tagKeys = Object.keys(tags);
+          tagKeys.sort((x, y) => {
+            return x == defaultTag ? -1 : y == defaultTag ? 1 : 0;
+          });
+          commit('set', ['tags', tagKeys])
+          commit('set', ['tagData', tags])
+        }
+      });
+    },
     setClickImage({ commit }, hash) {
       commit('setImage', ['click_images', hash])
     },
@@ -79,7 +98,7 @@ const store = new Vuex.Store({
     setPage({ commit }, page) {
       commit('set', ['page', page]);
     },
-    selectAll({commit}, check) {
+    selectAll({ commit }, check) {
       commit('set', ['select_all', check]);
     }
   },
