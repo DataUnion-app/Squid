@@ -16,9 +16,12 @@
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
       </h1>
-      <div class="select-body">
+      <p>
+        {{ description }}
+      </p>
+      <div v-if="tags != undefined" class="select-body">
         <vs-select
-          v-if="tags.length > 0"
+          v-if="tags.length != 0"
           placeholder="Select a tag"
           v-model="tag"
           class="select-tag"
@@ -27,7 +30,7 @@
           collapse-chips
         >
           <vs-option
-            v-for="item in tags.slice(0, 30)"
+            v-for="item in tags.slice(0, 100)"
             :key="item"
             :label="item"
             :value="item"
@@ -77,11 +80,13 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import API from "../utils/api";
 
 export default {
   name: "CHeader",
   props: {
     title: String,
+    description: String,
     flag: Number,
   },
   watch: {
@@ -116,14 +121,28 @@ export default {
     editClicked(event) {
       this.$emit("onClickEdit");
     },
+    async init() {
+      const event = new Date();
+      const date = event.toLocaleString(`en`);
+      const splitDate = date.split(`, `)[0].split(`/`);
+      const currentDate = [splitDate[1], splitDate[0], splitDate[2]].join(`-`);
+
+      const start_date = "14-05-2021";
+      const end_date = currentDate;
+
+      const apiTags = await API.tags(start_date, end_date);
+      this.$store.dispatch("setTags", apiTags);
+    },
   },
-  mounted() {
+  async mounted() {
+    await this.init();
+
     if (
       this.$store.state.selectTag == "" ||
       this.$store.state.selectTag == undefined
     ) {
-      this.tag = this.$store.state.tags[0];
-      this.$store.dispatch("setSelectTag", this.tag);
+      if (this.$store.state.tags) this.tag = this.$store.state.tags[0];
+      this.$store.dispatch("setSelectTag", this.tag || "dataunion");
     } else {
       this.tag = this.$store.state.selectTag;
     }

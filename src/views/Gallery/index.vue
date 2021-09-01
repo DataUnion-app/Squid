@@ -3,20 +3,21 @@
     <CHeader title="Gallery" :flag="2" />
     <CPopMenu :flag="1" />
     <div class="main-body">
-      <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
-        <!-- <VueAutoVirtualScrollList
-        :totalHeight="800"
-        :defaultHeight="80"
-        > -->
-        <div v-for="photo in photos" :key="photo.hash" class="image-relative">
-          <div class="comment">
-            <CImage
-              :hash="photo.hash"
-              class="w-full h-full absolute p-1 comment-item"
-            />
+      <div v-if="photos">
+        <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
+          <!-- <VueAutoVirtualScrollList
+          :totalHeight="800"
+          :defaultHeight="80"
+          > -->
+          <div v-for="photo in photos" :key="photo.hash" class="image-relative">
+            <div class="comment">
+              <CImage
+                :hash="photo.hash"
+                class="w-full h-full absolute p-1 comment-item"
+              />
+            </div>
           </div>
         </div>
-        <!-- </VueAutoVirtualScrollList> -->
       </div>
       <div v-else>
         <h1 class="text-3xl p-3 not-margin">There is no image</h1>
@@ -46,6 +47,7 @@ export default {
   },
   watch: {
     selectTag(newVal, oldVal) {
+      if (newVal === undefined) return;
       let i, timer;
       if (typeof newVal == "string") {
         API.photos({ tag: newVal }).then((photos) => {
@@ -148,8 +150,10 @@ export default {
       }
     },
   },
+
   mounted() {
     let i, timer;
+
     if (typeof this.$store.state.selectTag == "string") {
       API.photos({ tag: this.$store.state.selectTag }).then((photos) => {
         this.photos = photos;

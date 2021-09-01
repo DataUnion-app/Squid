@@ -270,51 +270,102 @@ class API {
     page = page || 1;
     let real_page = page;
     page = Math.floor(real_page / 5) + 1;
-    status = status || 'VERIFIABLE';
-    return this.call('api/v1/search-images', 'POST', {
-      status,
-      page,
-      tag
-    })
-      .then(async response => {
-        const result = [];
-        if (response.result.length === 0)
+    const callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
+
+    console.log(`real_page = ${real_page}`)
+    console.log(`page = ${page}`)
+    console.log(`Math.floor(real_page / 5) = ${Math.floor(real_page / 5)}`)
+
+    if (callBothStatuses) {
+      status = 'VERIFIABLE'
+      return this.call('api/v1/search-images', 'POST', {
+        status,
+        page,
+        tag
+      })
+        .then(async verifiableResponse => {
+          status = 'VERIFIED'
+          return this.call('api/v1/search-images', 'POST', {
+            status,
+            page,
+            tag
+          }).then(verifiedResponse => {
+            const result = [];
+            if (verifiableResponse.result.length === 0 && verifiedResponse.result.length === 0)
+              return result;
+
+            let i;
+            if (real_page % 5 != 0) {
+              for (i = (real_page - 1) % 5 * 20; i < real_page % 5 * 20; i++) {
+                const hash1 = verifiableResponse.result[i];
+                const hash2 = verifiedResponse.result[i]
+                if (hash1 == undefined && hash2 == undefined) break;
+                if (hash1) result.push({ hash: hash1, status: 'VERIFIABLE' });
+                if (hash2) result.push({ hash: hash2, status: 'VERIFIED' });
+              }
+            }
+            else {
+              const longest = verifiableResponse.result.length > verifiedResponse.length ? verifiableResponse.result.length : verifiedResponse.result.length
+              for (i = 80; i < longest; i++) {
+                const hash1 = verifiableResponse.result[i];
+                const hash2 = verifiedResponse.result[i];
+                if (hash1 == undefined && hash2 == undefined) break;
+                if (hash1) result.push({ hash: hash1, status: 'VERIFIABLE' });
+                if (hash2) result.push({ hash: hash2, status: 'VERIFIED' });
+              }
+            }
+            return result;
+          }).catch(err => {
+            return Promise.reject(err);
+          });
+        })
+    }
+
+    else {
+      status = status || 'VERIFIABLE';
+      return this.call('api/v1/search-images', 'POST', {
+        status,
+        page,
+        tag
+      })
+        .then(async verifiableResponse => {
+          const result = [];
+          if (verifiableResponse.result.length === 0)
+            // TODO: Set "no VERIFIED results here."
+            // 
+            return result;
+          let i;
+          if (real_page % 5 != 0) {
+            for (i = (real_page - 1) % 5 * 20; i < real_page % 5 * 20; i++) {
+              const hash = verifiableResponse.result[i];
+              if (hash == undefined) break;
+              const photo = {
+                hash
+              };
+              result.push(photo);
+            }
+          }
+          else {
+            for (i = 80; i < verifiableResponse.result.length; i++) {
+              const hash = verifiableResponse.result[i];
+              if (hash == undefined) break;
+              const photo = {
+                hash
+              };
+              result.push(photo);
+            }
+          }
           return result;
-        let i;
-        if (real_page % 5 != 0) {
-          for (i = (real_page - 1) % 5 * 20; i < real_page % 5 * 20; i++) {
-            const hash = response.result[i];
-            if (hash == undefined) break;
-            const photo = {
-              hash
-            };
-            result.push(photo);
-          }
-        }
-        else {
-          for (i = 80; i < response.result.length; i++) {
-            const hash = response.result[i];
-            if (hash == undefined) break;
-            const photo = {
-              hash
-            };
-            result.push(photo);
-          }
-        }
-        return result;
-      }).catch(err => {
-        return Promise.reject(err);
-      });
+        }).catch(err => {
+          return Promise.reject(err);
+        });
+    }
+
   }
 
-  tags = (type) => {
-    // return Promise.resolve([
-    //   'food bounty'
-    // ]);
-    type = type || 'RECOMMENDED_WORDS';
-    return this.call(`staticdata/tags?type=${type}`, 'GET')
+  tags = (start_date, end_date) => {
+    return this.call(`/api/v1/stats/overall-tags?start_date=${start_date}&end_date=${end_date}`, 'GET')
       .then(response => {
-        response.result.unshift('food bounty');
         return response.result;
       }).catch(err => {
         return Promise.reject(err);
