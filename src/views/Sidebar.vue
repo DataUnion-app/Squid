@@ -5,17 +5,17 @@
         <img class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg" />
         <div class="text-5xl font-extrabold text-purple-600">Squid</div>
       </template>
-      <vs-sidebar-item id="Home">
+      <vs-sidebar-item id="My data">
         <template #icon>
           <i class="bx bx-home"></i>
         </template>
-        Home
+        My data
       </vs-sidebar-item>
-      <vs-sidebar-item id="Gallery">
+      <vs-sidebar-item id="Data">
         <template #icon>
           <i class="bx bx-grid-alt"></i>
         </template>
-        Gallery
+        Data
       </vs-sidebar-item>
 
       <div v-if="datas.length > 0">
@@ -107,6 +107,12 @@
           <img src="@/assets/algorithm.svg" style="width:20px;" />
         </template>
         Algorithms
+      </vs-sidebar-item>
+      <vs-sidebar-item id="About">
+        <template #icon>
+          <img src="@/assets/about.png" style="width:20px;" />
+        </template>
+        About
       </vs-sidebar-item>
       <template #footer v-if="blockies">
         <div class="w-full flex flex-nowrap items-center">

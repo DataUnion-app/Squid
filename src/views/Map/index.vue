@@ -369,7 +369,7 @@ export default {
         color,
         position,
         title: "Failed",
-        text: "Already photo exists",
+        text: "Photo already exists",
       });
     },
   },
