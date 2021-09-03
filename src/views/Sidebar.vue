@@ -5,13 +5,13 @@
         <img class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg" />
         <div class="text-5xl font-extrabold text-purple-600">Squid</div>
       </template>
-      <vs-sidebar-item id="My data">
+      <vs-sidebar-item id="MyData">
         <template #icon>
           <i class="bx bx-home"></i>
         </template>
         My data
       </vs-sidebar-item>
-      <vs-sidebar-item id="Data">
+      <vs-sidebar-item id="AllData">
         <template #icon>
           <i class="bx bx-grid-alt"></i>
         </template>

@@ -59,19 +59,25 @@
     <div class="header-icon">
       <ul class="flex">
         <li class="header-icon-item">
-          <vs-avatar>
-            <i class="bx bx-code-alt"></i>
-          </vs-avatar>
+          <a href="https://twitter.com/datauniona" target="_blank">
+            <vs-avatar>
+              <i class="bx bxl-twitter"></i>
+            </vs-avatar>
+          </a>
         </li>
         <li class="header-icon-item">
-          <vs-avatar>
-            <i class="bx bxl-telegram"></i>
-          </vs-avatar>
+          <a href="https://t.me/dataunionapp" target="_blank">
+            <vs-avatar>
+              <i class="bx bxl-telegram"></i>
+            </vs-avatar>
+          </a>
         </li>
         <li class="header-icon-item">
-          <vs-avatar>
-            <i class="bx bxl-discord"></i>
-          </vs-avatar>
+          <a href="https://discord.com/invite/Jm9C3yD8Sd" target="_blank">
+            <vs-avatar>
+              <i class="bx bxl-discord"></i>
+            </vs-avatar>
+          </a>
         </li>
       </ul>
     </div>
