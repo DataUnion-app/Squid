@@ -20,24 +20,7 @@
         {{ description }}
       </p>
       <div v-if="tags != undefined" class="select-body">
-        <vs-select
-          v-if="tags.length != 0"
-          placeholder="Select a tag"
-          v-model="tag"
-          class="select-tag"
-          filter
-          multiple
-          collapse-chips
-        >
-          <vs-option
-            v-for="item in tags.slice(0, 100)"
-            :key="item"
-            :label="item"
-            :value="item"
-          >
-            {{ item }}
-          </vs-option>
-        </vs-select>
+        <multiselect v-model="tag" :options="tags" multiple> </multiselect>
       </div>
       <div class="pl-5 flex items-center">
         Select All: <vs-checkbox v-model="select_all" class="pl-2" />
@@ -80,20 +63,20 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import API from "../utils/api";
+import Multiselect from "vue-multiselect";
 
 export default {
   name: "CHeader",
+  components: {
+    Multiselect,
+  },
   props: {
     title: String,
     description: String,
     flag: Number,
   },
   watch: {
-    tag(newVal, oldVal) {
-      if (newVal == "") {
-        return;
-      }
+    tag(newVal) {
       this.page = 1;
       this.$store.dispatch("setSelectTag", newVal);
     },
@@ -109,40 +92,26 @@ export default {
   data() {
     return {
       tag: [],
+      tagIndex: 0,
       page: 1,
       select_all: false,
     };
   },
   computed: {
-    ...mapState(["tags", "totalPage"])
+    ...mapState(["tags", "totalPage"]),
   },
   methods: {
     ...mapActions(["setPage"]),
     editClicked(event) {
       this.$emit("onClickEdit");
     },
-    async init() {
-      const event = new Date();
-      const date = event.toLocaleString(`en`);
-      const splitDate = date.split(`, `)[0].split(`/`);
-      const currentDate = [splitDate[1], splitDate[0], splitDate[2]].join(`-`);
-
-      const start_date = "14-05-2021";
-      const end_date = currentDate;
-
-      const apiTags = await API.tags(start_date, end_date);
-      this.$store.dispatch("setTags", apiTags);
-    },
   },
   async mounted() {
-    await this.init();
+    await this.$store.dispatch("setTags");
 
-    if (
-      this.$store.state.selectTag == "" ||
-      this.$store.state.selectTag == undefined
-    ) {
-      if (this.$store.state.tags) this.tag = this.$store.state.tags[0];
-      this.$store.dispatch("setSelectTag", this.tag || "dataunion");
+    if (!this.$store.state.selectTag) {
+      this.tag = "dataunion";
+      this.$store.dispatch("setSelectTag", this.tag);
     } else {
       this.tag = this.$store.state.selectTag;
     }
@@ -150,3 +119,5 @@ export default {
   },
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
