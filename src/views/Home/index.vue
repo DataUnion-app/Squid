@@ -2,7 +2,7 @@
   <div class="home">
     <CHeader title="Home" />
     <CPopMenu :flag="1" />
-    <div class="main-body">
+    <div v-show="!pageLoading" class="main-body">
       <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
         <div v-for="photo in photos" :key="photo.hash" class="image-relative">
           <div class="comment">
@@ -35,7 +35,7 @@ export default {
   name: "Home",
   components: {},
   computed: {
-    ...mapState(["page", "totalPage"]),
+    ...mapState(["page", "pageLoading", "totalPage"]),
   },
   methods: {
     ...mapActions(["initClickImage"]),

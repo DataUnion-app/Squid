@@ -2,7 +2,7 @@
   <div class="home">
     <CHeader title="Gallery" :flag="2" />
     <CPopMenu :flag="1" />
-    <div class="main-body">
+    <div class="main-body" v-show="!pageLoading">
       <div v-if="photos">
         <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
           <!-- <VueAutoVirtualScrollList
@@ -153,8 +153,8 @@ export default {
 
   mounted() {
     let i, timer;
-    const defaultTag = "dataunion";
-    console.log('hello checking', this.$store.state.selectTag)
+    const defaultTag = "dataunion - 1";
+
     if (!this.$store.state.selectTag || this.$store.state.selectTag?.length === 0) {
       this.$store.dispatch("setSelectTag", defaultTag);
     } else {
