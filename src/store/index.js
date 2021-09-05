@@ -29,9 +29,9 @@ const store = new Vuex.Store({
   },
   actions: {
     init({ commit }) {
-      console.log('initing');
+      // console.log('initing');
       API.tags(start_date, end_date).then(tags => {
-        console.log(tags)
+        // console.log(tags)
         if (tags) {
           const defaultTag = 'dataunion';
           const tagKeys = Object.keys(tags);
@@ -40,7 +40,7 @@ const store = new Vuex.Store({
           });
           let tagCountKeys = [];
           tagKeys.forEach((v, i) => {
-            tagCountKeys.push(`${v} - ${tags[v].map(tag => tag.value).reduce((a, b) => b + a)}`);
+            tagCountKeys.push(`${v} - (${tags[v].map(tag => tag.value).reduce((a, b) => b + a)} image(s) found)`);
           });
           commit('set', ['tags', tagKeys])
           commit('set', ['tagData', tags])
@@ -84,7 +84,7 @@ const store = new Vuex.Store({
           });
           let tagCountKeys = [];
           tagKeys.forEach((v, i) => {
-            tagCountKeys.push(`${v} - ${tags[v].map(tag => tag.value).reduce((a, b) => b + a)}`);
+            tagCountKeys.push(`${v} - (${tags[v].map(tag => tag.value).reduce((a, b) => b + a)} image(s) found)`);
           });
           commit('set', ['tags', tagKeys])
           commit('set', ['tagData', tags])

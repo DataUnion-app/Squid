@@ -57,6 +57,7 @@
         <h1 class="text-3xl not-margin">Add to Data Set</h1>
       </template>
 
+      <!-- PLEASE CREATE DATASET -->
       <div class="flex">
         <div class="flex flex-col add-dialog">
           <div v-if="datas.length > 0" class="p-3 flex justify-center">
@@ -77,11 +78,13 @@
             <vs-button @click="addDataSet_m"> Save </vs-button>
           </div>
           <div v-else class="p-3 flex justify-center">
-            There is no data set yet, Please create one
+            You haven't created any datasets yet. Please create one.
             <vs-button @click="connectSidebar"> Create </vs-button>
           </div>
         </div>
       </div>
+      <!-- PLEASE CREATE DATASET -->
+
       <template #footer> </template>
     </vs-dialog>
     <vs-dialog v-model="removeDataSet">

@@ -58,7 +58,7 @@
                   <div class="content-tooltip">
                     <h4 class="center">Confirm</h4>
                     <p>
-                      You are sure to delete this user, by doing so you cannot
+                      Are you sure you want to delete this user, by doing so you cannot
                       recover the data
                     </p>
                     <footer class="flex">

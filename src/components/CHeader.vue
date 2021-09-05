@@ -17,17 +17,27 @@
         </div>
       </div>
     </div>
+
     <div v-else-if="flag == 2" class="flex w-2/5">
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
       </h1>
+      
       <p>
         {{ description }}
       </p>
+
       <div v-if="tagCountKeys !== undefined" class="select-body">
         <multiselect
           v-model="tag"
           :options="tagCountKeys"
+          
+          selectLabel=""
+          selectGroupLabel=""
+          selectedLabel=""
+          deselectLabel=""
+          deselectGroupLabel=""
+          
           multiple
           style="z-index: 9"
         ></multiselect>
@@ -36,6 +46,7 @@
         Select All: <vs-checkbox v-model="select_all" class="pl-2" />
       </div>
     </div>
+
     <div v-else class="w-2/5 flex">
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
@@ -145,7 +156,7 @@ export default {
     await this.$store.dispatch("setTags");
 
     if (!this.$store.state.selectTag) {
-      this.tag = "dataunion - 1";
+      this.tag = "dataunion - (1 image(s) found)";
       this.$store.dispatch("setSelectTag", this.tag);
     } else {
       this.tag = this.$store.state.selectTag;
