@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CHeader title="Welcome. Please login via Metamask." />
+    <CHeader title="Welcome. Please login via Metamask." :flag="'welcome'" />
       <div>
         <h4><b>What is Metamask?</b></h4>
             Metamask is a cryptocurrency wallet app. Through Metamask, you can generate a cryptocurrency wallet or connect an existing wallet. 
@@ -38,11 +38,24 @@
 
 <script>
 
+import { mapState, mapActions } from "vuex";
+import API from "@/utils/api";
+
 export default {
   name: 'Welcome',
   props: {
   },
   watch: {
+    page(newVal, oldVal) {
+      API.myImages({ page: newVal }).then((photos) => {
+        this.photos = photos;
+        if (this.photos.length === 0) {
+          this.$store.commit("setTotalPage", this.page);
+        } else {
+          this.$store.commit("setTotalPage", this.page + 1);
+        }
+      });
+    },
   },
   data() {
     return {
@@ -51,6 +64,7 @@ export default {
   components: {
   },
   computed: {
+    ...mapState(["page", "totalPage"]),
   },
   methods: {
     log (message) {

@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div v-if="flag == 1" class="flex w-2/5">
+    <div v-if="flag === 'data'" class="flex w-2/5">
       <div class="flex">
         <div>
           <h1 class="text-4xl not-margin header-title">{{ title }} Data Set</h1>
@@ -49,11 +49,13 @@
       </h1>
     </div>
 
-    <div v-if="flag != 1" class="center con-pagination flex">
-      <vs-pagination only-arrows v-model="page" :length="this.totalPage" />
-      <code class="pt-7">
-        Page: <b>{{ page }}</b>
-      </code>
+    <div v-if="flag != 'data'" class="center con-pagination flex">
+      <div v-if="flag != 'welcome'" class="center con-pagination flex">
+        <vs-pagination only-arrows v-model="page" :length="this.totalPage" />
+        <code class="pt-7">
+          Page: <b>{{ page }}</b>
+        </code>
+      </div>
     </div>
 
     <div class="header-icon">

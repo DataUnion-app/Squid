@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <CHeader title="Home" />
+    <CHeader title="My Data" />
     <CPopMenu :flag="1" />
     <div class="main-body">
       <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
