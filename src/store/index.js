@@ -24,21 +24,27 @@ const store = new Vuex.Store({
     click_images: [],
     page: 1,
     totalPage: 20,
+    pageLoading: true,
     select_all: false,
   },
   actions: {
     init({ commit }) {
-      console.log('initing');
+      // console.log('initing');
       API.tags(start_date, end_date).then(tags => {
-        console.log(tags)
+        // console.log(tags)
         if (tags) {
           const defaultTag = 'dataunion';
           const tagKeys = Object.keys(tags);
           tagKeys.sort((x, y) => {
             return x == defaultTag ? -1 : y == defaultTag ? 1 : 0;
           });
+          let tagCountKeys = [];
+          tagKeys.forEach((v, i) => {
+            tagCountKeys.push(`${v} - (${tags[v].map(tag => tag.value).reduce((a, b) => b + a)} image(s) found)`);
+          });
           commit('set', ['tags', tagKeys])
           commit('set', ['tagData', tags])
+          commit('set', ['tagCountKeys', tagCountKeys])
         }
       });
       API.datas().then(datas => {
@@ -76,10 +82,18 @@ const store = new Vuex.Store({
           tagKeys.sort((x, y) => {
             return x == defaultTag ? -1 : y == defaultTag ? 1 : 0;
           });
+          let tagCountKeys = [];
+          tagKeys.forEach((v, i) => {
+            tagCountKeys.push(`${v} - (${tags[v].map(tag => tag.value).reduce((a, b) => b + a)} image(s) found)`);
+          });
           commit('set', ['tags', tagKeys])
           commit('set', ['tagData', tags])
+          commit('set', ['tagCountKeys', tagCountKeys])
         }
       });
+    },
+    setPageLoading({commit}, v) {
+      commit('set', ['pageLoading', v])
     },
     setClickImage({ commit }, hash) {
       commit('setImage', ['click_images', hash])

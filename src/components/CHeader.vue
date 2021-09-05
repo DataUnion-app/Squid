@@ -1,9 +1,14 @@
 <template>
-  <div class="header">
-    <div v-if="flag === 'data'" class="flex w-2/5">
+  <div v-if="pageLoading" class="smt-spinner-circle">
+    <div class="smt-spinner"></div>
+  </div>
+  <div v-else class="header">
+    <div v-if="flag == 1" class="flex w-2/5">
       <div class="flex">
         <div>
-          <h1 class="text-4xl not-margin header-title">{{ title }} Data Set</h1>
+          <h1 class="text-4xl not-margin header-title">
+            {{ title }} Data Set
+          </h1>
         </div>
         <div class="header-edit-button">
           <vs-button danger icon @click="editClicked">
@@ -12,37 +17,36 @@
         </div>
       </div>
     </div>
+
     <div v-else-if="flag == 2" class="flex w-2/5">
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
       </h1>
+      
       <p>
         {{ description }}
       </p>
-      <div v-if="tags != undefined" class="select-body">
-        <vs-select
-          v-if="tags.length != 0"
-          placeholder="Select a tag"
+
+      <div v-if="tagCountKeys !== undefined" class="select-body">
+        <multiselect
           v-model="tag"
-          class="select-tag"
-          filter
+          :options="tagCountKeys"
+          
+          selectLabel=""
+          selectGroupLabel=""
+          selectedLabel=""
+          deselectLabel=""
+          deselectGroupLabel=""
+          
           multiple
-          collapse-chips
-        >
-          <vs-option
-            v-for="item in tags.slice(0, 100)"
-            :key="item"
-            :label="item"
-            :value="item"
-          >
-            {{ item }}
-          </vs-option>
-        </vs-select>
+          style="z-index: 9"
+        ></multiselect>
       </div>
       <div class="pl-5 flex items-center">
         Select All: <vs-checkbox v-model="select_all" class="pl-2" />
       </div>
     </div>
+
     <div v-else class="w-2/5 flex">
       <h1 class="text-4xl not-margin header-title">
         {{ title }}
@@ -85,23 +89,48 @@
     </div>
   </div>
 </template>
+<style>
+.smt-spinner-circle {
+  width: 50px;
+  height: 50px;
+  position: relative;
+}
+.smt-spinner {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
+  border-top: 2px solid grey;
+  border-left: 2px solid grey;
+  border-bottom: 2px solid grey;
+  animation: rotate--spinner 1.6s infinite;
+}
 
+@keyframes rotate--spinner {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
 <script>
 import { mapState, mapActions } from "vuex";
-import API from "../utils/api";
+import Multiselect from "vue-multiselect";
 
 export default {
   name: "CHeader",
+  components: {
+    Multiselect,
+  },
   props: {
     title: String,
     description: String,
     flag: Number,
   },
   watch: {
-    tag(newVal, oldVal) {
-      if (newVal == "") {
-        return;
-      }
+    tag(newVal) {
       this.page = 1;
       this.$store.dispatch("setSelectTag", newVal);
     },
@@ -117,44 +146,35 @@ export default {
   data() {
     return {
       tag: [],
+      tagIndex: 0,
       page: 1,
       select_all: false,
     };
   },
   computed: {
-    ...mapState(["tags", "totalPage"])
+    ...mapState(["tags", "tagCountKeys", "pageLoading", "totalPage"]),
   },
   methods: {
     ...mapActions(["setPage"]),
     editClicked(event) {
       this.$emit("onClickEdit");
     },
-    async init() {
-      const event = new Date();
-      const date = event.toLocaleString(`en`);
-      const splitDate = date.split(`, `)[0].split(`/`);
-      const currentDate = [splitDate[1], splitDate[0], splitDate[2]].join(`-`);
-
-      const start_date = "14-05-2021";
-      const end_date = currentDate;
-
-      const apiTags = await API.tags(start_date, end_date);
-      this.$store.dispatch("setTags", apiTags);
-    },
   },
   async mounted() {
-    await this.init();
+    await this.$store.dispatch("setTags");
 
-    if (
-      this.$store.state.selectTag == "" ||
-      this.$store.state.selectTag == undefined
-    ) {
-      if (this.$store.state.tags) this.tag = this.$store.state.tags[0];
-      this.$store.dispatch("setSelectTag", this.tag || "dataunion");
+    if (!this.$store.state.selectTag) {
+      this.tag = "dataunion - (1 image(s) found)";
+      this.$store.dispatch("setSelectTag", this.tag);
     } else {
       this.tag = this.$store.state.selectTag;
     }
     this.$store.dispatch("selectAll", false);
+    setTimeout(() => {
+      this.$store.dispatch("setPageLoading", false);
+    }, 4000);
   },
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

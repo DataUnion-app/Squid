@@ -271,24 +271,21 @@ class API {
     let real_page = page;
     page = Math.floor(real_page / 5) + 1;
     const callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
-
-    console.log(`real_page = ${real_page}`)
-    console.log(`page = ${page}`)
-    console.log(`Math.floor(real_page / 5) = ${Math.floor(real_page / 5)}`)
+    const myTag = tag?.toString().split(' - ')[0];
 
     if (callBothStatuses) {
       status = 'VERIFIABLE'
       return this.call('api/v1/search-images', 'POST', {
         status,
         page,
-        tag
+        tag: myTag
       })
         .then(async verifiableResponse => {
           status = 'VERIFIED'
           return this.call('api/v1/search-images', 'POST', {
             status,
             page,
-            tag
+            tag: myTag
           }).then(verifiedResponse => {
             const result = [];
             if (verifiableResponse.result.length === 0 && verifiedResponse.result.length === 0)
@@ -326,7 +323,7 @@ class API {
       return this.call('api/v1/search-images', 'POST', {
         status,
         page,
-        tag
+        tag: myTag
       })
         .then(async verifiableResponse => {
           const result = [];

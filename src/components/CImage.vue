@@ -5,6 +5,7 @@
         <template #img>
           <img v-if="image" class="image" :src="image" @click="preview" />
         </template>
+
         <template #interactions>
           <vs-tooltip
             ref="tooltip"
@@ -16,6 +17,8 @@
             <vs-button danger icon @click="showDataTooltip">
               <i class="bx bx-heart"></i>
             </vs-button>
+
+            <!-- SELECT DATASET -->
             <template #tooltip>
               <div class="content-tooltip" v-click-outside="onTooltipOutside">
                 <div v-if="datas.length > 0">
@@ -34,7 +37,7 @@
                       {{ item.name }}
                     </vs-option>
                   </vs-select>
-                  <p>You are sure to add this image in that Data Set?</p>
+                  <!-- <p>Are you sure you want to add this image in that Data Set?</p> -->
                   <footer class="flex">
                     <vs-button @click="addDataSet" danger block>
                       Yes
@@ -50,13 +53,15 @@
                   </footer>
                 </div>
                 <div v-else class="p-3 flex justify-center">
-                  There is no data set yet, Please create one
+                  You haven't created any datasets yet. Please create one.
                   <footer class="flex">
                     <vs-button @click="connectSidebar"> Create </vs-button>
                   </footer>
                 </div>
               </div>
             </template>
+            <!-- SELECT DATASET -->
+          
           </vs-tooltip>
           <vs-tooltip v-else shadow not-hover v-model="removeImage">
             <vs-button danger icon @click="removeImage = !removeImage">
@@ -65,7 +70,7 @@
             <template #tooltip>
               <div class="content-tooltip">
                 <h4 class="center">Confirm</h4>
-                <p>You are sure to remove this image?</p>
+                <p>Are you sure you want to remove this image?</p>
                 <footer class="flex">
                   <vs-button @click="removeIconClicked" danger block>
                     Remove
@@ -89,7 +94,7 @@
             <i class="bx bx-detail"></i>
           </vs-button>
           <vs-checkbox success v-model="option"> </vs-checkbox>
-        </template>
+        </template>      
       </vs-card>
       <div v-show="!image" ref="loader" class="relative w-full h-full"></div>
     </div>
@@ -127,6 +132,8 @@
                   <vs-button danger icon @click="showDataDetailTooltip">
                     <i class="bx bx-heart"></i>
                   </vs-button>
+                  
+                  <!-- SELECT DATASET -->
                   <template #tooltip>
                     <div
                       class="content-tooltip"
@@ -148,7 +155,7 @@
                             {{ item.name }}
                           </vs-option>
                         </vs-select>
-                        <p>You are sure to add this image in that Data Set?</p>
+                        <!-- <p>Are you sure you want to add this image in that Data Set?</p> -->
                         <footer class="flex">
                           <vs-button @click="addDataSet" danger block>
                             Yes
@@ -164,7 +171,7 @@
                         </footer>
                       </div>
                       <div v-else class="p-3 flex justify-center">
-                        There is no data set yet, Please create one
+                        You haven't created any datasets yet. Please create one.
                         <footer class="flex">
                           <vs-button @click="connectSidebar">
                             Create
@@ -173,6 +180,8 @@
                       </div>
                     </div>
                   </template>
+                  <!-- SELECT DATASET -->
+                
                 </vs-tooltip>
                 <vs-tooltip
                   v-else
@@ -191,7 +200,7 @@
                   <template #tooltip>
                     <div class="content-tooltip">
                       <h4 class="center">Confirm</h4>
-                      <p>You are sure to remove this image?</p>
+                      <p>Are you sure you want to remove this image?</p>
                       <footer class="flex">
                         <vs-button @click="removeIconClicked" danger block>
                           Remove
@@ -219,7 +228,7 @@
             <div class="mt-3 flex flex-wrap">
               <div v-for="(tag, index) in tags" :key="index" class="flex">
                 <vs-button v-bind:style="styleObject[index]">
-                  {{ tag.tag }}-up:{{ tag.up_votes }} down:{{ tag.down_votes }}
+                  {{ tag.tag }}
                 </vs-button>
                 <!-- <vs-tooltip v-if="isUp(tag)" success>
                   <vs-button success flat>
@@ -271,9 +280,9 @@
                   <template #thead>
                     <vs-tr>
                       <vs-th> Tag Name </vs-th>
-                      <vs-th> upvotes </vs-th>
-                      <vs-th> downvotes </vs-th>
-                      <vs-th> boxes </vs-th>
+                      <vs-th> Upvotes </vs-th>
+                      <vs-th> Downvotes </vs-th>
+                      <vs-th> Boxes </vs-th>
                     </vs-tr>
                   </template>
                   <template #tbody>
@@ -309,9 +318,7 @@
       </div>
       <template #footer>
         <div class="flex flex-col rounded-xl border-gray-500 border mt-4 p-3">
-          <div class="pl-3">Sales-price-usage information</div>
-          <div class="text-center">Placeholder</div>
-          <div class="text-right pr-3">coming soon...</div>
+          <div class="coming-soon">Sales Price & Usage Information: COMING SOON</div>
         </div>
       </template>
     </vs-dialog>
@@ -326,7 +333,7 @@
   height: 32px !important;
 }
 .vs-table table {
-  min-width: auto;
+  min-width: 0% !important;
 }
 .vs-table-content {
   height: 100%;
@@ -458,7 +465,7 @@ export default {
         color,
         position,
         title: "Failed",
-        text: "Already photo exists",
+        text: `Photo already exists in this dataset.`,
       });
     },
     groupBy(dataArray, key) {

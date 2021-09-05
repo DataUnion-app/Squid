@@ -154,6 +154,10 @@ body {
   min-width: 44px;
 }
 
+.coming-soon {
+  text-align: center;
+}
+
 .add-dialog {
   width: 50%;
   min-width: 400px;

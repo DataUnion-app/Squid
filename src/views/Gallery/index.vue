@@ -2,7 +2,7 @@
   <div class="home">
     <CHeader title="Gallery" :flag="2" />
     <CPopMenu :flag="1" />
-    <div class="main-body">
+    <div class="main-body" v-show="!pageLoading">
       <div v-if="photos">
         <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
           <!-- <VueAutoVirtualScrollList
@@ -153,52 +153,60 @@ export default {
 
   mounted() {
     let i, timer;
+    const defaultTag = "dataunion - 1";
 
-    if (typeof this.$store.state.selectTag == "string") {
-      API.photos({ tag: this.$store.state.selectTag }).then((photos) => {
-        this.photos = photos;
-        if (this.photos.length === 0) {
-          this.$store.commit("setTotalPage", this.page);
-        } else {
-          this.$store.commit("setTotalPage", this.page + 1);
-        }
-      });
+    if (!this.$store.state.selectTag || this.$store.state.selectTag?.length === 0) {
+      this.$store.dispatch("setSelectTag", defaultTag);
     } else {
-      i = 0;
-      timer = setInterval(() => {
-        if (i >= this.$store.state.selectTag.length - 1) {
-          clearInterval(timer);
-        }
-        if (i == 0) {
-          API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
-            this.photos = photos;
-            if (this.photos.length === 0) {
-              this.$store.commit("setTotalPage", this.page);
-            } else {
-              this.$store.commit("setTotalPage", this.page + 1);
-            }
-          });
-        } else {
-          API.photos({ tag: this.$store.state.selectTag[i] }).then((photos) => {
-            let j = 0;
-            for (j = 0; j < photos.length; j++) {
-              if (
-                !this.photos.filter((item) => item.hash == photos[j].hash)
-                  .length
-              )
-                this.photos.push(photos[j]);
-              if (this.photos.length === 0) {
-                this.$store.commit("setTotalPage", this.page);
-              } else {
-                this.$store.commit("setTotalPage", this.page + 1);
+      if (typeof this.$store.state.selectTag == "string") {
+        API.photos({ tag: this.$store.state.selectTag }).then((photos) => {
+          this.photos = photos;
+          if (this.photos.length === 0) {
+            this.$store.commit("setTotalPage", this.page);
+          } else {
+            this.$store.commit("setTotalPage", this.page + 1);
+          }
+        });
+      } else {
+        i = 0;
+        timer = setInterval(() => {
+          if (i >= this.$store.state.selectTag.length - 1) {
+            clearInterval(timer);
+          }
+          if (i == 0) {
+            API.photos({ tag: this.$store.state.selectTag[i] }).then(
+              (photos) => {
+                this.photos = photos;
+                if (this.photos.length === 0) {
+                  this.$store.commit("setTotalPage", this.page);
+                } else {
+                  this.$store.commit("setTotalPage", this.page + 1);
+                }
               }
-            }
-          });
-        }
-        i++;
-      }, 50);
+            );
+          } else {
+            API.photos({ tag: this.$store.state.selectTag[i] }).then(
+              (photos) => {
+                let j = 0;
+                for (j = 0; j < photos.length; j++) {
+                  if (
+                    !this.photos.filter((item) => item.hash == photos[j].hash)
+                      .length
+                  )
+                    this.photos.push(photos[j]);
+                  if (this.photos.length === 0) {
+                    this.$store.commit("setTotalPage", this.page);
+                  } else {
+                    this.$store.commit("setTotalPage", this.page + 1);
+                  }
+                }
+              }
+            );
+          }
+          i++;
+        }, 50);
+      }
     }
-
     this.initClickImage();
   },
 };
