@@ -50,7 +50,7 @@
     </div>
 
     <div v-if="flag != 'data'" class="center con-pagination flex">
-      <div v-if="flag != 'welcome'" class="center con-pagination flex">
+      <div v-if="flag != 'nopage'" class="center con-pagination flex">
         <vs-pagination only-arrows v-model="page" :length="this.totalPage" />
         <code class="pt-7">
           Page: <b>{{ page }}</b>

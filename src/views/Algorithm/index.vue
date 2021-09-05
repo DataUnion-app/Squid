@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <CHeader title="Algorithms" />
+    <CHeader title="Algorithms" :flag="'nopage'" />
     <div class="main-body">
       <h1 class="text-3xl p-3 not-margin">
         This is new algorithm tag, Coming Soon...

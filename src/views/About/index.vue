@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <CHeader title="About" />
+    <CHeader title="About" :flag="'nopage'" />
     <div class="main-body">
       <h1 class="text-3xl p-3 not-margin">
         About the DataUnion data portal
