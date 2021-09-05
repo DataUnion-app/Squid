@@ -318,7 +318,7 @@
       </div>
       <template #footer>
         <div class="flex flex-col rounded-xl border-gray-500 border mt-4 p-3">
-          <div class="coming-soon">Sales Price & Usage Information: COMING SOON</div>
+          <div class="coming-soon">Sales, Price & Usage Information: COMING SOON</div>
         </div>
       </template>
     </vs-dialog>
