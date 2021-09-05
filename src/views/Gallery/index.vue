@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <CHeader title="Gallery" :flag="2" />
+    <CHeader title="All Data" :flag="2" />
     <CPopMenu :flag="1" />
     <div class="main-body">
       <div v-if="photos">
