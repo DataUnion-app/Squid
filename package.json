@@ -15,6 +15,7 @@
     "v-viewer": "^1.6.3",
     "vue": "^2.6.11",
     "vue-auto-virtual-scroll-list": "^0.3.0",
+    "vue-multiselect": "^2.1.6",
     "vue-router": "^3.2.0",
     "vue-youtube-embed": "^2.2.2",
     "vuesax": "^4.0.1-alpha.25",

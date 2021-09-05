@@ -31,6 +31,8 @@
                   <vs-button danger icon @click="showDataTooltip">
                     <i class="bx bx-heart"></i>
                   </vs-button>
+
+                  <!-- SELECT DATASET -->
                   <template #tooltip>
                     <div
                       class="content-tooltip"
@@ -52,7 +54,7 @@
                             {{ item.name }}
                           </vs-option>
                         </vs-select>
-                        <p>You are sure to add this image in that Data Set?</p>
+                        <!-- <p>Are you sure you want to add this image in that Data Set?</p> -->
                         <footer class="flex">
                           <vs-button @click="addDataSet" danger block>
                             Yes
@@ -68,7 +70,7 @@
                         </footer>
                       </div>
                       <div v-else class="p-3 flex justify-center">
-                        There is no data set yet, Please create one
+                        You haven't created any datasets yet. Please create one.
                         <footer class="flex">
                           <vs-button @click="connectSidebar">
                             Create
@@ -77,10 +79,13 @@
                       </div>
                     </div>
                   </template>
+                  <!-- SELECT DATASET -->
+
                 </vs-tooltip>
               </template>
             </vs-card>
           </div>
+
           <div class="mt-3 flex flex-wrap">
             <div v-for="tag in tags" :key="tag.tag" class="flex">
               <vs-tooltip v-if="isUp(tag)" success>
@@ -158,6 +163,7 @@
         <h1 class="text-3xl not-margin">Add to Data Set</h1>
       </template>
 
+      <!-- PLEASE CREATE DATASET -->
       <div class="flex">
         <div class="flex flex-col add-dialog">
           <div v-if="datas.length > 0" class="p-3 flex justify-center">
@@ -174,19 +180,22 @@
             <vs-button @click="addDataSet"> Save </vs-button>
           </div>
           <div v-else class="p-3 flex justify-center">
-            There is no data set yet, Please create one
+            You haven't created any datasets yet. Please create one.
             <vs-button @click="connectSidebar"> Create </vs-button>
           </div>
         </div>
       </div>
+      <!-- PLEASE CREATE DATASET -->
       <template #footer> </template>
     </vs-dialog>
   </div>
 </template>
 <style>
+
 .vs-select__options {
   z-index: 9999999 !important;
 }
+
 </style>
 <script>
 import { mapActions, mapGetters } from "vuex";
@@ -369,7 +378,7 @@ export default {
         color,
         position,
         title: "Failed",
-        text: "Photo already exists",
+        text: `Photo already exists in this dataset.`,
       });
     },
   },
