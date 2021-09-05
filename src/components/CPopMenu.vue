@@ -14,9 +14,6 @@
           <v-icon v-else> mdi-square-edit-outline </v-icon>
         </v-btn>
       </template>
-      <v-btn fab dark small class="pop-menu-pencil">
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
       <v-btn
         v-if="flag == 1"
         fab

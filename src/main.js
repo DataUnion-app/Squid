@@ -10,6 +10,8 @@ import App from './App.vue'
 import router from './router';
 import store from './store';
 
+import VueYouTubeEmbed from 'vue-youtube-embed'
+
 import './component';
 import '@/index.css'
 import 'boxicons';
@@ -23,6 +25,7 @@ Vue.use(vClickOutside)
 Vue.use(VueViewer)
 Vue.use
 Vue.use(Vuesax, {})
+Vue.use(VueYouTubeEmbed)
 
 Vue.config.productionTip = false
 

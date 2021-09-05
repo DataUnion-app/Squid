@@ -53,29 +53,37 @@
       </h1>
     </div>
 
-    <div v-if="flag != 1" class="center con-pagination flex">
-      <vs-pagination only-arrows v-model="page" :length="this.totalPage" />
-      <code class="pt-7">
-        Page: <b>{{ page }}</b>
-      </code>
+    <div v-if="flag != 'data'" class="center con-pagination flex">
+      <div v-if="flag != 'nopage'" class="center con-pagination flex">
+        <vs-pagination only-arrows v-model="page" :length="this.totalPage" />
+        <code class="pt-7">
+          Page: <b>{{ page }}</b>
+        </code>
+      </div>
     </div>
 
     <div class="header-icon">
       <ul class="flex">
         <li class="header-icon-item">
-          <vs-avatar>
-            <i class="bx bx-code-alt"></i>
-          </vs-avatar>
+          <a href="https://twitter.com/datauniona" target="_blank">
+            <vs-avatar>
+              <i class="bx bxl-twitter"></i>
+            </vs-avatar>
+          </a>
         </li>
         <li class="header-icon-item">
-          <vs-avatar>
-            <i class="bx bxl-telegram"></i>
-          </vs-avatar>
+          <a href="https://t.me/dataunionapp" target="_blank">
+            <vs-avatar>
+              <i class="bx bxl-telegram"></i>
+            </vs-avatar>
+          </a>
         </li>
         <li class="header-icon-item">
-          <vs-avatar>
-            <i class="bx bxl-discord"></i>
-          </vs-avatar>
+          <a href="https://discord.com/invite/Jm9C3yD8Sd" target="_blank">
+            <vs-avatar>
+              <i class="bx bxl-discord"></i>
+            </vs-avatar>
+          </a>
         </li>
       </ul>
     </div>

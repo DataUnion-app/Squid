@@ -1,9 +1,9 @@
 <template>
   <div class="home">
-    <CHeader title="Algorithms" :flag="'nopage'" />
+    <CHeader title="About" :flag="'nopage'" />
     <div class="main-body">
       <h1 class="text-3xl p-3 not-margin">
-        This is new algorithm tag, Coming Soon...
+        About the DataUnion data portal
       </h1>
     </div>
   </div>

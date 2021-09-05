@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CHeader :title="$route.params.id" :flag="1" @onClickEdit="onClickEdit" />
+    <CHeader :title="$route.params.id" :flag="'data'" @onClickEdit="onClickEdit" />
     <CPopMenu :flag="2" />
     <div class="main-body">
       <div>
@@ -22,7 +22,7 @@
           </div>
         </div>
         <div v-else>
-          <h1 class="text-3xl p-3 not-margin">There is no image</h1>
+          <h1 class="text-3xl p-3 not-margin">This Data Set is empty.</h1>
         </div>
       </div>
       <vs-dialog v-model="showModal">

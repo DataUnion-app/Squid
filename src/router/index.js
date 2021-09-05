@@ -8,8 +8,8 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('@/views/Home')
+    name: 'MyData',
+    component: () => import('@/views/MyData')
   },
   {
     path: '/welcome',
@@ -17,12 +17,12 @@ const routes = [
     component: () => import('@/views/Welcome')
   },
   {
-    path: '/gallery',
-    name: 'Gallery',
+    path: '/alldata',
+    name: 'AllData',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import('@/views/Gallery')
+    component: () => import('@/views/AllData')
   },
   {
     path: '/map',
@@ -39,6 +39,14 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import('@/views/Algorithm')
+  },
+  {
+    path: '/about',
+    name: 'About',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import('@/views/About')
   },
   {
     path: '/datas/:id',
@@ -65,7 +73,7 @@ router.beforeEach((to, from, next) => {
 })
 
 Observer.$on('login', ({ account }) => {
-  router.push({ name: 'Home' }).catch(() => { });
+  router.push({ name: 'MyData' }).catch(() => { });
 })
 
 export default router
