@@ -269,9 +269,9 @@ class API {
     }
     page = page || 1;
     let real_page = page;
-    page = Math.floor(real_page / 5) + 1;
+    page = Math.floor(real_page / 20) + 1;
     const callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
-    const myTag = tag?.toString().split(' - ')[0];
+    const myTag = tag?.toString().split(' - (')[0];
     console.log('myTag ', myTag);
 
     if (callBothStatuses) {
