@@ -272,6 +272,7 @@ class API {
     page = Math.floor(real_page / 5) + 1;
     const callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
     const myTag = tag?.toString().split(' - ')[0];
+    console.log('myTag ', myTag);
 
     if (callBothStatuses) {
       status = 'VERIFIABLE'
@@ -363,6 +364,14 @@ class API {
   tags = (start_date, end_date) => {
     return this.call(`/api/v1/stats/overall-tags?start_date=${start_date}&end_date=${end_date}`, 'GET')
       .then(response => {
+        console.log('tags: ', response.result);
+        const list_of_removed_tags = ['women', 'woman', 'MAN', 'WOMEN', 'WOMAN',
+         'a woman', 'asian woman', 'asian women', 'old women', 'Man', 'children', 'child', 'Child', 'anonymization challenge',
+          'anonymization bounty', 'biometric', 'PII - faces', 'PII - non faces',
+           'Anonymization bounty'];
+        for (let i = 0; i < list_of_removed_tags.length; i++) {
+          delete response.result[list_of_removed_tags[i]];
+        }
         return response.result;
       }).catch(err => {
         return Promise.reject(err);

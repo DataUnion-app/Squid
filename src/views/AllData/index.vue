@@ -35,7 +35,7 @@ export default {
   name: "Gallery",
   // components: { VueAutoVirtualScrollList  },
   computed: {
-    ...mapState(["selectTag", "page"]),
+    ...mapState(["selectTag", "page", "pageLoading", "totalPage"]),
   },
   methods: {
     ...mapActions(["initClickImage", "setPage"]),
@@ -153,7 +153,7 @@ export default {
 
   mounted() {
     let i, timer;
-    const defaultTag = "dataunion - 1";
+    const defaultTag = "dataunion - (1)";
 
     if (!this.$store.state.selectTag || this.$store.state.selectTag?.length === 0) {
       this.$store.dispatch("setSelectTag", defaultTag);

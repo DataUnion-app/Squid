@@ -4,19 +4,17 @@
     <div class="main-body">
       <h4><b>What is Metamask?</b></h4>
           Metamask is a cryptocurrency wallet app. Through Metamask, you can generate a cryptocurrency wallet or connect an existing wallet. 
-          Your Metamask wallet connects to DataUnion and acts as your anonymous account. In Squid we are using Metamask to identify the data that you uploaded to DataUnion and to facilitate paying and tracking service usage.
+          Your Metamask wallet connects to DataUnion and acts as your account. In Squid we are using Metamask to identify the data that you uploaded to DataUnion and to facilitate paying and tracking service usage.
       <br />
       <br />
-      <container :title="title">
-        <youtube video-id="GNPz-Dv5BjM"
-          @ready="ready"
-          @ended="ended"
-          @playing="playing"
-          @paused="paused"
-          @buffering="buffering"
-          @qued="qued"
-        ></youtube>
-      </container>
+      <youtube video-id="GNPz-Dv5BjM"
+        @ready="ready"
+        @ended="ended"
+        @playing="playing"
+        @paused="paused"
+        @buffering="buffering"
+        @qued="qued"
+      ></youtube>
       <br />
       <br />
 

@@ -35,7 +35,7 @@ export default {
   name: "Home",
   components: {},
   computed: {
-    ...mapState(["page", "totalPage"]),
+    ...mapState(["page", "pageLoading", "totalPage"]),
   },
   methods: {
     ...mapActions(["initClickImage"]),

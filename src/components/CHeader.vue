@@ -164,7 +164,7 @@ export default {
     await this.$store.dispatch("setTags");
 
     if (!this.$store.state.selectTag) {
-      this.tag = "dataunion (1)";
+      this.tag = "dataunion - (1)";
       this.$store.dispatch("setSelectTag", this.tag);
     } else {
       this.tag = this.$store.state.selectTag;
