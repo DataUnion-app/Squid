@@ -99,7 +99,7 @@ class API {
   myImages = async ({
     page
   }) => {
-    // TODO: Remove mockup data 
+    // TODO: Remove mockup data
     // return Promise.resolve([{
     //     hash: "00fcff53017cf800"
     //   },
@@ -269,7 +269,7 @@ class API {
     }
     page = page || 1;
     let real_page = page;
-    page = Math.floor(real_page / 5) + 1;
+    page = Math.floor(real_page / 20) + 1;
     const callBothStatuses = status ? false : true      // if status has been passed as a parameter, we don't call both statuses. statuses are 'VERIFIED' and 'VERIFIABLE'
     const myTag = tag?.toString().split(' - ')[0];
     // console.log('myTag ', myTag);
@@ -330,7 +330,7 @@ class API {
           const result = [];
           if (verifiableResponse.result.length === 0)
             // TODO: Set "no VERIFIED results here."
-            // 
+            //
             return result;
           let i;
           if (real_page % 5 != 0) {
