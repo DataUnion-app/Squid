@@ -105,7 +105,7 @@
       </template>
 
       <div class="flex position-relative">
-        <div v-show="!tags.length" class="smt-spinner-circle">
+        <div v-show="!tagsLoaded" class="smt-spinner-circle">
           <div class="smt-spinner"></div>
         </div>
         <div class="image-detail-left">
