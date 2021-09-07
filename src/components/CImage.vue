@@ -105,7 +105,7 @@
       </template>
 
       <div class="flex position-relative">
-        <div v-show="!tags.length" class="smt-spinner-circle">
+        <div v-show="!tagsLoaded" class="smt-spinner-circle">
           <div class="smt-spinner"></div>
         </div>
         <div class="image-detail-left">
@@ -322,6 +322,7 @@
         </div>
       </template>
     </vs-dialog>
+    
   </div>
 </template>
 <style>
@@ -419,6 +420,7 @@ export default {
       addDataDetailTooltip: false,
       removeImage: false,
       removeImageDetail: false,
+      tagsLoaded: false,
       styleObject: [],
     };
   },
@@ -508,6 +510,7 @@ export default {
               };
             }
           }
+          this.tagsLoaded = true;
         })
         .catch((error) => {
           console.error(error);
