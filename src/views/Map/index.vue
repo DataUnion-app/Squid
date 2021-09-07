@@ -117,44 +117,6 @@
             </div>
           </div>
         </div>
-        <div class="flex flex-col image-detail-right">
-          <div class="relative w-full">
-            <div class="comment">
-              <div
-                class="
-                  w-full
-                  h-full
-                  absolute
-                  p-1
-                  object-contain
-                  pr-5
-                  comment-item
-                "
-              >
-                <div v-if="comments.length > 0" class="h-full flex flex-col">
-                  <div class="text-2xl text-center">Comments</div>
-                  <div class="p-3 overflow-y-auto">
-                    <div
-                      v-for="(item, index) in comments"
-                      :key="index"
-                      class="flex items-center m-1"
-                    >
-                      <vs-avatar class="mr-3 comment-avatar">
-                        <img :src="avatar(item.from)" alt="" />
-                      </vs-avatar>
-                      <div>{{ item.comment }}</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="text-xl p-5" v-else>There is no comment yet.</div>
-              </div>
-            </div>
-          </div>
-          <div class="p-3 flex justify-center">
-            <vs-input v-model="comment" placeholder="Input your feedback" />
-            <vs-button @click="postComment"> Comment </vs-button>
-          </div>
-        </div>
       </div>
       <template #footer> </template>
     </vs-dialog>

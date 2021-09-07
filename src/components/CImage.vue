@@ -105,7 +105,7 @@
       </template>
 
       <div class="flex position-relative">
-        <div v-show="!tags.length" class="smt-spinner-circle">
+        <div v-show="!tagsLoaded" class="smt-spinner-circle">
           <div class="smt-spinner"></div>
         </div>
         <div class="image-detail-left">
@@ -286,7 +286,7 @@
                     </vs-tr>
                   </template>
                   <template #tbody>
-                    <p v-show="!tags.length"></p>
+                    <p v-show="!tagsLoaded"></p>
                     <vs-tr :key="i" v-for="(tr, i) in tags" :data="tr">
                       <vs-td>
                         {{ tr.tag }}
@@ -407,6 +407,7 @@ export default {
       image: null,
       showDetails: false,
       showDataSet: false,
+      tagsLoaded: false,
       option: false,
       tags: [],
       groupedImages: [],
@@ -516,6 +517,7 @@ export default {
         this.groupedImages = this.groupBy(images, "tag");
       });
       this.showDetails = true;
+      this.tagsLoaded = true;
     },
     showDataDialog() {
       this.refreshDataSet();

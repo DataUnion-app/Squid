@@ -8,6 +8,7 @@
       <h4 class="text-2xl p-3 not-margin">
         Feature description:
       </h4>
+      <img src="@/assets/Algorithms.png" />
       <p class="p-3 not-margin">This feature allows you to use the Data Sets that are selected from the data to apply machine learning algorithms to. These algorithms can either be for machine learning training of new models or inference to verify existing models. The algorithms have to be published on Ocean Protocol and vetted on our dataset - we do not want the data to leak.</p>
       <p class="p-3 not-margin">These compute jobs run via compute-to-data on our hardware. The configuration of the hardware as well as of the algorithms e.g. hyperparemeters or even hyperparameter optimizers (HyperOpt, AutoML etc.) can be selected.</p>
       <p class="p-3 not-margin">This configuration as well as the selection of images determine the price in QUICRA-0/datatokens that the job costs. The price is displayed here as well as its different components - data, hardware, and overhead costs.</p>
