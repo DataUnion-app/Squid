@@ -3,24 +3,36 @@
     <CHeader title="All Data" :flag="2" />
     <CPopMenu :flag="1" />
     <div class="main-body" v-show="!pageLoading">
-      <div v-if="photos">
-        <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
-          <!-- <VueAutoVirtualScrollList
+      <div v-if="apiLoading">
+        <h1 class="text-3xl p-3 not-margin">Data is loading now...</h1>
+      </div>
+      <div v-else>
+        <div v-if="photos">
+          <div
+            v-if="photos.length > 0"
+            class="flex flex-wrap justify-left ml-12"
+          >
+            <!-- <VueAutoVirtualScrollList
           :totalHeight="800"
           :defaultHeight="80"
           > -->
-          <div v-for="photo in photos" :key="photo.hash" class="image-relative">
-            <div class="comment">
-              <CImage
-                :hash="photo.hash"
-                class="w-full h-full absolute p-1 comment-item"
-              />
+            <div
+              v-for="photo in photos"
+              :key="photo.hash"
+              class="image-relative"
+            >
+              <div class="comment">
+                <CImage
+                  :hash="photo.hash"
+                  class="w-full h-full absolute p-1 comment-item"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div v-else>
-        <h1 class="text-3xl p-3 not-margin">There is no image</h1>
+        <div v-else>
+          <h1 class="text-3xl p-3 not-margin">There is no image</h1>
+        </div>
       </div>
     </div>
   </div>
@@ -35,7 +47,7 @@ export default {
   name: "Gallery",
   // components: { VueAutoVirtualScrollList  },
   computed: {
-    ...mapState(["selectTag", "page", "pageLoading", "totalPage"]),
+    ...mapState(["selectTag", "apiLoading", "pageLoading", "page"]),
   },
   methods: {
     ...mapActions(["initClickImage", "setPage"]),
@@ -49,8 +61,10 @@ export default {
     selectTag(newVal, oldVal) {
       if (newVal === undefined) return;
       let i, timer;
+      this.$store.dispatch("setApiLoading", true);
       if (typeof newVal == "string") {
         API.photos({ tag: newVal }).then((photos) => {
+          this.$store.dispatch("setApiLoading", false);
           this.photos = photos;
           if (this.photos.length === 0) {
             this.$store.commit("setTotalPage", this.page);
@@ -66,6 +80,7 @@ export default {
           }
           if (i == 0) {
             API.photos({ tag: newVal[i] }).then((photos) => {
+              this.$store.dispatch("setApiLoading", false);
               this.photos = photos;
               if (this.photos.length === 0) {
                 this.$store.commit("setTotalPage", this.page);
@@ -75,6 +90,7 @@ export default {
             });
           } else {
             API.photos({ tag: newVal[i] }).then((photos) => {
+              this.$store.dispatch("setApiLoading", false);
               let j = 0;
               for (j = 0; j < photos.length; j++) {
                 if (
@@ -96,9 +112,12 @@ export default {
     },
     page(newVal, oldVal) {
       let i, timer;
+      this.$store.dispatch("setApiLoading", true);
+      console.log("tag type", this.$store.state.selectTag, typeof this.$store.state.selectTag);
       if (typeof this.$store.state.selectTag == "string") {
         API.photos({ tag: this.$store.state.selectTag, page: newVal }).then(
           (photos) => {
+            this.$store.dispatch("setApiLoading", false);
             this.photos = photos;
             if (this.photos.length === 0) {
               this.$store.commit("setTotalPage", this.page);
@@ -118,6 +137,7 @@ export default {
               tag: this.$store.state.selectTag[i],
               page: newVal,
             }).then((photos) => {
+              this.$store.dispatch("setApiLoading", false);
               this.photos = photos;
               if (this.photos.length === 0) {
                 this.$store.commit("setTotalPage", this.page);
@@ -130,6 +150,7 @@ export default {
               tag: this.$store.state.selectTag[i],
               page: newVal,
             }).then((photos) => {
+              this.$store.dispatch("setApiLoading", false);
               let j = 0;
               for (j = 0; j < photos.length; j++) {
                 if (
@@ -153,13 +174,18 @@ export default {
 
   mounted() {
     let i, timer;
-    const defaultTag = "dataunion - (1)";
+    const defaultTag = "dataunion - 1";
+    this.$store.dispatch("setApiLoading", true);
 
-    if (!this.$store.state.selectTag || this.$store.state.selectTag?.length === 0) {
+    if (
+      !this.$store.state.selectTag ||
+      this.$store.state.selectTag?.length === 0
+    ) {
       this.$store.dispatch("setSelectTag", defaultTag);
     } else {
       if (typeof this.$store.state.selectTag == "string") {
         API.photos({ tag: this.$store.state.selectTag }).then((photos) => {
+          this.$store.dispatch("setApiLoading", false);
           this.photos = photos;
           if (this.photos.length === 0) {
             this.$store.commit("setTotalPage", this.page);
@@ -176,6 +202,7 @@ export default {
           if (i == 0) {
             API.photos({ tag: this.$store.state.selectTag[i] }).then(
               (photos) => {
+            this.$store.dispatch("setApiLoading", false);
                 this.photos = photos;
                 if (this.photos.length === 0) {
                   this.$store.commit("setTotalPage", this.page);
@@ -187,6 +214,7 @@ export default {
           } else {
             API.photos({ tag: this.$store.state.selectTag[i] }).then(
               (photos) => {
+                this.$store.dispatch("setApiLoading", false);
                 let j = 0;
                 for (j = 0; j < photos.length; j++) {
                   if (
