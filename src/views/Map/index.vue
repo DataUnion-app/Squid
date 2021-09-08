@@ -146,68 +146,9 @@
             </div>
             </div>
         </div>
-        <div class="flex image-detail-right">
-            <div class="relative w-full">
-            <div class="comment">
-                <div
-                class="
-                    w-full
-                    h-full
-                    absolute
-                    p-2
-                    object-contain
-                    pl-4
-                    pr-2
-                    comment-item
-                "
-                >
-                <vs-table>
-                    <template #thead>
-                    <vs-tr>
-                        <vs-th> Tag Name </vs-th>
-                        <vs-th> Upvotes </vs-th>
-                        <vs-th> Downvotes </vs-th>
-                        <vs-th> Boxes </vs-th>
-                    </vs-tr>
-                    </template>
-                    <template #tbody>
-                    <p v-show="!tagsLoaded"></p>
-                    <vs-tr :key="i" v-for="(tr, i) in tags" :data="tr">
-                        <vs-td>
-                        {{ tr.tag }}
-                        </vs-td>
-                        <vs-td>
-                        {{ tr.up_votes }}
-                        </vs-td>
-                        <vs-td>
-                        {{ tr.down_votes }}
-                        </vs-td>
-                        <vs-td>
-                        {{
-                            groupedImages[tr.tag]
-                            ? groupedImages[tr.tag].length
-                            : 0
-                        }}
-                        </vs-td>
-                    </vs-tr>
-                    </template>
-                </vs-table>
-                </div>
-            </div>
-            </div>
-            <!-- <div class="p-3 flex justify-center">
-            <vs-input v-model="comment" placeholder="Input your feedback" />
-            <vs-button @click="postComment"> Comment </vs-button>
-            </div> -->
-        </div>
-        </div>
-        <template #footer>
-        <div class="flex flex-col rounded-xl border-gray-500 border mt-4 p-3">
-            <div class="coming-soon">Sales, Price & Usage Information: COMING SOON</div>
-        </div>
-        </template>
-  </vs-dialog>
-
+      </div>
+      <template #footer> </template>
+    </vs-dialog>
     <vs-dialog v-model="showDataSet">
       <template #header>
         <h1 class="text-3xl not-margin">Add to Data Set</h1>

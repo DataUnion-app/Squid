@@ -286,7 +286,7 @@
                     </vs-tr>
                   </template>
                   <template #tbody>
-                    <p v-show="!tags.length"></p>
+                    <p v-show="!tagsLoaded"></p>
                     <vs-tr :key="i" v-for="(tr, i) in tags" :data="tr">
                       <vs-td>
                         {{ tr.tag }}
@@ -325,6 +325,7 @@
     
   </div>
 </template>
+
 <style>
 .vs-select__options {
   z-index: 9999999 !important;
@@ -365,6 +366,10 @@
   border-left: 2px solid grey;
   border-bottom: 2px solid grey;
   animation: rotate--spinner 1.6s infinite;
+}
+
+.flex {
+  flex: none !important;
 }
 
 @keyframes rotate--spinner {
@@ -408,6 +413,7 @@ export default {
       image: null,
       showDetails: false,
       showDataSet: false,
+      tagsLoaded: false,
       option: false,
       tags: [],
       groupedImages: [],
@@ -420,7 +426,6 @@ export default {
       addDataDetailTooltip: false,
       removeImage: false,
       removeImageDetail: false,
-      tagsLoaded: false,
       styleObject: [],
     };
   },
@@ -519,6 +524,7 @@ export default {
         this.groupedImages = this.groupBy(images, "tag");
       });
       this.showDetails = true;
+      this.tagsLoaded = true;
     },
     showDataDialog() {
       this.refreshDataSet();

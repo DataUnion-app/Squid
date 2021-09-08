@@ -25,6 +25,7 @@ const store = new Vuex.Store({
     page: 1,
     totalPage: 20,
     pageLoading: true,
+    apiLoading: false,
     select_all: false,
   },
   actions: {
@@ -92,8 +93,11 @@ const store = new Vuex.Store({
         }
       });
     },
-    setPageLoading({commit}, v) {
-      commit('set', ['pageLoading', v])
+    setPageLoading({ commit }, v) {
+      commit('set', ['pageLoading', v]);
+    },
+    setApiLoading({ commit }, v) {
+      commit('set', ['apiLoading', v]);
     },
     setClickImage({ commit }, hash) {
       commit('setImage', ['click_images', hash])
