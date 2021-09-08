@@ -324,6 +324,7 @@
     </vs-dialog>
   </div>
 </template>
+
 <style>
 .vs-select__options {
   z-index: 9999999 !important;
@@ -364,6 +365,10 @@
   border-left: 2px solid grey;
   border-bottom: 2px solid grey;
   animation: rotate--spinner 1.6s infinite;
+}
+
+.flex {
+  flex: none !important;
 }
 
 @keyframes rotate--spinner {
