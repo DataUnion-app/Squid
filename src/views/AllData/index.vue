@@ -113,7 +113,6 @@ export default {
     page(newVal, oldVal) {
       let i, timer;
       this.$store.dispatch("setApiLoading", true);
-      console.log("tag type", this.$store.state.selectTag, typeof this.$store.state.selectTag);
       if (typeof this.$store.state.selectTag == "string") {
         API.photos({ tag: this.$store.state.selectTag, page: newVal }).then(
           (photos) => {
