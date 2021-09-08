@@ -54,15 +54,12 @@ export default {
     ...mapState(["page", "totalPage"]),
   },
   methods: {
-    log (message) {
-      this.$log(`${new Date().toLocaleTimeString()} -- ${message}`)
-    },
-    ready () { this.log('ready') },
-    ended () { this.log('ended') },
-    playing () { this.log('playing') },
-    paused () { this.log('paused') },
-    buffering () { this.log('buffering') },
-    qued () { this.log('qued') }    
+    ready () {  },
+    ended () {  },
+    playing () {  },
+    paused () {  },
+    buffering () {  },
+    qued () {  }    
   },
   mounted() {
   }

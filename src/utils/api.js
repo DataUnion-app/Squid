@@ -268,7 +268,7 @@ class API {
       return Promise.resolve([]);
     }
 
-    const myTag = tag?.toString().split(' - ')[0];
+    const myTag = tag?.toString().split(' - (')[0];
     page = page || 1;
 
     return this.call('api/v1/search-images', 'POST', {
