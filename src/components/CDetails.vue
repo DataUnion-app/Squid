@@ -200,17 +200,75 @@
   </vs-dialog>
 </template>
 
+<style>
+.vs-select__options {
+  z-index: 9999999 !important;
+}
+.vs-checkbox-con {
+  width: 32px !important;
+  height: 32px !important;
+}
+.vs-table table {
+  min-width: 0% !important;
+}
+.vs-table-content {
+  height: 100%;
+  overflow: auto;
+  border: 1px solid gray;
+}
+.vs-card {
+  max-width: auto;
+}
+.vs-table tr {
+  border-bottom: 1px;
+  border-color: rgba(229, 231, 235, var(--tw-border-opacity));
+  border-style: solid;
+}
+.smt-spinner-circle {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: calc(50% - 25px);
+  top: calc(40% - 25px);
+}
+.smt-spinner {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
+  border-top: 2px solid grey;
+  border-left: 2px solid grey;
+  border-bottom: 2px solid grey;
+  animation: rotate--spinner 1.6s infinite;
+}
+
+.flex {
+  flex: none !important;
+}
+
+@keyframes rotate--spinner {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
+
+
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 import API from "@/utils/api";
 
 export default {
   name: "CDetails",
   props: {
-    hash: String
+    hash: String,
+    location: String
   },
   computed: {
-
+    ...mapGetters(["imagebyId", "getImageWorld"]),
   },
   watch: {
 
@@ -230,7 +288,7 @@ export default {
   },
   methods: {
     ...mapActions(["getImage", "getTags"]),
-    details() {
+    detailsDataGrid() {
       this.getImage(this.hash).then((image) => {
         this.image = image;
       });
@@ -271,11 +329,22 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-      API.imageTag(this.hash, "BoundingBox").then((images) => {
+      API.imageGeoloc(this.hash, "BoundingBox").then((images) => {
         this.groupedImages = this.groupBy(images, "tag");
       });
       this.showDetails = true;
       this.tagsLoaded = true;
+    },
+    detailsMap(hash) {
+      this.hash = hash;
+      this.refreshComments();
+      this.getImage(this.hash).then((image) => {
+        this.image = image;
+      });
+      this.getTags(this.hash).then((tags) => {
+        this.tags = tags;
+        this.showDetails = true;
+      });
     },
     preview() {
       this.$viewerApi({
@@ -308,7 +377,63 @@ export default {
     }
   },
   mounted() {
-    this.details();
-  }
+    if (location === 'map') {
+      let imageHash = this.getImageWorld;
+      API.myImages({ page: 1 }).then((photos) => {
+        let i,
+          length = photos.length;
+        let tempImage = [];
+        for (i = 0; i < length; i++) tempImage.push(photos[i].hash);
+        API.imageGeoloc(tempImage, "GeoLocation").then((images) => {
+          this.markers = images;
+          let marker;
+          for (let i = 0; i < this.markers.length; i++) {
+            if (this.markers[i].image_id == imageHash) {
+              map.flyTo({
+                center: [
+                  this.markers[i].value.longitude,
+                  this.markers[i].value.latitude,
+                ],
+              });
+            } else {
+              map.flyTo({
+                center: [
+                  this.markers[0].value.longitude,
+                  this.markers[0].value.latitude,
+                ],
+              });
+              this.$store.dispatch("setImageWorld", "");
+            }
+            const markerItem = this.markers[i];
+            const markerIcon = document.createElement("img");
+            markerIcon.style.width = "50px";
+            markerIcon.style.height = "50px";
+            markerIcon.style.borderRadius = "50%";
+            markerIcon.style.backgroundSize = "cover";
+            markerIcon.src = this.imagebyId(markerItem.image_id);
+            markerIcon.style.cursor = "pointer";
+            markerIcon.addEventListener("click", () => {
+              this.detailsMap(markerItem.image_id);
+              map.flyTo({
+                center: [markerItem.value.longitude, markerItem.value.latitude],
+              });
+            });
+            marker = new window.maplibregl.Marker(markerIcon)
+              .setLngLat([
+                this.markers[i].value.longitude,
+                this.markers[i].value.latitude,
+              ])
+              .addTo(map);
+          }
+        });
+      });
+      const map = new window.maplibregl.Map({
+        container: "map", // container id
+        style: `https://api.maptiler.com/maps/streets/style.json?key=${process.env.VUE_APP_KEY}`, // style URL
+        center: [-38, -40], // starting position [lng, lat]
+        zoom: 3, // starting zoom
+      });
+    }
+  },
 }
 </script>

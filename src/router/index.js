@@ -65,7 +65,14 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (!Auth.token() && to.name != 'Welcome') {
+  // ts
+  // console.log(`firing beforeEach`);
+  // console.log(`Auth.token() = `, Auth.token());
+  // console.log(`Auth.loaded() = `, Auth.loaded());
+  // console.log(Auth.loaded() === false);
+  // console.log(Auth.loaded() === false && Auth.loaded() !== undefined);
+
+  if (Auth.loaded() === false && Auth.loading !== undefined && !Auth.token() && to.name != 'Welcome') {
     next({ name: 'Welcome' });
     return;
   }

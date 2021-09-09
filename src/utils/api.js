@@ -82,12 +82,14 @@ class API {
       });
   }
 
-  imageTag = (id, tagType) => {
+  imageGeoloc = (id, tagType) => {
     return this.call(`api/v1/metadata/query`, 'POST', {
       image_ids: id,
-      annotations: [tagType] //['BoundingBox', 'GeoLocation']
+      annotations: [tagType] // ['BoundingBox', 'GeoLocation']
     })
       .then(response => {
+        console.log(`metadata/query response: `);
+        console.log(response);
         return response.result[tagType];
       }).catch(err => {
         return Promise.reject(err);

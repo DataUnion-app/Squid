@@ -1,184 +1,12 @@
 <template>
   <div class="">
     <div class="map-size overflow-hidden" id="map"></div>
-    
-    <!-- <CDetails
-      v-if='hash !== "" && hash !== undefined' 
+    <CDetails
+      v-if='hash !== "" && hash !== undefined && photos !== [] && photos !== undefined' 
       :hash="hash"
-      :
-    /> -->
-
-      <vs-dialog 
-        v-model="showDetails"
-        @v-on:close="handleClose"
-        >
-        <template #header>
-        <h1 class="text-3xl not-margin">Details</h1>
-        </template>
-
-        <div class="flex position-relative">
-        <div v-show="!tagsLoaded" class="smt-spinner-circle">
-            <div class="smt-spinner"></div>
-        </div>
-        <div class="image-detail-left">
-            <div class="relative w-full">
-            <vs-card>
-                <template #img>
-                <img
-                    v-if="image"
-                    class="image-detail"
-                    :src="image"
-                    @click="preview"
-                    alt=""
-                />
-                </template>
-                <template #interactions>
-                <vs-tooltip
-                    ref="tooltipdetail"
-                    v-if="!flag"
-                    bottom
-                    shadow
-                    not-hover
-                    v-model="addDataDetailTooltip"
-                >
-                    <vs-button danger icon @click="showDataDetailTooltip">
-                    <i class="bx bx-heart"></i>
-                    </vs-button>
-                    
-                    <!-- SELECT DATASET -->
-                    <template #tooltip>
-                    <div
-                        class="content-tooltip"
-                        v-click-outside="onTooltipOutside"
-                    >
-                        <div v-if="datas.length > 0">
-                        <h4>Please select a Data Set</h4>
-                        <vs-select
-                            class="vs-body"
-                            placeholder="Select a Data Set"
-                            v-model="data"
-                        >
-                            <vs-option
-                            v-for="item in datas"
-                            :key="item.name"
-                            :label="item.name"
-                            :value="item.name"
-                            >
-                            {{ item.name }}
-                            </vs-option>
-                        </vs-select>
-                        <!-- <p>Are you sure you want to add this image in that Data Set?</p> -->
-                        <footer class="flex">
-                            <vs-button @click="addDataSet" danger block>
-                            Yes
-                            </vs-button>
-                            <vs-button
-                            @click="addDataDetailTooltip = false"
-                            transparent
-                            dark
-                            block
-                            >
-                            No
-                            </vs-button>
-                        </footer>
-                        </div>
-                        <div v-else class="p-3 flex justify-center">
-                        You haven't created any datasets yet. Please create one.
-                        <footer class="flex">
-                            <vs-button @click="connectSidebar">
-                            Create
-                            </vs-button>
-                        </footer>
-                        </div>
-                    </div>
-                    </template>
-                    <!-- SELECT DATASET -->
-                
-                </vs-tooltip>
-                <vs-tooltip
-                    v-else
-                    bottom
-                    shadow
-                    not-hover
-                    v-model="removeImageDetail"
-                >
-                    <vs-button
-                    danger
-                    icon
-                    @click="removeImageDetail = !removeImageDetail"
-                    >
-                    <i class="bx bx-trash"></i>
-                    </vs-button>
-                    <template #tooltip>
-                    <div class="content-tooltip">
-                        <h4 class="center">Confirm</h4>
-                        <p>Are you sure you want to remove this image?</p>
-                        <footer class="flex">
-                        <vs-button @click="removeIconClicked" danger block>
-                            Remove
-                        </vs-button>
-                        <vs-button
-                            @click="removeImageDetail = false"
-                            transparent
-                            dark
-                            block
-                        >
-                            Cancel
-                        </vs-button>
-                        </footer>
-                    </div>
-                    </template>
-                </vs-tooltip>
-
-                <vs-button danger icon @click="goWorldMap">
-                    <i class="bx bx-world"></i>
-                </vs-button>
-                </template>
-            </vs-card>
-            </div>
-            <div class="mt-3 h-40 overflow-auto">
-            <div class="mt-3 flex flex-wrap">
-                <div v-for="(tag, index) in tags" :key="index" class="flex">
-                <vs-button v-bind:style="styleObject[index]">
-                    {{ tag.tag }}
-                </vs-button>
-                </div>
-            </div>
-            </div>
-        </div>
-      </div>
-      <template #footer> </template>
-    </vs-dialog>
-    <vs-dialog v-model="showDataSet">
-      <template #header>
-        <h1 class="text-3xl not-margin">Add to Data Set</h1>
-      </template>
-
-      <!-- PLEASE CREATE DATASET -->
-      <div class="flex">
-        <div class="flex flex-col add-dialog">
-          <div v-if="datas.length > 0" class="p-3 flex justify-center">
-            <vs-select placeholder="Select a Data Set" v-model="data">
-              <vs-option
-                v-for="item in datas"
-                :key="item.name"
-                :label="item.name"
-                :value="item.name"
-              >
-                {{ item.name }}
-              </vs-option>
-            </vs-select>
-            <vs-button @click="addDataSet"> Save </vs-button>
-          </div>
-          <div v-else class="p-3 flex justify-center">
-            You haven't created any datasets yet. Please create one.
-            <vs-button @click="connectSidebar"> Create </vs-button>
-          </div>
-        </div>
-      </div>
-      <!-- PLEASE CREATE DATASET -->
-      <template #footer> </template>
-    </vs-dialog>
+      :photos="photos"
+      :location="location"
+    />
   </div>
 </template>
 <style>
@@ -199,6 +27,8 @@ export default {
     return {
       // default to Montreal to keep it simple
       // change this to whatever makes sense
+      location: 'map',
+      photos: [],
       showDetails: false,
       showDataSet: false,
       tags: [],
@@ -216,12 +46,13 @@ export default {
   mounted() {
     let imageHash = this.getImageWorld;
     API.myImages({ page: 1 }).then((photos) => {
-      let i,
-        length = photos.length;
+      this.photos = photos;
+      let i, length = photos.length;
       let tempImage = [];
       for (i = 0; i < length; i++) tempImage.push(photos[i].hash);
 
-      API.imageTag(tempImage, "GeoLocation").then((images) => {
+      //
+      API.imageGeoloc(tempImage, "GeoLocation").then((images) => {
         this.markers = images;
         let marker;
 
@@ -243,6 +74,7 @@ export default {
             this.$store.dispatch("setImageWorld", "");
           }
 
+          // Create image on world map
           const markerItem = this.markers[i];
           const markerIcon = document.createElement("img");
           markerIcon.style.width = "50px";
@@ -252,8 +84,9 @@ export default {
           markerIcon.src = this.imagebyId(markerItem.image_id);
           markerIcon.style.cursor = "pointer";
 
+          // add event listener to the image
           markerIcon.addEventListener("click", () => {
-            this.details(markerItem.image_id);
+            this.detailsMap(markerItem.image_id);
             map.flyTo({
               center: [markerItem.value.longitude, markerItem.value.latitude],
             });
@@ -293,7 +126,18 @@ export default {
     avatar(id) {
       return utils.blockies(id);
     },
-    details() {
+    detailsMap(hash) {
+      this.hash = hash;
+      this.refreshComments();
+      this.getImage(this.hash).then((image) => {
+        this.image = image;
+      });
+      this.getTags(this.hash).then((tags) => {
+        this.tags = tags;
+        this.showDetails = true;
+      });
+    },
+    detailsDataGrid() {
       this.getImage(this.hash).then((image) => {
         this.image = image;
       });
@@ -334,7 +178,7 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-      API.imageTag(this.hash, "BoundingBox").then((images) => {
+      API.imageGeoloc(this.hash, "BoundingBox").then((images) => {
         this.groupedImages = this.groupBy(images, "tag");
       });
       this.showDetails = true;
