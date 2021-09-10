@@ -57,13 +57,14 @@ export default {
   },
   methods: {
     ...mapActions(["initClickImage", "setPage"]),
-    async fetchPhotoHashs(cTags) {
+    async fetchPhotoHashs(cTags, page=1) {
       this.$store.dispatch("setApiLoading", true);
       let result = [];
       const photosResult = await Promise.all(
         cTags.map((t) =>
           API.photos({
             tag: t,
+            page
           })
         )
       );
@@ -86,13 +87,13 @@ export default {
   data() {
     return {
       photos: [],
+      realPage: 1,
       totalPhotos: []
     };
   },
   watch: {
     async selectTag(newVal) {
       if (newVal === undefined) return;
-      console.log("called again")
       const selectedTags = this.getSelectedTags();
       this.totalPhotos = await this.fetchPhotoHashs(selectedTags);
 
@@ -105,11 +106,21 @@ export default {
         this.page * this.pageCount
       );
     },
-    page(newVal, oldVal) {
-      // ts
-      // console.log('new page num', newVal);
-      // console.log('photos', this.photos);
+    async page(newVal) {
       this.$store.dispatch("setPage", newVal || 1);
+
+      if (Math.ceil(this.totalPhotos.length / this.pageCount) <= newVal) {
+        this.realPage ++;
+        console.log('Real Page', this.realPage);
+        const selectedTags = this.getSelectedTags();
+        const newPhotos = await this.fetchPhotoHashs(selectedTags, this.realPage);
+        this.totalPhotos.push(...newPhotos);
+        this.$store.commit(
+          "setTotalPage",
+          Math.ceil(this.totalPhotos.length / this.pageCount) || 1
+        );
+      }
+
       this.photos = this.totalPhotos.slice(
         (this.page - 1) * this.pageCount,
         this.page * this.pageCount
