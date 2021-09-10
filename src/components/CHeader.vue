@@ -36,11 +36,8 @@
                 v-model="tag"
                 :options="tagCountKeys"
                 :limit="2"
-                selectLabel=""
-                selectGroupLabel=""
-                selectedLabel=""
-                deselectLabel=""
-                deselectGroupLabel=""
+                :show-labels="true"
+                internalSearch
                 multiple
                 style="z-index: 9;"
               ></multiselect>
@@ -181,7 +178,7 @@ export default {
     this.$store.dispatch("selectAll", false);
     setTimeout(() => {
       this.$store.dispatch("setPageLoading", false);
-    }, 4000);
+    }, 2000);
   },
 };
 </script>
