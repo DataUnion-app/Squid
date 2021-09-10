@@ -1,7 +1,9 @@
+<!-- DETAILS POPUP: Used on MyData, Data and Map -->
+<!-- Functionality is very different on these pages. -->
 <template>
   <vs-dialog 
     v-model="showDetails"
-    @v-on:close="handleClose"
+    v-on:close="handleClose"
   >
     <template #header>
       <h1 class="text-3xl not-margin">Details</h1>
@@ -22,7 +24,11 @@
                 @click="preview"
                 alt=""
               />
+              <div v-else class="smt-spinner-circle">
+                <div class="smt-spinner"></div>
+              </div>
             </template>
+
             <template #interactions>
               <vs-tooltip
                 ref="tooltipdetail"
@@ -86,6 +92,7 @@
                 <!-- SELECT DATASET -->
               
               </vs-tooltip>
+
               <vs-tooltip
                 v-else
                 bottom
@@ -265,21 +272,33 @@ export default {
   name: "CDetails",
   props: {
     hash: String,
-    location: String
+    location: String,          // 'map' or 'data'
+    showDetails: Boolean
   },
   computed: {
     ...mapGetters(["imagebyId", "getImageWorld"]),
   },
   watch: {
-
+    showDetails: function (newValue, oldValue) {
+      // ts
+      // console.log(`showDetails newValue = ${newValue}`);
+      // console.log(`showDetails oldValue = ${oldValue}`);
+      if (newValue) {
+        this.details();
+      }
+    },
+    // ts
+    // hash: function (newValue, oldValue) {
+    //   console.log(`hash newValue = ${newValue}`);
+    // }
   },
   data() {
     return {
+      flag: false,
       tags: [],
       image: '',
       groupedImages: [],
       styleObject: [],
-      showDetails: false,
       addDataDetailTooltip: false,
       datas: [],
       data: "",
@@ -288,10 +307,13 @@ export default {
   },
   methods: {
     ...mapActions(["getImage", "getTags"]),
-    detailsDataGrid() {
+    details() {
+      // Gets individual image (larger size) for the clicked thumbnail.
       this.getImage(this.hash).then((image) => {
         this.image = image;
       });
+      
+      // Gets tags pertaining to the clicked thumbnail.
       this.getTags(this.hash)
         .then((tags) => {
           this.tags = tags;
@@ -324,29 +346,17 @@ export default {
                 color: "white",
               };
             }
-          }
+          }        
         })
         .catch((error) => {
           console.error(error);
         });
-      API.imageGeoloc(this.hash, "BoundingBox").then((images) => {
-        this.groupedImages = this.groupBy(images, "tag");
-      });
-      this.showDetails = true;
-      this.tagsLoaded = true;
-    },
-    detailsMap(hash) {
-      this.hash = hash;
-      this.refreshComments();
-      this.getImage(this.hash).then((image) => {
-        this.image = image;
-      });
-      this.getTags(this.hash).then((tags) => {
-        this.tags = tags;
-        this.showDetails = true;
-      });
+
+      this.updateShowDetails(true);
+      this.updateTagsLoaded(true);
     },
     preview() {
+      // console.log(`CDetails preview CLICKED!`);
       this.$viewerApi({
         images: [this.image],
       });
@@ -358,6 +368,9 @@ export default {
     addDataSet() {
       if (this.data !== "") {
         API.saveData({ name: this.data, hash: this.hash }).then((flag) => {
+          // ts
+          // console.log(flag)
+          this.flag = flag;
           if (flag) {
             this.openNotificationSucess("top-right", "success");
           } else {
@@ -372,68 +385,29 @@ export default {
       this.showDataSet = false;
       this.$root.$refs.Sidebar.createData();
     },
+    onTooltipOutside() {
+
+    },
+    goWorldMap() {
+      this.$store.dispatch("setImageWorld", this.hash);
+      this.$router.push({ name: "Map" }).catch(() => {});
+    },
     handleClose () {
-      this.showDetails = false;
+      this.$emit(`closedPopup`);
+    },
+    updateShowDetails(newDetails) {
+      this.showDetails = newDetails;
+    },
+    updateHash(newHash) {
+      this.hash = newHash;
+    },
+    updateTagsLoaded(newTagsLoaded) {
+      this.tagsLoaded = newTagsLoaded;
     }
   },
   mounted() {
-    if (location === 'map') {
-      let imageHash = this.getImageWorld;
-      API.myImages({ page: 1 }, 'CDetails').then((photos) => {
-        let i,
-          length = photos.length;
-        let tempImage = [];
-        for (i = 0; i < length; i++) tempImage.push(photos[i].hash);
-        API.imageGeoloc(tempImage, "GeoLocation").then((images) => {
-          this.markers = images;
-          let marker;
-          for (let i = 0; i < this.markers.length; i++) {
-            if (this.markers[i].image_id == imageHash) {
-              map.flyTo({
-                center: [
-                  this.markers[i].value.longitude,
-                  this.markers[i].value.latitude,
-                ],
-              });
-            } else {
-              map.flyTo({
-                center: [
-                  this.markers[0].value.longitude,
-                  this.markers[0].value.latitude,
-                ],
-              });
-              this.$store.dispatch("setImageWorld", "");
-            }
-            const markerItem = this.markers[i];
-            const markerIcon = document.createElement("img");
-            markerIcon.style.width = "50px";
-            markerIcon.style.height = "50px";
-            markerIcon.style.borderRadius = "50%";
-            markerIcon.style.backgroundSize = "cover";
-            markerIcon.src = this.imagebyId(markerItem.image_id);
-            markerIcon.style.cursor = "pointer";
-            markerIcon.addEventListener("click", () => {
-              this.detailsMap(markerItem.image_id);
-              map.flyTo({
-                center: [markerItem.value.longitude, markerItem.value.latitude],
-              });
-            });
-            marker = new window.maplibregl.Marker(markerIcon)
-              .setLngLat([
-                this.markers[i].value.longitude,
-                this.markers[i].value.latitude,
-              ])
-              .addTo(map);
-          }
-        });
-      });
-      const map = new window.maplibregl.Map({
-        container: "map", // container id
-        style: `https://api.maptiler.com/maps/streets/style.json?key=${process.env.VUE_APP_KEY}`, // style URL
-        center: [-38, -40], // starting position [lng, lat]
-        zoom: 3, // starting zoom
-      });
-    }
+    let imageHash = this.getImageWorld;
+    this.updateHash(imageHash);
   },
 }
 </script>

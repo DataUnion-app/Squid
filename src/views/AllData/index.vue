@@ -106,8 +106,9 @@ export default {
       );
     },
     page(newVal, oldVal) {
-      console.log('new page num', newVal);
-      console.log('photos', this.photos);
+      // ts
+      // console.log('new page num', newVal);
+      // console.log('photos', this.photos);
       this.$store.dispatch("setPage", newVal || 1);
       this.photos = this.totalPhotos.slice(
         (this.page - 1) * this.pageCount,
@@ -128,7 +129,8 @@ export default {
     } else {
       const selectedTags = this.getSelectedTags();
       this.totalPhotos = await this.fetchPhotoHashs(selectedTags);
-      console.log("photosResult", this.totalPhotos);
+      // ts
+      // console.log("photosResult", this.totalPhotos);
       this.$store.commit(
         "setTotalPage",
         Math.ceil(this.totalPhotos.length / this.pageCount) || 1

@@ -5,7 +5,9 @@
       v-if='hash !== "" && hash !== undefined && photos !== [] && photos !== undefined' 
       :hash="hash"
       :photos="photos"
+      :showDetails="showDetails"
       :location="location"
+      @closedPopup="closedPopup"
     />
   </div>
 </template>
@@ -29,6 +31,11 @@ export default {
       // change this to whatever makes sense
       location: 'map',
       photos: [],
+
+      // showDetails 
+      // needs to change to True inside CDetails to activate the popup. (Parent -> Child communication)
+      // needs to change back to False inside CDetails when popup is closed. (Child -> Parent communication)
+
       showDetails: false,
       showDataSet: false,
       tags: [],
@@ -43,8 +50,15 @@ export default {
       addDataTooltip: false,
     };
   },
+  watch: {
+    // ts
+    // hash: function (newVal, oldVal) {
+    //   console.log(`=== [WELCOME index.vue] hash changed ! ===`);
+    //   console.log(`[WELCOME index.vue] hash newVal = ${newVal}`);
+    // }
+  },
   mounted() {
-    let imageHash = this.getImageWorld;
+    // Maps ALL the thumbnails to the icons on the map.
     API.myImages({ page: 1 }, 'map').then((photos) => {
       this.photos = photos;
       let i, length = photos.length;
@@ -57,25 +71,26 @@ export default {
         let marker;
 
         for (let i = 0; i < this.markers.length; i++) {
-          if (this.markers[i].image_id == imageHash) {
-            map.flyTo({
-              center: [
-                this.markers[i].value.longitude,
-                this.markers[i].value.latitude,
-              ],
-            });
+          if (this.markers[i].image_id == this.hash) {
+            // map.flyTo({
+            //   center: [
+            //     this.markers[i].value.longitude,
+            //     this.markers[i].value.latitude,
+            //   ],
+            // });
           } else {
-            map.flyTo({
-              center: [
-                this.markers[0].value.longitude,
-                this.markers[0].value.latitude,
-              ],
-            });
+            // map.flyTo({
+            //   center: [
+            //     this.markers[0].value.longitude,
+            //     this.markers[0].value.latitude,
+            //   ],
+            // });
             this.$store.dispatch("setImageWorld", "");
           }
 
           // Create image on world map
           const markerItem = this.markers[i];
+          
           const markerIcon = document.createElement("img");
           markerIcon.style.width = "50px";
           markerIcon.style.height = "50px";
@@ -86,10 +101,16 @@ export default {
 
           // add event listener to the image
           markerIcon.addEventListener("click", () => {
-            this.detailsMap(markerItem.image_id);
-            map.flyTo({
-              center: [markerItem.value.longitude, markerItem.value.latitude],
-            });
+            // ts 
+            // console.log(`=== [WELCOME index.vue] CLICKED! ===\nimage_id = ${markerItem.image_id}`);
+            
+            this.hash = markerItem.image_id;
+            this.updateShowDetails(true);
+            this.detailsMap();
+            
+            // map.flyTo({
+            //   center: [markerItem.value.longitude, markerItem.value.latitude],
+            // });
           });
 
           marker = new window.maplibregl.Marker(markerIcon)
@@ -114,6 +135,11 @@ export default {
   },
   methods: {
     ...mapActions(["getImage", "getTags"]),
+    closedPopup() {
+      // ts
+      // console.log(`[WELCOME index.vue] closedPopup() called`);
+      this.updateShowDetails(false);
+    },
     onTooltipOutside(e) {
       if (
         this.addDataTooltip &&
@@ -126,63 +152,15 @@ export default {
     avatar(id) {
       return utils.blockies(id);
     },
-    detailsMap(hash) {
-      this.hash = hash;
+    detailsMap() {
       this.refreshComments();
       this.getImage(this.hash).then((image) => {
         this.image = image;
       });
       this.getTags(this.hash).then((tags) => {
         this.tags = tags;
-        this.showDetails = true;
+        this.updateShowDetails(true);
       });
-    },
-    detailsDataGrid() {
-      this.getImage(this.hash).then((image) => {
-        this.image = image;
-      });
-      this.getTags(this.hash)
-        .then((tags) => {
-          this.tags = tags;
-          let i;
-          this.color_rank = [];
-          let up_max = 0,
-            down_max = 0;
-          for (i = 0; i < tags.length; i++) {
-            if (up_max < tags[i].up_votes) up_max = tags[i].up_votes;
-            if (down_max < tags[i].down_votes) down_max = tags[i].down_votes;
-          }
-
-          for (i = 0; i < tags.length; i++) {
-            if (tags[i].up_votes > tags[i].down_votes) {
-              let d_green = 128 + (64 / up_max) * (up_max - tags[i].up_votes);
-              this.styleObject[i] = {
-                backgroundColor: `rgb(0, ${d_green}, 0)`,
-                color: "white",
-              };
-            } else if (tags[i].up_votes == tags[i].down_votes) {
-              this.styleObject[i] = {
-                backgroundColor: "rgb(204, 204, 0)",
-                color: "white",
-              };
-            } else {
-              let d_red =
-                128 + (64 / down_max) * (down_max - tags[i].down_votes);
-              this.styleObject[i] = {
-                backgroundColor: `rgb(${d_red}, 0, 0)`,
-                color: "white",
-              };
-            }
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      API.imageGeoloc(this.hash, "BoundingBox").then((images) => {
-        this.groupedImages = this.groupBy(images, "tag");
-      });
-      this.showDetails = true;
-      this.tagsLoaded = true;
     },
     isUp(tag) {
       const down = tag.down_votes || tag.down_Votes;
@@ -251,6 +229,9 @@ export default {
         title: "Failed",
         text: `Photo already exists in this dataset.`,
       });
+    },
+    updateShowDetails(newShowDetails) {
+      this.showDetails = newShowDetails;
     },
   },
 

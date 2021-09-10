@@ -1,5 +1,5 @@
 // export const BASE_URL = 'http://206.81.26.71:8081';
-export const BASE_URL = 'https://alpha.dataunion.app:4430';
+export const BASE_URL = 'https://crab.dataunion.app';
 // export const BASE_URL = 'https://dev.dataunion.app:8082';
 import Auth from './auth';
 import VM from '../main';
@@ -92,8 +92,9 @@ class API {
       annotations: [tagType] // ['BoundingBox', 'GeoLocation']
     })
       .then(response => {
-        console.log(`metadata/query response: `);
-        console.log(response);
+        // ts
+        // console.log(`metadata/query response: `);
+        // console.log(response);
         return response.result[tagType];
       }).catch(err => {
         return Promise.reject(err);
@@ -134,7 +135,8 @@ class API {
     // ]);
 
     // ts
-    console.log(`calling myImages from ${from}`)
+    // console.log(`calling myImages from ${from}`)
+    
     if (Auth.token() !== null) return this.call(`api/v1/my-images?page=${page}`, 'GET')
       .then(async response => {
         const result = [];
