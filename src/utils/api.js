@@ -1,5 +1,6 @@
 // export const BASE_URL = 'http://206.81.26.71:8081';
-export const BASE_URL = 'https://alpha.dataunion.app:4430';
+// export const BASE_URL = 'https://alpha.dataunion.app:4430';
+export const BASE_URL = 'https://crab.dataunion.app/';
 // export const BASE_URL = 'https://dev.dataunion.app:8082';
 import Auth from './auth';
 import VM from '../main';
