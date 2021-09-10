@@ -278,7 +278,7 @@ class API {
       return Promise.resolve([]);
     }
 
-    const myTag = tag?.toString().split(' - ')[0];
+    const myTag = tag?.toString().split(' - (')[0];
     page = page || 1;
 
     return this.call('api/v1/search-images', 'POST', {
@@ -286,10 +286,9 @@ class API {
       page,
       tag: myTag
     }).then((verifiableResult) => {
-      console.log("verifiableResponse", verifiableResult);
       const result = [];
 
-      verifiableResult.result.slice(0, 20).map((hash) => {
+      verifiableResult.result.map((hash) => {
         result.push({ hash, status: status || "VERIFIABLE" });
       });
 
@@ -299,8 +298,7 @@ class API {
           page,
           tag: myTag
         }).then((verifiedResult) => {
-          console.log('VERIFIED', verifiedResult)
-          verifiedResult.result.slice(0, 20).map((item) => {
+          verifiedResult.result.map((item) => {
             result.push({ hash: item, status: "VERIFIED" });
           });
         }).catch((err) => console.log(err));
@@ -314,7 +312,6 @@ class API {
   tags = (start_date, end_date) => {
     return this.call(`/api/v1/stats/overall-tags?start_date=${start_date}&end_date=${end_date}`, 'GET')
       .then(response => {
-        // console.log('tags: ', response.result);
         const list_of_removed_tags = ['women', 'woman', 'MAN', 'WOMEN', 'WOMAN',
          'a woman', 'asian woman', 'asian women', 'old women', 'Man', 'children', 'child', 'Child', 'anonymization challenge',
           'anonymization bounty', 'biometric', 'PII - faces', 'PII - non faces',

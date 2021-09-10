@@ -3,89 +3,95 @@
     <div class="smt-spinner"></div>
   </div>
   <div v-else class="header">
-    <div v-if="flag == 1" class="flex w-2/5">
-      <div class="flex">
-        <div>
+    <div class="flex justify-between" style="width: 90%">
+      <div>
+        <div v-if="flag == 1" class="flex">
+          <div class="flex">
+            <div>
+              <h1 class="text-4xl not-margin header-title">
+                {{ title }} Data Set
+              </h1>
+            </div>
+            <div class="header-edit-button">
+              <vs-button danger icon @click="editClicked">
+                <i class="bx bx-edit"></i>
+              </vs-button>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="flag == 2" class="flex">
+          <div>
+            <h1 class="text-4xl not-margin header-title">
+              {{ title }}
+            </h1>
+
+            <p>
+              {{ description }}
+            </p>
+          </div>
+          <div class="flex">
+            <div v-if="tagCountKeys !== undefined" class="select-body">
+              <multiselect
+                v-model="tag"
+                :options="tagCountKeys"
+                :limit="2"
+                :show-labels="true"
+                internalSearch
+                multiple
+                style="z-index: 9;"
+              ></multiselect>
+            </div>
+            <div class="flex items-start pl-5 pt-6">
+              <span class="pt-1">Select All: </span
+              ><vs-checkbox v-model="select_all" class="pl-2" />
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="flex">
           <h1 class="text-4xl not-margin header-title">
-            {{ title }} Data Set
+            {{ title }}
           </h1>
         </div>
-        <div class="header-edit-button">
-          <vs-button danger icon @click="editClicked">
-            <i class="bx bx-edit"></i>
-          </vs-button>
+      </div>
+      <div class="flex justify-center items-center">
+        <div
+          v-if="flag !== 'data' && flag !== 'nopage'"
+          class="flex justify-center items-center con-pagination"
+        >
+          <vs-pagination only-arrows v-model="page" :length="this.totalPage" />
+          <code>
+            Page: <b>{{ page }}</b>
+          </code>
+        </div>
+
+        <div class="ml-3">
+          <ul class="flex">
+            <li class="header-icon-item">
+              <a href="https://twitter.com/datauniona" target="_blank">
+                <vs-avatar>
+                  <i class="bx bxl-twitter"></i>
+                </vs-avatar>
+              </a>
+            </li>
+            <li class="header-icon-item">
+              <a href="https://t.me/dataunionapp" target="_blank">
+                <vs-avatar>
+                  <i class="bx bxl-telegram"></i>
+                </vs-avatar>
+              </a>
+            </li>
+            <li class="header-icon-item">
+              <a href="https://discord.com/invite/Jm9C3yD8Sd" target="_blank">
+                <vs-avatar>
+                  <i class="bx bxl-discord"></i>
+                </vs-avatar>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-
-    <div v-else-if="flag == 2" class="flex w-2/5">
-      <h1 class="text-4xl not-margin header-title">
-        {{ title }}
-      </h1>
-      
-      <p>
-        {{ description }}
-      </p>
-
-      <div v-if="tagCountKeys !== undefined" class="select-body">
-        <multiselect
-          v-model="tag"
-          :options="tagCountKeys"
-          
-          selectLabel=""
-          selectGroupLabel=""
-          selectedLabel=""
-          deselectLabel=""
-          deselectGroupLabel=""
-          
-          multiple
-          style="z-index: 9"
-        ></multiselect>
-      </div>
-      <div class="pl-5 flex items-center">
-        Select All: <vs-checkbox v-model="select_all" class="pl-2" />
-      </div>
-    </div>
-
-    <div v-else class="w-2/5 flex">
-      <h1 class="text-4xl not-margin header-title">
-        {{ title }}
-      </h1>
-    </div>
-
-    <div v-if="flag != 'data'" class="center con-pagination flex">
-      <div v-if="flag != 'nopage'" class="center con-pagination flex">
-        <vs-pagination only-arrows v-model="page" :length="this.totalPage" />
-        <code class="pt-7">
-          Page: <b>{{ page }}</b>
-        </code>
-      </div>
-    </div>
-
-    <div class="header-icon">
-      <ul class="flex">
-        <li class="header-icon-item">
-          <a href="https://twitter.com/datauniona" target="_blank">
-            <vs-avatar>
-              <i class="bx bxl-twitter"></i>
-            </vs-avatar>
-          </a>
-        </li>
-        <li class="header-icon-item">
-          <a href="https://t.me/dataunionapp" target="_blank">
-            <vs-avatar>
-              <i class="bx bxl-telegram"></i>
-            </vs-avatar>
-          </a>
-        </li>
-        <li class="header-icon-item">
-          <a href="https://discord.com/invite/Jm9C3yD8Sd" target="_blank">
-            <vs-avatar>
-              <i class="bx bxl-discord"></i>
-            </vs-avatar>
-          </a>
-        </li>
-      </ul>
     </div>
   </div>
 </template>
@@ -172,7 +178,7 @@ export default {
     this.$store.dispatch("selectAll", false);
     setTimeout(() => {
       this.$store.dispatch("setPageLoading", false);
-    }, 4000);
+    }, 2000);
   },
 };
 </script>

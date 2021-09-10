@@ -24,6 +24,7 @@ const store = new Vuex.Store({
     click_images: [],
     page: 1,
     totalPage: 20,
+    pageCount: 20,
     pageLoading: true,
     apiLoading: false,
     select_all: false,
