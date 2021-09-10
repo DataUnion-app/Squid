@@ -138,6 +138,7 @@ export default {
   watch: {
     tag(newVal) {
       this.page = 1;
+      this.$store.dispatch("setPage", this.page);
       this.$store.dispatch("setSelectTag", newVal);
     },
     page(newVal, oldVal) {
