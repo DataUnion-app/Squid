@@ -5,11 +5,11 @@ import { Register, GetTokens, RefreshTokens } from './authapi'
 class Auth {
     constructor() {
         this.auth = {
-            loaded: false,
             accessToken: null,
             refreshToken: null
         };
         this.account = null;
+        this.isLoaded = false;
     }
 
     /** BEGIN GETTERS **/
@@ -22,13 +22,14 @@ class Auth {
     }
 
     loaded() {
-        return this.auth.loaded;
+        return this.isLoaded;
     }
     /** END GETTERS **/
 
     // Sets items retrieved from API call
     authenticate(account, auth) {
         this.auth = auth;
+        this.isLoaded = true;
         this.account = account;
         localStorage.setItem('auth', JSON.stringify(this.auth));
         localStorage.setItem('account', this.account);

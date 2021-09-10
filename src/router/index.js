@@ -17,6 +17,11 @@ const routes = [
     component: () => import('@/views/Welcome')
   },
   {
+    path: '/loading',
+    name: 'Loading',
+    component: () => import('@/views/Loading')
+  },
+  {
     path: '/alldata',
     name: 'AllData',
     // route level code-splitting
@@ -72,11 +77,9 @@ router.beforeEach((to, from, next) => {
   // console.log(Auth.loaded() === false);
   // console.log(Auth.loaded() === false && Auth.loaded() !== undefined);
 
-  if (Auth.loaded() === false && Auth.loading !== undefined && !Auth.token() && to.name != 'Welcome') {
-    next({ name: 'Welcome' });
-    return;
-  }
-  next();
+  if (Auth.loaded() && !Auth.token() && to.name != 'Welcome') next({ name: 'Welcome' });
+  else if (Auth.loaded() && Auth.token() && to.name != 'Welcome') next();
+  else next({name: 'Loading'});
 })
 
 Observer.$on('login', ({ account }) => {

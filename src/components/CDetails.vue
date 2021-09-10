@@ -379,7 +379,7 @@ export default {
   mounted() {
     if (location === 'map') {
       let imageHash = this.getImageWorld;
-      API.myImages({ page: 1 }).then((photos) => {
+      API.myImages({ page: 1 }, 'CDetails').then((photos) => {
         let i,
           length = photos.length;
         let tempImage = [];

@@ -35,8 +35,7 @@
 </template>
 
 <script>
-
-import { mapState, mapActions } from "vuex";
+import { mapState } from "vuex";
 import API from "@/utils/api";
 
 export default {
@@ -45,7 +44,7 @@ export default {
   },
   watch: {
     page(newVal, oldVal) {
-      API.myImages({ page: newVal }).then((photos) => {
+      API.myImages({ page: newVal }, 'welcome').then((photos) => {
         this.photos = photos;
         if (this.photos.length === 0) {
           this.$store.commit("setTotalPage", this.page);

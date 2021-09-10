@@ -45,7 +45,7 @@ export default {
   },
   mounted() {
     let imageHash = this.getImageWorld;
-    API.myImages({ page: 1 }).then((photos) => {
+    API.myImages({ page: 1 }, 'map').then((photos) => {
       this.photos = photos;
       let i, length = photos.length;
       let tempImage = [];

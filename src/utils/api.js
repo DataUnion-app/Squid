@@ -12,7 +12,11 @@ class API {
 
   call = (path, method, data, headers, isPure) => {
     const apiHeaders = new Headers()
-    apiHeaders.append("Authorization", `Bearer ${Auth.token()}`)
+    apiHeaders.append("Authorization", `Bearer ${Auth.token()}`);
+    
+    // ts
+    // console.log(`Auth.token() null? = ${Auth.token() == null}`);
+
     if (headers) {
       Object.keys(headers).map(key => {
         apiHeaders[key] = headers[key];
@@ -99,7 +103,8 @@ class API {
 
 
   myImages = async ({
-    page
+    page,
+    from='[not specified]'
   }) => {
     // TODO: Remove mockup data
     // return Promise.resolve([{
@@ -127,7 +132,10 @@ class API {
     //     hash: "fffff9800181dbff"
     //   }
     // ]);
-    return this.call(`api/v1/my-images?page=${page}`, 'GET')
+
+    // ts
+    console.log(`calling myImages from ${from}`)
+    if (Auth.token() !== null) return this.call(`api/v1/my-images?page=${page}`, 'GET')
       .then(async response => {
         const result = [];
         for (let i = 0; i < response.result.length; i++) {
