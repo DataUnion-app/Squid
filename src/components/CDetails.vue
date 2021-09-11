@@ -30,7 +30,8 @@
             </template>
 
             <template #interactions>
-              <vs-tooltip
+              <!-- SELECT DATASET -->
+              <!-- <vs-tooltip
                 ref="tooltipdetail"
                 v-if="!flag"
                 bottom
@@ -42,7 +43,6 @@
                   <i class="bx bx-heart"></i>
                 </vs-button>
                 
-                <!-- SELECT DATASET -->
                 <template #tooltip>
                   <div
                     class="content-tooltip"
@@ -64,7 +64,7 @@
                           {{ item.name }}
                         </vs-option>
                       </vs-select>
-                      <!-- <p>Are you sure you want to add this image in that Data Set?</p> -->
+                      <p>Are you sure you want to add this image in that Data Set?</p>
                       <footer class="flex">
                         <vs-button @click="addDataSet" danger block>
                           Yes
@@ -89,9 +89,8 @@
                     </div>
                   </div>
                 </template>
-                <!-- SELECT DATASET -->
               
-              </vs-tooltip>
+              </vs-tooltip> 
 
               <vs-tooltip
                 v-else
@@ -126,9 +125,11 @@
                     </footer>
                   </div>
                 </template>
-              </vs-tooltip>
+              </vs-tooltip> -->
+              <!-- SELECT DATASET -->
 
-              <vs-button danger icon @click="goWorldMap">
+              <!-- View world map: Only relevant if location is not map -->
+              <vs-button v-if="location != 'map'" danger icon @click="goWorldMap">
                 <i class="bx bx-world"></i>
               </vs-button>
             </template>
@@ -280,9 +281,6 @@ export default {
   },
   watch: {
     showDetails: function (newValue, oldValue) {
-      // ts
-      // console.log(`showDetails newValue = ${newValue}`);
-      // console.log(`showDetails oldValue = ${oldValue}`);
       if (newValue) {
         this.details();
       }
@@ -406,8 +404,9 @@ export default {
     }
   },
   mounted() {
-    let imageHash = this.getImageWorld;
-    this.updateHash(imageHash);
+    if (this.showDetails) {
+      this.details();
+    }
   },
 }
 </script>

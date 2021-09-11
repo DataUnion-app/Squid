@@ -104,7 +104,8 @@ export default {
             // ts 
             // console.log(`=== [WELCOME index.vue] CLICKED! ===\nimage_id = ${markerItem.image_id}`);
             
-            this.hash = markerItem.image_id;
+            let newHash = markerItem.image_id;
+            this.updateHash(newHash);
             this.updateShowDetails(true);
             this.detailsMap();
             
@@ -233,6 +234,11 @@ export default {
     updateShowDetails(newShowDetails) {
       this.showDetails = newShowDetails;
     },
+    updateHash(newHash) {
+      // console.log(`calling updateHash`);
+      // console.log(newHash);
+      this.hash = newHash;
+    }
   },
 
   updated() {
