@@ -3,7 +3,7 @@
     <CHeader title="All Data" :flag="2" />
     <CPopMenu :flag="1" />
     <div class="main-body" v-show="!pageLoading">
-      <CLoader v-if="apiLoading" message="Loading data..." />
+      <CLoader v-if="apiLoading" message="Checking for searched data..." />
       <!-- <div v-if="apiLoading">
         <div v-show="!tagsLoaded" class="smt-spinner-circle">
           <div class="smt-spinner"></div>
