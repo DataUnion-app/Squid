@@ -1,155 +1,14 @@
 <template>
   <div class="">
     <div class="map-size overflow-hidden" id="map"></div>
-    <vs-dialog v-model="showDetails">
-      <template #header>
-        <h1 class="text-3xl not-margin">Details</h1>
-      </template>
-
-      <div class="flex">
-        <div class="image-detail-left">
-          <div class="relative w-full">
-            <vs-card>
-              <template #img>
-                <img
-                  v-if="image"
-                  class="image-detail"
-                  :src="image"
-                  @click="preview"
-                  alt=""
-                />
-              </template>
-              <template #interactions>
-                <vs-tooltip
-                  ref="tooltip"
-                  bottom
-                  shadow
-                  :interactivity="true"
-                  :not-hover="true"
-                  v-model="addDataTooltip"
-                >
-                  <vs-button danger icon @click="showDataTooltip">
-                    <i class="bx bx-heart"></i>
-                  </vs-button>
-
-                  <!-- SELECT DATASET -->
-                  <template #tooltip>
-                    <div
-                      class="content-tooltip"
-                      v-click-outside="onTooltipOutside"
-                    >
-                      <div v-if="datas.length > 0">
-                        <h4 class="center">Please select a Data Set</h4>
-                        <vs-select
-                          class="vs-body"
-                          placeholder="Select a Data Set"
-                          v-model="data"
-                        >
-                          <vs-option
-                            v-for="item in datas"
-                            :key="item.name"
-                            :label="item.name"
-                            :value="item.name"
-                          >
-                            {{ item.name }}
-                          </vs-option>
-                        </vs-select>
-                        <!-- <p>Are you sure you want to add this image in that Data Set?</p> -->
-                        <footer class="flex">
-                          <vs-button @click="addDataSet" danger block>
-                            Yes
-                          </vs-button>
-                          <vs-button
-                            @click="addDataTooltip = false"
-                            transparent
-                            dark
-                            block
-                          >
-                            No
-                          </vs-button>
-                        </footer>
-                      </div>
-                      <div v-else class="p-3 flex justify-center">
-                        You haven't created any datasets yet. Please create one.
-                        <footer class="flex">
-                          <vs-button @click="connectSidebar">
-                            Create
-                          </vs-button>
-                        </footer>
-                      </div>
-                    </div>
-                  </template>
-                  <!-- SELECT DATASET -->
-
-                </vs-tooltip>
-              </template>
-            </vs-card>
-          </div>
-
-          <div class="mt-3 flex flex-wrap">
-            <div v-for="tag in tags" :key="tag.tag" class="flex">
-              <vs-tooltip v-if="isUp(tag)" success>
-                <vs-button success flat>
-                  {{ tag.tag }}
-                </vs-button>
-                <template #tooltip>
-                  <div>
-                    <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
-                    <div>
-                      <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
-                    </div>
-                  </div>
-                </template>
-              </vs-tooltip>
-              <vs-tooltip v-else danger>
-                <vs-button danger flat>
-                  {{ tag.tag }}
-                </vs-button>
-                <template #tooltip>
-                  <div>
-                    <div><i class="bx bx-upvote"></i>:{{ tag.up_votes }}</div>
-                    <div>
-                      <i class="bx bx-downvote"></i>:{{ tag.down_votes }}
-                    </div>
-                  </div>
-                </template>
-              </vs-tooltip>
-            </div>
-          </div>
-        </div>
-      </div>
-      <template #footer> </template>
-    </vs-dialog>
-    <vs-dialog v-model="showDataSet">
-      <template #header>
-        <h1 class="text-3xl not-margin">Add to Data Set</h1>
-      </template>
-
-      <!-- PLEASE CREATE DATASET -->
-      <div class="flex">
-        <div class="flex flex-col add-dialog">
-          <div v-if="datas.length > 0" class="p-3 flex justify-center">
-            <vs-select placeholder="Select a Data Set" v-model="data">
-              <vs-option
-                v-for="item in datas"
-                :key="item.name"
-                :label="item.name"
-                :value="item.name"
-              >
-                {{ item.name }}
-              </vs-option>
-            </vs-select>
-            <vs-button @click="addDataSet"> Save </vs-button>
-          </div>
-          <div v-else class="p-3 flex justify-center">
-            You haven't created any datasets yet. Please create one.
-            <vs-button @click="connectSidebar"> Create </vs-button>
-          </div>
-        </div>
-      </div>
-      <!-- PLEASE CREATE DATASET -->
-      <template #footer> </template>
-    </vs-dialog>
+    <CDetails
+      v-if='hash !== "" && hash !== undefined && photos !== [] && photos !== undefined' 
+      :hash="hash"
+      :photos="photos"
+      :showDetails="showDetails"
+      :location="location"
+      @closedPopup="closedPopup"
+    />
   </div>
 </template>
 <style>
@@ -170,6 +29,13 @@ export default {
     return {
       // default to Montreal to keep it simple
       // change this to whatever makes sense
+      location: 'map',
+      photos: [],
+
+      // showDetails 
+      // needs to change to True inside CDetails to activate the popup. (Parent -> Child communication)
+      // needs to change back to False inside CDetails when popup is closed. (Child -> Parent communication)
+
       showDetails: false,
       showDataSet: false,
       tags: [],
@@ -184,37 +50,47 @@ export default {
       addDataTooltip: false,
     };
   },
+  watch: {
+    // ts
+    // hash: function (newVal, oldVal) {
+    //   console.log(`=== [WELCOME index.vue] hash changed ! ===`);
+    //   console.log(`[WELCOME index.vue] hash newVal = ${newVal}`);
+    // }
+  },
   mounted() {
-    let imageHash = this.getImageWorld;
-    API.myImages({ page: 1 }).then((photos) => {
-      let i,
-        length = photos.length;
+    // Maps ALL the thumbnails to the icons on the map.
+    API.myImages({ page: 1 }, 'map').then((photos) => {
+      this.photos = photos;
+      let i, length = photos.length;
       let tempImage = [];
       for (i = 0; i < length; i++) tempImage.push(photos[i].hash);
 
-      API.imageTag(tempImage, "GeoLocation").then((images) => {
+      //
+      API.imageGeoloc(tempImage, "GeoLocation").then((images) => {
         this.markers = images;
         let marker;
 
         for (let i = 0; i < this.markers.length; i++) {
-          if (this.markers[i].image_id == imageHash) {
-            map.flyTo({
-              center: [
-                this.markers[i].value.longitude,
-                this.markers[i].value.latitude,
-              ],
-            });
+          if (this.markers[i].image_id == this.hash) {
+            // map.flyTo({
+            //   center: [
+            //     this.markers[i].value.longitude,
+            //     this.markers[i].value.latitude,
+            //   ],
+            // });
           } else {
-            map.flyTo({
-              center: [
-                this.markers[0].value.longitude,
-                this.markers[0].value.latitude,
-              ],
-            });
+            // map.flyTo({
+            //   center: [
+            //     this.markers[0].value.longitude,
+            //     this.markers[0].value.latitude,
+            //   ],
+            // });
             this.$store.dispatch("setImageWorld", "");
           }
 
+          // Create image on world map
           const markerItem = this.markers[i];
+          
           const markerIcon = document.createElement("img");
           markerIcon.style.width = "50px";
           markerIcon.style.height = "50px";
@@ -223,11 +99,19 @@ export default {
           markerIcon.src = this.imagebyId(markerItem.image_id);
           markerIcon.style.cursor = "pointer";
 
+          // add event listener to the image
           markerIcon.addEventListener("click", () => {
-            this.details(markerItem.image_id);
-            map.flyTo({
-              center: [markerItem.value.longitude, markerItem.value.latitude],
-            });
+            // ts 
+            // console.log(`=== [WELCOME index.vue] CLICKED! ===\nimage_id = ${markerItem.image_id}`);
+            
+            let newHash = markerItem.image_id;
+            this.updateHash(newHash);
+            this.updateShowDetails(true);
+            this.detailsMap();
+            
+            // map.flyTo({
+            //   center: [markerItem.value.longitude, markerItem.value.latitude],
+            // });
           });
 
           marker = new window.maplibregl.Marker(markerIcon)
@@ -252,6 +136,11 @@ export default {
   },
   methods: {
     ...mapActions(["getImage", "getTags"]),
+    closedPopup() {
+      // ts
+      // console.log(`[WELCOME index.vue] closedPopup() called`);
+      this.updateShowDetails(false);
+    },
     onTooltipOutside(e) {
       if (
         this.addDataTooltip &&
@@ -264,15 +153,14 @@ export default {
     avatar(id) {
       return utils.blockies(id);
     },
-    details(hash) {
-      this.hash = hash;
+    detailsMap() {
       this.refreshComments();
       this.getImage(this.hash).then((image) => {
         this.image = image;
       });
       this.getTags(this.hash).then((tags) => {
         this.tags = tags;
-        this.showDetails = true;
+        this.updateShowDetails(true);
       });
     },
     isUp(tag) {
@@ -343,6 +231,14 @@ export default {
         text: `Photo already exists in this dataset.`,
       });
     },
+    updateShowDetails(newShowDetails) {
+      this.showDetails = newShowDetails;
+    },
+    updateHash(newHash) {
+      // console.log(`calling updateHash`);
+      // console.log(newHash);
+      this.hash = newHash;
+    }
   },
 
   updated() {

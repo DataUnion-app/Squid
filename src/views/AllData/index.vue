@@ -140,7 +140,8 @@ export default {
     } else {
       const selectedTags = this.getSelectedTags();
       this.totalPhotos = await this.fetchPhotoHashs(selectedTags);
-      console.log("photosResult", this.totalPhotos);
+      // ts
+      // console.log("photosResult", this.totalPhotos);
       this.$store.commit(
         "setTotalPage",
         Math.ceil(this.totalPhotos.length / this.pageCount) || 1

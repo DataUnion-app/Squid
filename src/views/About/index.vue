@@ -34,7 +34,7 @@ export default {
   },
   watch: {
     page(newVal, oldVal) {
-      API.myImages({ page: newVal }).then((photos) => {
+      API.myImages({ page: newVal }, 'about').then((photos) => {
         this.photos = photos;
         if (this.photos.length === 0) {
           this.$store.commit("setTotalPage", this.page);

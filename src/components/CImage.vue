@@ -322,6 +322,7 @@
         </div>
       </template>
     </vs-dialog>
+    
   </div>
 </template>
 
@@ -514,11 +515,12 @@ export default {
               };
             }
           }
+          this.tagsLoaded = true;
         })
         .catch((error) => {
           console.error(error);
         });
-      API.imageTag(this.hash, "BoundingBox").then((images) => {
+      API.imageGeoloc(this.hash, "BoundingBox").then((images) => {
         this.groupedImages = this.groupBy(images, "tag");
       });
       this.showDetails = true;
