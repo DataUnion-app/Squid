@@ -31,15 +31,16 @@
             </p>
           </div>
           <div class="flex">
-            <div v-if="tagCountKeys !== undefined" class="select-body">
+            <div v-if="allOptions !== undefined" class="select-body">
               <multiselect
                 v-model="tag"
-                :options="tagCountKeys"
+                :options="allOptions"
                 :limit="2"
                 :show-labels="true"
                 internalSearch
                 multiple
-                style="z-index: 9;"
+                showPointer
+                style="z-index: 9"
               ></multiselect>
             </div>
             <div class="flex items-start pl-5 pt-6">
@@ -140,6 +141,21 @@ export default {
       this.page = 1;
       this.$store.dispatch("setPage", this.page);
       this.$store.dispatch("setSelectTag", newVal);
+
+      const newKeys =
+        typeof newVal === "string"
+          ? [newVal]
+          : newVal === undefined
+          ? []
+          : newVal;
+      let tCountKeys = this.tagCountKeys;
+
+      tCountKeys =
+        tCountKeys === undefined
+          ? []
+          : tCountKeys.filter((el) => !newKeys.includes(el));
+      this.allOptions = [...newKeys, ...tCountKeys];
+      this.$store.dispatch("setTagCountKeys", this.allOptions);
     },
     page(newVal, oldVal) {
       this.$store.dispatch("setPage", newVal);
@@ -153,6 +169,7 @@ export default {
   data() {
     return {
       tag: [],
+      allOptions:[],
       tagIndex: 0,
       page: 1,
       select_all: false,
@@ -177,6 +194,7 @@ export default {
       this.tag = this.$store.state.selectTag;
     }
     this.$store.dispatch("selectAll", false);
+    this.allOptions = this.tagCountKeys;
     setTimeout(() => {
       this.$store.dispatch("setPageLoading", false);
     }, 2000);
