@@ -100,6 +100,9 @@ const store = new Vuex.Store({
     setApiLoading({ commit }, v) {
       commit('set', ['apiLoading', v]);
     },
+    setTagCountKeys({ commit }, newTagCountkeys) {
+      commit('set', ['tagCountKeys', newTagCountkeys]);
+    },
     setClickImage({ commit }, hash) {
       commit('setImage', ['click_images', hash])
     },
