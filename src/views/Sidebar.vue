@@ -114,8 +114,13 @@
         </template>
         About
       </vs-sidebar-item>
+
       <template #footer v-if="blockies">
-        <div class="w-full flex flex-nowrap items-center">
+        <CMetamaskPopup />
+        <button
+          @click="showMetamaskPopup" 
+          class="w-full flex flex-nowrap items-center"
+        >
           <vs-avatar class="mr-3 comment-avatar">
             <img :src="blockies" alt="" />
           </vs-avatar>
@@ -129,8 +134,9 @@
           >
             {{ account }}
           </div>
-        </div>
+        </button>
       </template>
+
     </vs-sidebar>
     <vs-dialog v-model="showdatas">
       <template #header>
@@ -170,6 +176,9 @@ export default {
     $route() {
       if (this.$route.name !== "datas") this.active = this.$route.name;
     },
+    displayMetamaskPopup(newVal, oldVal) {
+      console.log(`displayMetamaskPopup = ${newVal}`);
+    },
     active: function () {
       if (this.$route.name != this.active) {
         for (var i = 0; i < this.datas.length; i++) {
@@ -195,6 +204,7 @@ export default {
       dataName: "",
       openTooltip: [],
       force: 0,
+      displayMetamaskPopup: false,
     };
   },
   computed: {
@@ -202,6 +212,12 @@ export default {
   },
   methods: {
     ...mapActions(["initClickImage"]),
+    showMetamaskPopup() {
+      this.updateDisplayMetamaskPopup(true);
+    },
+    updateDisplayMetamaskPopup(newVal) {
+      this.displayMetamaskPopup = newVal;
+    },
     createData() {
       this.showdatas = true;
       if (this.dataName !== "") {

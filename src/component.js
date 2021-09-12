@@ -4,9 +4,11 @@ import CHeader from "@/components/CHeader";
 import CPopMenu from "@/components/CPopMenu";
 import CDetails from "@/components/CDetails";
 import CLoader from "@/components/CLoader";
+import CMetamaskPopup from "@/components/CMetamaskPopup";
 
 Vue.component('CImage', CImage);
 Vue.component('CHeader', CHeader);
 Vue.component('CPopMenu', CPopMenu);
 Vue.component('CDetails', CDetails);
 Vue.component('CLoader', CLoader);
+Vue.component('CMetamaskPopup', CMetamaskPopup);
