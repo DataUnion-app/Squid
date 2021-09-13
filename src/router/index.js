@@ -17,6 +17,11 @@ const routes = [
     component: () => import('@/views/Welcome')
   },
   {
+    path: '/loading',
+    name: 'Loading',
+    component: () => import('@/views/Loading')
+  },
+  {
     path: '/alldata',
     name: 'AllData',
     // route level code-splitting
@@ -65,11 +70,16 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (!Auth.token() && to.name != 'Welcome') {
-    next({ name: 'Welcome' });
-    return;
-  }
-  next();
+  // ts
+  // console.log(`firing beforeEach`);
+  // console.log(`Auth.token() = `, Auth.token());
+  // console.log(`Auth.loaded() = `, Auth.loaded());
+  // console.log(Auth.loaded() === false);
+  // console.log(Auth.loaded() === false && Auth.loaded() !== undefined);
+
+  if (Auth.loaded() && !Auth.token() && to.name != 'Welcome') next({ name: 'Welcome' });
+  else if (Auth.loaded() && Auth.token() && to.name != 'Welcome') next();
+  else next({name: 'Loading'});
 })
 
 Observer.$on('login', ({ account }) => {

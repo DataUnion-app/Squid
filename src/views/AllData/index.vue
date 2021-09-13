@@ -3,9 +3,12 @@
     <CHeader title="All Data" :flag="2" />
     <CPopMenu :flag="1" />
     <div class="main-body" v-show="!pageLoading">
-      <div v-if="apiLoading">
-        <h1 class="text-3xl p-3 not-margin">Data is loading now...</h1>
-      </div>
+      <CLoader v-if="apiLoading" message="Checking for searched data..." />
+      <!-- <div v-if="apiLoading">
+        <div v-show="!tagsLoaded" class="smt-spinner-circle">
+          <div class="smt-spinner"></div>
+        </div>
+      </div> -->
       <div v-else>
         <div v-if="photos">
           <div
@@ -140,7 +143,8 @@ export default {
     } else {
       const selectedTags = this.getSelectedTags();
       this.totalPhotos = await this.fetchPhotoHashs(selectedTags);
-      console.log("photosResult", this.totalPhotos);
+      // ts
+      // console.log("photosResult", this.totalPhotos);
       this.$store.commit(
         "setTotalPage",
         Math.ceil(this.totalPhotos.length / this.pageCount) || 1
