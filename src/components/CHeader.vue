@@ -3,7 +3,7 @@
     <div class="smt-spinner"></div>
   </div>
   <div v-else class="header">
-    <div class="flex justify-between" style="width: 90%">
+    <div class="flex justify-between pr-12" >
       <div>
         <div v-if="flag == 1" class="flex">
           <div class="flex">
