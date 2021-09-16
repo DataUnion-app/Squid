@@ -84,10 +84,11 @@ export default {
         }
     },
     watch: {
-        loggedIn(n, o) {
-            console.log(`LOGGED IN CHANGED`)
-            console.log(n);
-        }
+        // TS
+        // loggedIn(n, o) {
+        //     console.log(`LOGGED IN CHANGED`)
+        //     console.log(n);
+        // }
     },
     methods: {
         setLoggedIn(newVal) {
