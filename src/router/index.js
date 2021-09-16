@@ -76,8 +76,7 @@ router.beforeEach((to, from, next) => {
   // console.log(`Auth.loaded() = `, Auth.loaded());
   // console.log(Auth.loaded() === false);
   // console.log(Auth.loaded() === false && Auth.loaded() !== undefined);
-
-  if (Auth.loaded() && !Auth.token() && to.name != 'Welcome') next({ name: 'Welcome' });
+  if (Auth.loaded() && !Auth.token() && to.name != 'Welcome') next({ name: 'Welcome' }); 
   else if (Auth.loaded() && Auth.token() && to.name != 'Welcome') next();
   else next({name: 'Loading'});
 })

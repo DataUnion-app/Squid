@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import API from '../utils/api';
+import Auth from '../utils/api';
 
 Vue.use(Vuex);
 
@@ -32,6 +33,10 @@ const store = new Vuex.Store({
   actions: {
     init({ commit }) {
       // console.log('initing');
+      // Auth.checkIfLoggedIn().then(result => {
+      //   console.log(`CHECK IF LOGGED IN result: `);
+      //   console.log(result)
+      // })
       API.tags(start_date, end_date).then(tags => {
         // console.log(tags)
         if (tags) {

@@ -116,11 +116,16 @@
       </vs-sidebar-item>
 
       <template #footer v-if="blockies">
-        <CMetamaskPopup />
         <button
           @click="showMetamaskPopup" 
           class="w-full flex flex-nowrap items-center"
         >
+          <CMetamaskPopup
+            class="metamask-relative"
+            :display="displayMetamaskPopup"
+            @closedMetamaskPopup="showMetamaskPopup"
+          />
+
           <vs-avatar class="mr-3 comment-avatar">
             <img :src="blockies" alt="" />
           </vs-avatar>
@@ -159,6 +164,12 @@
   </div>
 </template>
 
+<style>
+  .metamask-relative {
+    top: 75%;
+  }
+</style>
+
 <script>
 import { mapState, mapActions } from "vuex";
 
@@ -176,9 +187,13 @@ export default {
     $route() {
       if (this.$route.name !== "datas") this.active = this.$route.name;
     },
-    displayMetamaskPopup(newVal, oldVal) {
-      console.log(`displayMetamaskPopup = ${newVal}`);
-    },
+    // blockies(newVal, oldVal) {
+    //   console.log(`BLOCKIES CHANGED = ${newVal}`);
+    //   console.log(typeof this.blockies);
+    // },
+    // displayMetamaskPopup(newVal, oldVal) {
+    //   console.log(`displayMetamaskPopup = ${newVal}`);
+    // },
     active: function () {
       if (this.$route.name != this.active) {
         for (var i = 0; i < this.datas.length; i++) {
@@ -212,8 +227,13 @@ export default {
   },
   methods: {
     ...mapActions(["initClickImage"]),
+    // change to toggleMetamaskPopup
     showMetamaskPopup() {
-      this.updateDisplayMetamaskPopup(true);
+      if (this.displayMetamaskPopup) {
+        this.updateDisplayMetamaskPopup(false);
+      } else {
+        this.updateDisplayMetamaskPopup(true);
+      }
     },
     updateDisplayMetamaskPopup(newVal) {
       this.displayMetamaskPopup = newVal;

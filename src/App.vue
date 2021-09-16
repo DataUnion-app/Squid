@@ -26,6 +26,7 @@ export default {
   methods: {
   },
   mounted() {
+    // console.log(`app mounted`);
     Observer.$on("login", ({ account }) => {
       this.$store.dispatch("init");
     });

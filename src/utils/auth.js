@@ -4,11 +4,15 @@ import utils from './index';
 import { Register, GetTokens, RefreshTokens } from './authapi'
 class Auth {
     constructor() {
+        // core data
         this.auth = {
             accessToken: null,
             refreshToken: null
         };
         this.account = null;
+
+        // app signals
+        this.isLoading = false;
         this.isLoaded = false;
     }
 
@@ -24,13 +28,23 @@ class Auth {
     loaded() {
         return this.isLoaded;
     }
+
+    loading() {
+        return this.isLoading;
+    }
     /** END GETTERS **/
 
     // Sets items retrieved from API call
     authenticate(account, auth) {
+        // set core data
         this.auth = auth;
-        this.isLoaded = true;
         this.account = account;
+
+        // set signals
+        this.isLoaded = true;
+        this.isLoading = false;
+        
+        // set storage
         localStorage.setItem('auth', JSON.stringify(this.auth));
         localStorage.setItem('account', this.account);
         Observer.$emit('login', { account: this.account });
@@ -73,6 +87,26 @@ class Auth {
             })
         }).catch(err => {
         })
+    }
+
+    // execute=false by default, because otherwise it will run infinitely.
+    checkIfLoggedIn() {
+        console.log(`executing checkIfLoggedIn`);
+        try { 
+            return window.ethereum.enable().then(result => {
+                window.web3.eth.getAccounts((error, result) => {
+                    if (error) {
+                        this.auth.loading = false;
+                        return Promise.reject();
+                    } else {
+                        const account = result[0];
+                        return this.fetchToken(account);
+                    }
+                })
+            }) 
+        } catch {
+            return Promise.reject();
+        }
     }
 
     login() {
