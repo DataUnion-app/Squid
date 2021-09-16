@@ -18,13 +18,10 @@ export default {
     Sidebar,
   },
   data() {
-    return {
-    };
+    return {};
   },
-  computed: {
-  },
-  methods: {
-  },
+  computed: {},
+  methods: {},
   mounted() {
     // console.log(`app mounted`);
     Observer.$on("login", ({ account }) => {
@@ -85,12 +82,12 @@ body {
 
 .header {
   height: 80px;
-  width: 110%;
-  margin-left: -45px;
-  margin-top: -20px;
+  width: calc(100% - 230px);
   background-color: RGB(244, 247, 248);
-  display: flex;
-  position: relative;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  right: 0;
 }
 
 .header-title {
@@ -166,7 +163,7 @@ body {
 }
 
 .main-body {
-  margin-top: 25px;
+  margin-top: 80px;
   overflow-y: hidden;
 }
 
@@ -196,7 +193,7 @@ body {
   margin-left: 40px;
 }
 
-.select-tag{
+.select-tag {
   max-width: 500px !important;
   width: 270px !important;
 }
