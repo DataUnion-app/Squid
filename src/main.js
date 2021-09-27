@@ -37,6 +37,8 @@ const app = new Vue({
 }).$mount('#app')
 
 window.addEventListener("load", () => {
+  console.log(`window loaded`);
+  Auth.checkForAccount();
   Auth.login();
 });
 

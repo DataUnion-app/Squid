@@ -114,7 +114,7 @@ export default {
 
       if (Math.ceil(this.totalPhotos.length / this.pageCount) <= newVal) {
         this.realPage ++;
-        console.log('Real Page', this.realPage);
+        // console.log('Real Page', this.realPage);
         const selectedTags = this.getSelectedTags();
         const newPhotos = await this.fetchPhotoHashs(selectedTags, this.realPage);
         this.totalPhotos.push(...newPhotos);
