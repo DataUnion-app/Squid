@@ -14,9 +14,6 @@ class API {
   call = (path, method, data, headers, isPure) => {
     const apiHeaders = new Headers()
     apiHeaders.append("Authorization", `Bearer ${Auth.token()}`);
-    
-    // ts
-    // console.log(`Auth.token() null? = ${Auth.token() == null}`);
 
     if (headers) {
       Object.keys(headers).map(key => {
@@ -33,11 +30,6 @@ class API {
     }
 
     const timestamp = (new Date()).getTime();
-    // if (this.requests.length == 0) {
-    //   this.loader = VM.$vs.loading({
-    //     type: 'scale'
-    //   });
-    // }
     this.requests.push(timestamp);
     return fetch(
       `${BASE_URL}/${path}`, param
@@ -49,9 +41,13 @@ class API {
         return response.json();
       }
       const status = response.status;
+
+      // Handling token expiry, automatic refreshing
       return response.json().then(response => {
         if (response.msg == 'Token has expired') {
           return Auth.refreshToken().then(result => {
+            console.log(`refreshToken result = `);
+            console.log(result)
             if (result) {
               return this.call(path, method, data, headers);
             }
@@ -106,40 +102,16 @@ class API {
 
   myImages = async ({
     page,
-    from='[not specified]'
   }) => {
-    // TODO: Remove mockup data
-    // return Promise.resolve([{
-    //     hash: "00fcff53017cf800"
-    //   },
-    //   {
-    //     hash: "3f3f0000027fffff"
-    //   },
-    //   {
-    //     hash: "7efdfffff6eeff3f"
-    //   },
-    //   {
-    //     hash: "d7fe3e1014787c70"
-    //   },
-    //   {
-    //     hash: "f8ec5e7c3c1c1810"
-    //   },
-    //   {
-    //     hash: "fd980018141899ff"
-    //   },
-    //   {
-    //     hash: "fff1c0808081c1fb"
-    //   },
-    //   {
-    //     hash: "fffff9800181dbff"
-    //   }
-    // ]);
+    if (Auth.token() !== null) {
+      // ts
+      // console.log(`Auth.token() set`)
+      // console.log(Auth.token())
 
-    // ts
-    // console.log(`calling myImages from ${from}`)
-
-    if (Auth.token() !== null) return this.call(`api/v1/my-images?page=${page}`, 'GET')
-      .then(async response => {
+      return this.call(`api/v1/my-images?page=${page}`, 'GET').then(response => {
+        // ts
+        console.log(`myImages response = `);
+        console.log(response);
         const result = [];
         for (let i = 0; i < response.result.length; i++) {
           const hash = response.result[i].hash;
@@ -150,10 +122,13 @@ class API {
             result.push(photo);
           }
         }
-        return result;
+        return Promise.resolve(result);
       }).catch(err => {
         return Promise.reject(err);
       });
+    } else {
+      return "AUTH TOKEN NOT SET"
+    }
   }
 
   addComment = async ({

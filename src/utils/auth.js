@@ -1,7 +1,7 @@
 import Observer from '@/utils/observer';
 import Web3 from 'web3';
 import utils from './index';
-import { Register, GetTokens, RefreshTokens } from './authapi'
+import { RegisterTokens, GetTokens, RefreshTokens } from './authapi'
 class Auth {
     constructor() {
         // core data
@@ -34,7 +34,7 @@ class Auth {
     }
     /** END GETTERS **/
 
-    // Sets items retrieved from API call
+    // Sets items in localStorage after they're retrieved from API call
     authenticate(account, auth) {
         // set core data
         this.auth = auth;
@@ -52,20 +52,28 @@ class Auth {
 
     // API call
     refreshToken() {
+        let signalVar = false
         if (this.auth.refreshToken) {
+            let existingAccount = true;
             return RefreshTokens(this.auth.refreshToken).then(response => {
                 if (response.access_token) {
                     this.auth.accessToken = response.access_token;
                     this.authenticate(this.account, this.auth);
                     return true;
+                } else if (response.msg === "Token has expired") {
+                    this.fetchToken(this.account, existingAccount).then(res => {
+                        signalVar = true
+                        return true;
+                    });
                 }
-                return false;
             })
         }
-        return false;
+        if (signalVar == true) {
+            return true;
+        }
     }
 
-    // Checks if auth data (accessToken, account) already exist
+    // Checks if auth data (accessToken, account) already exist in LocalStorage and then brings them into the code.
     restoreToken() {
         const auth = JSON.parse(localStorage.getItem('auth'));
         const account = localStorage.getItem('account');
@@ -104,7 +112,7 @@ class Auth {
 
             if (error["code"] === -32002) {
                 // TODO: Put something interactive here
-                console.log(`PLEASE LOG IN`);
+                console.log(`YOU HAVE A PENDING WINDOW. PLEASE LOG IN`);
             }
 
             this.auth.loading = false;
@@ -113,20 +121,27 @@ class Auth {
     }
 
     // API call
-    fetchToken(account) {
-        return Register(account).then(nonce => {
-            GetTokens(account).then(result => {
-                this.authenticate(account, result);
-                this.auth.loading = false;
-                return result;
-            }).catch(err => {
-            })
-        }).catch(err => {
-        })
+    fetchToken(account, existing=false) {
+        if (!existing) {
+            return RegisterTokens(account).then(result => {
+                console.log(`REGISTER TOKENS result`);
+                console.log(result);
+                this.auth.accessToken = result.accessToken;
+                this.auth.refreshToken = result.refreshToken;
+                this.authenticate(this.account, this.auth);
+            }).catch(err => console.log(err)) 
+        } else {
+            return GetTokens(account).then(result => {
+                this.auth.accessToken = result.accessToken;
+                this.auth.refreshToken = result.refreshToken;
+                this.authenticate(this.account, this.auth);
+            }).catch(err => console.log(err));
+        }
     }
 
     login() {
-        console.log(`logging in`);
+        console.log(`Logging in`);
+
         if (this.restoreToken()) {
             console.log(`restoring token`);
             this.auth.loading = false;

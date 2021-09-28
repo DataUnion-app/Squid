@@ -42,7 +42,7 @@ export default {
     ...mapState(["page", "pageLoading", "totalPage"]),
   },
   methods: {
-    ...mapActions(["initClickImage"]),
+    ...mapActions(["initClickImage", "getMyPhotos"]),
     updateLoading(newLoading) {
       this.loading = newLoading;
     }
@@ -54,6 +54,9 @@ export default {
     };
   },
   watch: {
+    tempPhotos(newVal, oldVal) {
+      this.updatePhotos(newVal);
+    },
     // ts
     // loading(newVal, oldVal) {
     //   console.log(`loading newVal = ${newVal}`);
@@ -61,33 +64,30 @@ export default {
     // },
     photos(newVal, oldVal) { 
       // ts
-      // console.log(`photos newVal = `);
-      // console.log(newVal);
+      console.log(`photos newVal = `);
+      console.log(newVal);
       this.updateLoading(false);
     },
     page(newVal, oldVal) {
       this.updateLoading(true);
-      API.myImages({ page: newVal, from: 'mydata' }).then((photos) => {
+      this.getMyPhotos().then((photos) => {
         this.photos = photos;
         if (this.photos.length === 0) {
           this.$store.commit("setTotalPage", this.page);
         } else {
           this.$store.commit("setTotalPage", this.page + 1);
         }
+      }).catch(err => {
+        console.log(`MyData/index ${err}`);
       });
     },
   },
   mounted() {
-    // ts
-    // console.log(`MOUNTING MYDATA...`);
-    // console.log(`loading initialVal = ${this.loading}`)
     this.$store.commit("setTotalPage", 1);
-    API.myImages({ page: 1, from: 'mydata' }).then((photos) => {
+    this.getMyPhotos().then(photos => {
       this.photos = photos;
-      if (photos.length === 0) {
-        this.$store.commit("setTotalPage", 1);
-      }
-    });
+      this.updateLoading(false);
+    }).catch(err => console.log(err));
     this.initClickImage();
   },
 };

@@ -26,6 +26,7 @@ const store = new Vuex.Store({
     page: 1,
     totalPage: 20,
     pageCount: 20,
+    myPhotos: undefined,
     pageLoading: true,
     apiLoading: false,
     select_all: false,
@@ -58,23 +59,42 @@ const store = new Vuex.Store({
         commit('set', ['datas', datas])
       });
     },
+    switchWallet({ commit }) {
+
+    },
+    logOut({ commit }) {
+
+    },
     getImage({ state }, id) {
       if (state.imageCache[id]) {
         return Promise.resolve(state.imageCache[id]);
+      } else {
+        return API.thumbnail(id).then(thumbnail => {
+          state.imageCache[id] = thumbnail;
+          return thumbnail;
+        });
       }
-      return API.thumbnail(id).then(thumbnail => {
-        state.imageCache[id] = thumbnail;
-        return thumbnail;
-      });
     },
     getTags({ state }, id) {
       if (state.tagsCache[id]) {
         return Promise.resolve(state.tagsCache[id]);
+      } else {
+        return API.queryTags(id).then(response => {
+          state.tagsCache[id] = response;
+          return response;
+        });
       }
-      return API.queryTags(id).then(response => {
-        state.tagsCache[id] = response;
-        return response;
-      });
+    },
+    getMyPhotos({ state }) {
+      if (state.myPhotos !== undefined) {
+        console.log(`myPhotos NOT undefined!`)
+        return Promise.resolve(state.myPhotos);
+      } else {
+        return API.myImages({ page: 1 }).then(response => {
+          state.myPhotos = response;
+          return response; 
+        })
+      }
     },
     setdatas({ commit }) {
       API.datas().then(datas => {
@@ -128,6 +148,9 @@ const store = new Vuex.Store({
     },
     selectAll({ commit }, check) {
       commit('set', ['select_all', check]);
+    },
+    setMyPhotos({ commit }, myPhotos) {
+      commit('set', ['myPhotos', [myPhotos]])
     }
   },
   mutations: {
