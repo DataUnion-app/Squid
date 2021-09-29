@@ -46,9 +46,12 @@ class API {
       return response.json().then(response => {
         if (response.msg == 'Token has expired') {
           return Auth.refreshToken().then(result => {
-            console.log(`refreshToken result = `);
-            console.log(result)
+            // ts
+            // console.log(`refreshToken result = `);
+            // console.log(result);
             if (result) {
+              // ts
+              // console.log(`doing recursion`);
               return this.call(path, method, data, headers);
             }
           });
@@ -110,8 +113,8 @@ class API {
 
       return this.call(`api/v1/my-images?page=${page}`, 'GET').then(response => {
         // ts
-        console.log(`myImages response = `);
-        console.log(response);
+        // console.log(`myImages response = `);
+        // console.log(response);
         const result = [];
         for (let i = 0; i < response.result.length; i++) {
           const hash = response.result[i].hash;

@@ -64,8 +64,8 @@ export default {
     // },
     photos(newVal, oldVal) { 
       // ts
-      console.log(`photos newVal = `);
-      console.log(newVal);
+      // console.log(`photos newVal = `);
+      // console.log(newVal);
       this.updateLoading(false);
     },
     page(newVal, oldVal) {

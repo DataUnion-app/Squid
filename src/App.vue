@@ -27,11 +27,11 @@ export default {
     Observer.$on("login", ({ account }) => {
       this.$store.dispatch("init");
     });
-    Observer.$on("userLoggedOut", () => {
-      this.$store.dispatch();
+    Observer.$on("userLoggedOut", ({ account }) => {
+      this.$store.dispatch("logOut");
     })
     Observer.$on("userSwitchedWallet", ({ account }) => {
-      this.$store.dispatch();
+      this.$store.dispatch("switchWallet", account);
     })
   },
 };

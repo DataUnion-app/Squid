@@ -34,8 +34,67 @@ class Auth {
     }
     /** END GETTERS **/
 
+    /** BEGIN LOGIN MANAGEMENT: Logging in, logging out, switching wallet **/
+    
+    // this function runs when the user switches wallet via the Metamask app.
+    switchWallet(account) {
+        console.log(`Switching wallet in auth...`);
+        const existing = false;                     // assuming the default option.
+        const changingWallet = true;
+        this.fetchToken(account, existing, changingWallet); 
+    }
+
+    logOut() {
+        console.log(`logging out in auth...`);
+        const blankAuth = {
+            accessToken: null,
+            refreshToken: null
+        };
+        this.authenticate(null, blankAuth);
+    }
+
+    logOutButton() {
+        window.ethereum.logout();
+    }
+    /** END LOGIN MANAGEMENT **/
+
+    // API call
+    fetchToken(account, existing=false, changingWallet=false) {
+        if (!existing) {
+            return RegisterTokens(account).then(result => {
+                console.log(`REGISTER TOKENS result`);
+                console.log(result);
+                this.auth.accessToken = result.accessToken;
+                this.auth.refreshToken = result.refreshToken;
+                this.authenticate(this.account, this.auth, changingWallet);
+            }).catch(err => {
+                console.log(err)
+                return GetTokens(account).then(result => {
+                    this.auth.accessToken = result.accessToken;
+                    this.auth.refreshToken = result.refreshToken;
+                    this.authenticate(this.account, this.auth, changingWallet);
+                })
+            }) 
+        } else {
+            return GetTokens(account).then(result => {
+                this.auth.accessToken = result.accessToken;
+                this.auth.refreshToken = result.refreshToken;
+                this.authenticate(this.account, this.auth, changingWallet);
+            }).catch(err => {
+                console.log(err)
+                return RegisterTokens(account).then(result => {
+                    console.log(`REGISTER TOKENS result`);
+                    console.log(result);
+                    this.auth.accessToken = result.accessToken;
+                    this.auth.refreshToken = result.refreshToken;
+                    this.authenticate(this.account, this.auth, changingWallet);
+                })
+            });
+        }
+    }
+
     // Sets items in localStorage after they're retrieved from API call
-    authenticate(account, auth) {
+    authenticate(account, auth, changingWallet=false) {
         // set core data
         this.auth = auth;
         this.account = account;
@@ -48,6 +107,9 @@ class Auth {
         localStorage.setItem('auth', JSON.stringify(this.auth));
         localStorage.setItem('account', this.account);
         Observer.$emit('login', { account: this.account });
+        if (changingWallet) {
+            Observer.$emit("blockiesChanged");
+        }
     }
 
     // API call
@@ -88,22 +150,15 @@ class Auth {
         console.log(`checking for account`)
 
         window.ethereum.on('accountsChanged', function (accounts) {
-            // ts
-            // console.log(`ACCOUNTS CHANGED.`);
-            // console.log(accounts);
-
+            console.log(`window.ethereum accountsChanged event triggered. account changed to ${accounts[0]}`);
             if (accounts.length == 0) {
-                Observer.$emit(`userLoggedOut`);
-            } else {
-                Observer.$emit(`userSwitchedWallet`, { account: this.account });
+                Observer.$emit(`userLoggedOut`, { account: '' });
+            } else if (accounts.length === 1) {
+                Observer.$emit(`userSwitchedWallet`, { account: accounts[0] });
             }
         })
 
         return window.ethereum.enable().then(result => {
-            // ts
-            // console.log(`checking if logged in to Metamask externally...`);
-            // console.log(result);
-            // console.log(`returning ${result[0]}`);
             return result[0]
         }).catch((error) => {
             // User denied account access...
@@ -120,29 +175,11 @@ class Auth {
         });
     }
 
-    // API call
-    fetchToken(account, existing=false) {
-        if (!existing) {
-            return RegisterTokens(account).then(result => {
-                console.log(`REGISTER TOKENS result`);
-                console.log(result);
-                this.auth.accessToken = result.accessToken;
-                this.auth.refreshToken = result.refreshToken;
-                this.authenticate(this.account, this.auth);
-            }).catch(err => console.log(err)) 
-        } else {
-            return GetTokens(account).then(result => {
-                this.auth.accessToken = result.accessToken;
-                this.auth.refreshToken = result.refreshToken;
-                this.authenticate(this.account, this.auth);
-            }).catch(err => console.log(err));
-        }
-    }
-
     login() {
+        // ts
         console.log(`Logging in`);
-
         if (this.restoreToken()) {
+            // ts
             console.log(`restoring token`);
             this.auth.loading = false;
             return;
@@ -167,8 +204,8 @@ class Auth {
             // Request account access if needed
             return window.ethereum.enable().then(result => {
                 // ts
-                console.log(`[LOGIN FUNCTION] checking if logged in`);
-                console.log(result);
+                // console.log(`[LOGIN FUNCTION] checking if logged in`);
+                // console.log(result);
                 window.web3.eth.getAccounts((error, result) => {
                     if (error) {
                         this.auth.loading = false;
@@ -184,6 +221,10 @@ class Auth {
             this.auth.loading = false;
             return Promise.reject();
         }
+    }
+
+    connect() {
+        window.ethereum.request({ method: 'eth_requestAccounts' })
     }
 }
 

@@ -9,13 +9,12 @@
         </template>
         
         <div v-if="!loggedIn" class="wallet-content">
-            <i>(These features are coming soon. Please use the external Metamask widget to log in and out, and get help through the About section for now)</i>
             <button @click="connectWallet">Connect Wallet</button>
             <button @click="redirectToDownload">Download Metamask</button>
         </div>
         
         <div v-else-if="loggedIn" class="wallet-content">
-            <button @click="logOut">Log Out <i>(coming soon. Please logout through Metamask)</i></button>
+            <button @click="logOut">Log Out</button>
         </div>
 
         <div v-else class="smt-spinner-circle">
@@ -37,8 +36,8 @@
     background-color: RGB(244, 247, 248) !important;
     margin-bottom: none !important;
     border-radius: 0px !important;
-    min-width: 0px !important;
-    max-width: 250px !important;        /* var(--sidebar-width) */
+    min-width: 255px !important;
+    max-width: 255px !important;        /* var(--sidebar-width) */
     opacity: 55%;
     margin: none !important;
     top: 30% !important;
@@ -52,6 +51,7 @@
 
   .overwrite .vs-dialog .vs-dialog__header {
     padding: 2% !important;
+    text-align: center;
   }
 
   .overwrite .vs-dialog .vs-dialog__content {
@@ -73,6 +73,7 @@
 
 <script>
 import Auth from "@/utils/auth";
+import Observer from "@/utils/observer";
 
 export default {
     name: "CMetamaskPopup",
@@ -87,10 +88,10 @@ export default {
     },
     watch: {
         // TS
-        // loggedIn(n, o) {
-        //     console.log(`LOGGED IN CHANGED`)
-        //     console.log(n);
-        // }
+        loggedIn(n, o) {
+            console.log(`LOGGED IN CHANGED`)
+            console.log(n);
+        }
     },
     methods: {
         setLoggedIn(newVal) {
@@ -100,19 +101,26 @@ export default {
             this.$emit(`closedMetamaskPopup`);
         },
         connectWallet() {
-
+            Auth.checkForAccount()
         },
         redirectToDownload() {
 
         },
         logOut() {
-
+            Auth.logOutButton()
+            Observer.$emit(`userLoggedOut`, { account: '' });
         },
     },
     mounted() {
         if (Auth.blockies() !== null && Auth.blockies() !== undefined) {
             this.setLoggedIn(true);
         }
+        Observer.$on("userLoggedOut", ({ account }) => {
+            
+        });
+        Observer.$on("userSwitchedWallet", ({ account }) => {
+            
+        });
     }
 }
 </script>

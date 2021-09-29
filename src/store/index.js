@@ -34,10 +34,6 @@ const store = new Vuex.Store({
   actions: {
     init({ commit }) {
       // console.log('initing');
-      // Auth.checkIfLoggedIn().then(result => {
-      //   console.log(`CHECK IF LOGGED IN result: `);
-      //   console.log(result)
-      // })
       API.tags(start_date, end_date).then(tags => {
         // console.log(tags)
         if (tags) {
@@ -59,11 +55,13 @@ const store = new Vuex.Store({
         commit('set', ['datas', datas])
       });
     },
-    switchWallet({ commit }) {
-
+    switchWallet({ commit }, account) {
+      console.log(`user switched wallet to ${account}`);
+      Auth.switchWallet(account);      
     },
     logOut({ commit }) {
-
+      console.log(`user logged out`);
+      Auth.logOut()
     },
     getImage({ state }, id) {
       if (state.imageCache[id]) {
@@ -87,7 +85,7 @@ const store = new Vuex.Store({
     },
     getMyPhotos({ state }) {
       if (state.myPhotos !== undefined) {
-        console.log(`myPhotos NOT undefined!`)
+        // console.log(`myPhotos NOT undefined!`)
         return Promise.resolve(state.myPhotos);
       } else {
         return API.myImages({ page: 1 }).then(response => {

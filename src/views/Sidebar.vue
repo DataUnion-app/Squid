@@ -307,6 +307,15 @@ export default {
       this.account = Auth.account;
     }
 
+    Observer.$on("userLoggedOut", ({ account }) => {
+      Auth.logOut();      
+      this.blockies = Auth.blockies();
+    });
+
+    Observer.$on("blockiesChanged", ({ account }) => {
+      this.blockies = Auth.blockies();
+    });
+
     for (let i = 0; i < 50; i++) this.openTooltip[i] = false;
     Observer.$on("login", ({ account }) => {
       this.blockies = Auth.blockies();
