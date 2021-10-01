@@ -128,22 +128,35 @@ class Auth {
 
     connect() {
         console.log(`CONNECTING TO ETHEREUM API...`);
-        return window.ethereum.enable().then(result => {
-            console.log(`window.ethereum.enable() SUCCEEDED. RESULT: `);
-            console.log(result);
-            return result[0]
-        }).catch((error) => {
-            // User denied account access...
-            console.log(`connect denied`);
-            console.log(error);
+        return new Promise((resolve, reject) => {
+            window.ethereum.enable().then(result => {
+                window.web3.eth.getAccounts((error, result) => {
+                    if (error) {
+                        this.auth.loading = false;
+                        reject();
+                    } else {
+                        console.log(result[0])
+                        const account = result[0];
+                        resolve(account);
+                    }
+                });
+            }).catch((error) => {
+                // User denied account access...
+                console.log(`connect denied`);
+                console.log(error);
+    
+                if (error["code"] === -32002) {
+                    // TODO: Put something interactive here
+                    console.log(`YOU HAVE A PENDING WINDOW. PLEASE LOG IN`);
+                }
 
-            if (error["code"] === -32002) {
-                // TODO: Put something interactive here
-                console.log(`YOU HAVE A PENDING WINDOW. PLEASE LOG IN`);
-            }
-
-            return Promise.reject();
-        });
+                if (error["code"] === 4001) {
+                    console.log(`YOU CANCELLED THE WINDOW.`);
+                }
+    
+                reject();
+            });
+        }) 
     }
 
     login() {
