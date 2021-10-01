@@ -33,9 +33,7 @@ const store = new Vuex.Store({
   },
   actions: {
     init({ commit }) {
-      // console.log('initing');
       API.tags(start_date, end_date).then(tags => {
-        // console.log(tags)
         if (tags) {
           const defaultTag = 'dataunion';
           const tagKeys = Object.keys(tags);
@@ -54,14 +52,6 @@ const store = new Vuex.Store({
       API.datas().then(datas => {
         commit('set', ['datas', datas])
       });
-    },
-    switchWallet({ commit }, account) {
-      console.log(`user switched wallet to ${account}`);
-      Auth.switchWallet(account);      
-    },
-    logOut({ commit }) {
-      console.log(`user logged out`);
-      Auth.logOut()
     },
     getImage({ state }, id) {
       if (state.imageCache[id]) {

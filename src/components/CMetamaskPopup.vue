@@ -14,7 +14,7 @@
         </div>
         
         <div v-else-if="loggedIn" class="wallet-content">
-            <button @click="logOut">Log Out</button>
+            <p><i>Logged in as {{ account }}. Please log out through Metamask</i></p>
         </div>
 
         <div v-else class="smt-spinner-circle">
@@ -84,6 +84,7 @@ export default {
     data() {
         return {
             loggedIn: false,
+            account: ''
         }
     },
     watch: {
@@ -91,36 +92,40 @@ export default {
         loggedIn(n, o) {
             console.log(`LOGGED IN CHANGED`)
             console.log(n);
+        },
+        account(n, o) {
+            console.log(`ACCOUNT CHANGED`)
+            console.log(n)
         }
     },
     methods: {
         setLoggedIn(newVal) {
             this.loggedIn = newVal;
         },
+        setAccount(account) {
+            this.account = account;
+        },
         handleClose() {
             this.$emit(`closedMetamaskPopup`);
         },
         connectWallet() {
-            Auth.checkForAccount()
+            Auth.connect();
         },
         redirectToDownload() {
 
         },
-        logOut() {
-            Auth.logOutButton()
-            Observer.$emit(`userLoggedOut`, { account: '' });
-        },
     },
     mounted() {
-        if (Auth.blockies() !== null && Auth.blockies() !== undefined) {
+        if (Auth.getAccount() !== '' && Auth.getAccount() !== null) {
+            this.account = Auth.getAccount();
             this.setLoggedIn(true);
-        }
-        Observer.$on("userLoggedOut", ({ account }) => {
-            
-        });
-        Observer.$on("userSwitchedWallet", ({ account }) => {
-            
-        });
+        } 
+        Observer.$on("login", ({ account }) => {
+            console.log(`[METAMASK POPUP] login triggered`);
+            console.log(`login account = ${account}`);
+            this.setLoggedIn(true);
+            this.setAccount(account);
+        })
     }
 }
 </script>

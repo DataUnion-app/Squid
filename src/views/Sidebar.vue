@@ -48,39 +48,6 @@
                   v-on:click.stop="removeData(index)"
                   class="bx bx-trash sidebar-item"
                 ></i>
-              <!-- <vs-tooltip right shadow not-hover v-model="openTooltip[index]">
-                <i
-                  @click="openTooltip[index] = !openTooltip[index]"
-                  class="bx bx-trash sidebar-item"
-                >
-                </i>
-                <template #tooltip>
-                  <div class="content-tooltip">
-                    <h4 class="center">Confirm</h4>
-                    <p>
-                      Are you sure you want to delete this user, by doing so you cannot
-                      recover the data
-                    </p>
-                    <footer class="flex">
-                      <vs-button
-                        v-on:click.stop="removeData(index)"
-                        danger
-                        block
-                      >
-                        Delete
-                      </vs-button>
-                      <vs-button
-                        @click="openTooltip[index] = false"
-                        transparent
-                        dark
-                        block
-                      >
-                        Cancel
-                      </vs-button>
-                    </footer>
-                  </div>
-                </template>
-              </vs-tooltip> -->
             </div>
           </vs-sidebar-item>
         </vs-sidebar-group>
@@ -115,7 +82,8 @@
         About
       </vs-sidebar-item>
 
-      <template #footer v-if="blockies">
+      <!-- FOOTER -->
+      <template #footer>
         <button
           @click="showMetamaskPopup" 
           class="w-full flex flex-nowrap items-center"
@@ -127,9 +95,10 @@
           />
 
           <vs-avatar class="mr-3 comment-avatar">
-            <img :src="blockies" alt="" />
+            <img v-if="blockies" :src="blockies" alt="" />
           </vs-avatar>
           <div
+            v-if="account"
             class="
               text-white-600
               font-bold
@@ -187,10 +156,13 @@ export default {
     $route() {
       if (this.$route.name !== "datas") this.active = this.$route.name;
     },
-    // blockies(newVal, oldVal) {
-    //   console.log(`BLOCKIES CHANGED = ${newVal}`);
-    //   console.log(typeof this.blockies);
-    // },
+    blockies(newVal, oldVal) {
+      console.log(`BLOCKIES CHANGED = ${newVal}`);
+      console.log(typeof this.blockies);
+    },
+    account(newVal, oldVal) {
+      console.log(`ACCOUNT CHANGED = ${newVal}`);
+    },
     // displayMetamaskPopup(newVal, oldVal) {
     //   console.log(`displayMetamaskPopup = ${newVal}`);
     // },
@@ -228,6 +200,12 @@ export default {
   methods: {
     ...mapActions(["initClickImage"]),
     // change to toggleMetamaskPopup
+    updateBlockies() {
+      this.blockies = Auth.blockies();
+    },
+    updateAccount(account) {
+      this.account = account;
+    },
     showMetamaskPopup() {
       if (this.displayMetamaskPopup) {
         this.updateDisplayMetamaskPopup(false);
@@ -304,22 +282,14 @@ export default {
   mounted() {
     if (Auth.token()) {
       this.blockies = Auth.blockies();
-      this.account = Auth.account;
+      this.account = Auth.getAccount();
     }
-
-    Observer.$on("userLoggedOut", ({ account }) => {
-      Auth.logOut();      
-      this.blockies = Auth.blockies();
-    });
-
-    Observer.$on("blockiesChanged", ({ account }) => {
-      this.blockies = Auth.blockies();
-    });
 
     for (let i = 0; i < 50; i++) this.openTooltip[i] = false;
     Observer.$on("login", ({ account }) => {
-      this.blockies = Auth.blockies();
-      this.account = account;
+      console.log(`[SIDEBAR] Login triggered`);
+      this.updateBlockies();
+      this.updateAccount(account);
     });
   },
 };

@@ -10,6 +10,7 @@
 <script>
 import Sidebar from "@/views/Sidebar.vue";
 import Observer from "@/utils/observer";
+import Auth from "@/utils/auth";
 import API from "@/utils/api";
 
 export default {
@@ -27,12 +28,17 @@ export default {
     Observer.$on("login", ({ account }) => {
       this.$store.dispatch("init");
     });
+    Observer.$on("showSiteWithoutLogin", () => {
+      this.$store.dispatch("init");
+    })
     Observer.$on("userLoggedOut", ({ account }) => {
-      this.$store.dispatch("logOut");
-    })
+      Auth.clear();
+      location.reload(); 
+    });
     Observer.$on("userSwitchedWallet", ({ account }) => {
-      this.$store.dispatch("switchWallet", account);
-    })
+      Auth.clear();
+      location.reload();
+    });
   },
 };
 </script>

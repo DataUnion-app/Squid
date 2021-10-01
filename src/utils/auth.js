@@ -10,10 +10,7 @@ class Auth {
             refreshToken: null
         };
         this.account = null;
-
-        // app signals
-        this.isLoading = false;
-        this.isLoaded = false;
+        this.loaded = false;
     }
 
     /** BEGIN GETTERS **/
@@ -21,31 +18,41 @@ class Auth {
         return utils.blockies(this.account)
     }
 
+    getAccount() {
+        return this.account;
+    }
+
     token() {
         return this.auth.accessToken;
     }
 
-    loaded() {
-        return this.isLoaded;
-    }
-
-    loading() {
-        return this.isLoading;
+    isLoaded() {
+        return this.loaded
     }
     /** END GETTERS **/
 
-    /** BEGIN LOGIN MANAGEMENT: Logging in, logging out, switching wallet **/
-    
-    // this function runs when the user switches wallet via the Metamask app.
-    switchWallet(account) {
-        console.log(`Switching wallet in auth...`);
-        const existing = false;                     // assuming the default option.
-        const changingWallet = true;
-        this.fetchToken(account, existing, changingWallet); 
+    // API call
+    fetchToken(account) {
+        return GetTokens(account).then(result => {
+            console.log(result)
+            const authObj = {
+                accessToken: result.accessToken,
+                refreshToken: result.refreshToken
+            }
+            this.authenticate(account, authObj);
+        }).catch(err => {
+            console.log(err)
+            return RegisterTokens(account).then(result => {
+                const authObj = {
+                    accessToken: result.accessToken,
+                    refreshToken: result.refreshToken
+                }
+                this.authenticate(account, authObj);
+            })
+        })
     }
 
-    logOut() {
-        console.log(`logging out in auth...`);
+    clear() {
         const blankAuth = {
             accessToken: null,
             refreshToken: null
@@ -53,63 +60,18 @@ class Auth {
         this.authenticate(null, blankAuth);
     }
 
-    logOutButton() {
-        window.ethereum.logout();
-    }
-    /** END LOGIN MANAGEMENT **/
-
-    // API call
-    fetchToken(account, existing=false, changingWallet=false) {
-        if (!existing) {
-            return RegisterTokens(account).then(result => {
-                console.log(`REGISTER TOKENS result`);
-                console.log(result);
-                this.auth.accessToken = result.accessToken;
-                this.auth.refreshToken = result.refreshToken;
-                this.authenticate(this.account, this.auth, changingWallet);
-            }).catch(err => {
-                console.log(err)
-                return GetTokens(account).then(result => {
-                    this.auth.accessToken = result.accessToken;
-                    this.auth.refreshToken = result.refreshToken;
-                    this.authenticate(this.account, this.auth, changingWallet);
-                })
-            }) 
-        } else {
-            return GetTokens(account).then(result => {
-                this.auth.accessToken = result.accessToken;
-                this.auth.refreshToken = result.refreshToken;
-                this.authenticate(this.account, this.auth, changingWallet);
-            }).catch(err => {
-                console.log(err)
-                return RegisterTokens(account).then(result => {
-                    console.log(`REGISTER TOKENS result`);
-                    console.log(result);
-                    this.auth.accessToken = result.accessToken;
-                    this.auth.refreshToken = result.refreshToken;
-                    this.authenticate(this.account, this.auth, changingWallet);
-                })
-            });
-        }
-    }
-
     // Sets items in localStorage after they're retrieved from API call
-    authenticate(account, auth, changingWallet=false) {
+    authenticate(account, auth) {
         // set core data
+        console.log(auth);
         this.auth = auth;
         this.account = account;
-
-        // set signals
-        this.isLoaded = true;
-        this.isLoading = false;
+        this.loaded = true;
         
         // set storage
-        localStorage.setItem('auth', JSON.stringify(this.auth));
-        localStorage.setItem('account', this.account);
-        Observer.$emit('login', { account: this.account });
-        if (changingWallet) {
-            Observer.$emit("blockiesChanged");
-        }
+        localStorage.setItem('auth', JSON.stringify(auth));
+        localStorage.setItem('account', account);
+        Observer.$emit('login', { account: account });
     }
 
     // API call
@@ -136,19 +98,23 @@ class Auth {
     }
 
     // Checks if auth data (accessToken, account) already exist in LocalStorage and then brings them into the code.
-    restoreToken() {
+    checkForAccount() {
         const auth = JSON.parse(localStorage.getItem('auth'));
         const account = localStorage.getItem('account');
-        if (auth && auth.accessToken && account && account != 'null') {
+        
+        console.log(`=== DATA RETRIEVED FROM LOCALSTORAGE: ===`)
+        console.log(auth);
+        console.log(account);
+
+        if (auth && auth.accessToken && auth.refreshToken && account && account != 'null') {
             this.authenticate(account, auth);
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
-    checkForAccount() {
-        console.log(`checking for account`)
-
+    listenForAccountChange() {
         window.ethereum.on('accountsChanged', function (accounts) {
             console.log(`window.ethereum accountsChanged event triggered. account changed to ${accounts[0]}`);
             if (accounts.length == 0) {
@@ -157,12 +123,17 @@ class Auth {
                 Observer.$emit(`userSwitchedWallet`, { account: accounts[0] });
             }
         })
+    }
 
+    connect() {
+        console.log(`CONNECTING TO ETHEREUM API...`);
         return window.ethereum.enable().then(result => {
+            console.log(`window.ethereum.enable() SUCCEEDED. RESULT: `);
+            console.log(result);
             return result[0]
         }).catch((error) => {
             // User denied account access...
-            console.log(`checkforAccount denied`);
+            console.log(`connect denied`);
             console.log(error);
 
             if (error["code"] === -32002) {
@@ -170,22 +141,23 @@ class Auth {
                 console.log(`YOU HAVE A PENDING WINDOW. PLEASE LOG IN`);
             }
 
-            this.auth.loading = false;
             return Promise.reject();
         });
     }
 
     login() {
         // ts
-        console.log(`Logging in`);
-        if (this.restoreToken()) {
+        // console.log(`Logging in`);
+        if (this.checkForAccount()) {
             // ts
-            console.log(`restoring token`);
-            this.auth.loading = false;
+            console.log(`restoring token: ${this.checkForAccount()}`);
             return;
+        } else {
+            console.log(`restoring token: ${this.checkForAccount()}`);
         }
         // new browsers where window.web3 is gone
-        else if (window.ethereum) {
+        
+        if (window.ethereum) {
             window.web3 = new Web3(window.ethereum);
         }
         // Legacy dapp browsers which still use window.web3
@@ -195,36 +167,20 @@ class Auth {
         // Non-dapp browsers...
         else {
             console.log(`This is not a dApp Browser! Please use our app on a dapp browser.`);
-            this.auth.loading = false;
             return Promise.reject();
         }
 
         try {
             console.log(`[LOGIN FUNCTION] enabling ethereum...`);
-            // Request account access if needed
-            return window.ethereum.enable().then(result => {
-                // ts
-                // console.log(`[LOGIN FUNCTION] checking if logged in`);
-                // console.log(result);
-                window.web3.eth.getAccounts((error, result) => {
-                    if (error) {
-                        this.auth.loading = false;
-                        return Promise.reject();
-                    } else {
-                        const account = result[0];
-                        return this.fetchToken(account);
-                    }
-                });
+            return this.connect().then(account => {
+                console.log(`fetching token for ${account}...`)
+                return this.fetchToken(account)
             });
         } catch (error) {
+            console.log(`rejected login.`);
             // User denied account access...
-            this.auth.loading = false;
             return Promise.reject();
         }
-    }
-
-    connect() {
-        window.ethereum.request({ method: 'eth_requestAccounts' })
     }
 }
 
