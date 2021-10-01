@@ -33,6 +33,7 @@ class Auth {
 
     // API call
     fetchToken(account) {
+        console.log(`fetching token on account = ${account}`)
         return GetTokens(account).then(result => {
             console.log(result)
             const authObj = {

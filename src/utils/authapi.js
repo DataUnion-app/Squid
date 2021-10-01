@@ -97,7 +97,7 @@ export const Register = async (accountId) => {
 /***** TWO FUNCTIONS TO RETRIEVE AUTHENTICATION TOKENS FROM THE BACK-END. *****/
 /******************************************************************************/
 export const GetTokens = async (accountId) => {
-    console.log(`[authapi.js] running GetTokens`);
+    console.log(`[authapi.js] running GetTokens on ${accountId}`);
     return new Promise((resolve, reject) => {
         GetNonce(accountId).then(nonceObject => {
             if (nonceObject["status"] != "not found") {
