@@ -2,7 +2,7 @@
   <div class="">
     <vs-sidebar background="dark" textWhite v-model="active" open :key="force">
       <template #logo>
-        <img class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg" />
+        <img v-on:click.stop="" class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg" />
         <div class="text-5xl font-extrabold text-purple-600">Squid</div>
       </template>
       <vs-sidebar-item id="MyData">

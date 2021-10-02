@@ -43,6 +43,9 @@ class Auth {
             this.authenticate(account, authObj);
         }).catch(err => {
             console.log(err)
+            if (err["code"] === 4001) {         // user cancelled
+                return null;
+            }
             return RegisterTokens(account).then(result => {
                 const authObj = {
                     accessToken: result.accessToken,
@@ -127,15 +130,15 @@ class Auth {
     }
 
     connect() {
-        console.log(`CONNECTING TO ETHEREUM API...`);
+        // console.log(`CONNECTING TO ETHEREUM API...`);
         return new Promise((resolve, reject) => {
             window.ethereum.enable().then(result => {
                 window.web3.eth.getAccounts((error, result) => {
                     if (error) {
+                        console.log(error);
                         this.auth.loading = false;
                         reject();
                     } else {
-                        console.log(result[0])
                         const account = result[0];
                         resolve(account);
                     }
@@ -147,30 +150,43 @@ class Auth {
     
                 if (error["code"] === -32002) {
                     // TODO: Put something interactive here
-                    console.log(`YOU HAVE A PENDING WINDOW. PLEASE LOG IN`);
+                    reject(`YOU HAVE A PENDING WINDOW. PLEASE LOG IN`);
                 }
 
                 if (error["code"] === 4001) {
-                    console.log(`YOU CANCELLED THE WINDOW.`);
+                    reject(`YOU CANCELLED THE WINDOW.`);
                 }
     
-                reject();
+               
             });
         }) 
     }
 
     login() {
-        // ts
-        // console.log(`Logging in`);
+        // First, checks if there's an account already logged in. If yes, it ends the function instantly.
+        // otherwise, if there's no account already logged in, we .connect()
         if (this.checkForAccount()) {
-            // ts
-            console.log(`restoring token: ${this.checkForAccount()}`);
+            this.loaded = false;
             return;
         } else {
-            console.log(`restoring token: ${this.checkForAccount()}`);
+            try {
+                console.log(`[LOGIN FUNCTION] enabling ethereum...`);
+                return this.connect().then(account => {
+                    console.log(`fetching token for ${account}...`);
+                    return this.fetchToken(account);
+                }).catch(err => {
+                    return Promise.reject()
+                });
+            } catch (error) {
+                this.loaded = false;
+                return Promise.reject(error);
+            }
         }
+    }
+
+    // We need to set web3 variables before we do anything else. See main.js.
+    setWeb3() {
         // new browsers where window.web3 is gone
-        
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum);
         }
@@ -181,18 +197,6 @@ class Auth {
         // Non-dapp browsers...
         else {
             console.log(`This is not a dApp Browser! Please use our app on a dapp browser.`);
-            return Promise.reject();
-        }
-
-        try {
-            console.log(`[LOGIN FUNCTION] enabling ethereum...`);
-            return this.connect().then(account => {
-                console.log(`fetching token for ${account}...`)
-                return this.fetchToken(account)
-            });
-        } catch (error) {
-            console.log(`rejected login.`);
-            // User denied account access...
             return Promise.reject();
         }
     }

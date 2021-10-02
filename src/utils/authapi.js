@@ -111,20 +111,16 @@ export const GetTokens = async (accountId) => {
                     Login(accountId, signature).then((tokens) => {
                         resolve(tokens)
                     }).catch((err) => {
-                        console.log(`[auth.ts] Login error = ${err}`)
                         return reject(err)
                     })
                 }).catch((err) => {
-                    console.log(`[Auth.ts] Sign ERROR = ${err}`)
-                    return reject()
+                    return reject(err);
                 })
             } else {
-                console.log(`[auth.ts] GetNonce request: ${nonceObject["status"]}. Please register.`)
-                return reject()
+                return reject(`GetNonce request: ${nonceObject["status"]}. Please register.`)
             }
         }).catch((err) => {
-            console.log(`[auth.ts] GetNonce request ERROR = ${err}`)
-            return reject()
+            return reject(err)
         })
     })
 }
