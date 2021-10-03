@@ -19,25 +19,29 @@ export default {
     Sidebar,
   },
   data() {
-    return {};
+    return {
+      connecting: false
+    };
   },
   computed: {},
   methods: {},
   mounted() {
     // console.log(`app mounted`);
     Observer.$on("login", ({ account }) => {
-      this.$store.dispatch("init");
+      
     });
-    Observer.$on("showSiteWithoutLogin", () => {
-      this.$store.dispatch("init");
-    })
-    Observer.$on("userLoggedOut", ({ account }) => {
+    Observer.$on("logout", ({ account }) => {
       Auth.clear();
       location.reload(); 
     });
-    Observer.$on("userSwitchedWallet", ({ account }) => {
-      Auth.clear();
-      location.reload();
+    Observer.$on("userSwitchedWallet", ({ account, prevAccount }) => {
+      if (prevAccount !== '' && prevAccount !== undefined) {
+        Auth.clear();
+        location.reload();
+      }
+    });
+    Observer.$on("tryingToConnect", () => {
+      this.connecting = true;
     });
   },
 };

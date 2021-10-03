@@ -31,6 +31,13 @@ class Auth {
     }
     /** END GETTERS **/
 
+    /** BEGIN SETTERS **/
+    setAccount(acc) {
+        this.account = acc;
+    }
+
+    /** END SETTERS **/
+
     // API call
     fetchToken(account) {
         console.log(`fetching token on account = ${account}`)
@@ -44,6 +51,7 @@ class Auth {
         }).catch(err => {
             console.log(err)
             if (err["code"] === 4001) {         // user cancelled
+                Observer.$emit("rejectedLogin");
                 return null;
             }
             return RegisterTokens(account).then(result => {
@@ -52,6 +60,11 @@ class Auth {
                     refreshToken: result.refreshToken
                 }
                 this.authenticate(account, authObj);
+            }).catch(err => {
+                if (err["code"] === 4001) {         // user cancelled
+                    Observer.$emit("rejectedLogin");
+                    return null;
+                }
             })
         })
     }
@@ -61,7 +74,8 @@ class Auth {
             accessToken: null,
             refreshToken: null
         };
-        this.authenticate(null, blankAuth);
+        this.account = null;
+        return this.authenticate(null, blankAuth);
     }
 
     // Sets items in localStorage after they're retrieved from API call
@@ -75,7 +89,9 @@ class Auth {
         // set storage
         localStorage.setItem('auth', JSON.stringify(auth));
         localStorage.setItem('account', account);
-        Observer.$emit('login', { account: account });
+        if (account !== null && auth !== { accessToken: null, refreshToken: null }) {
+            Observer.$emit("login", { account: account });
+        }
     }
 
     // API call
@@ -106,6 +122,7 @@ class Auth {
         const auth = JSON.parse(localStorage.getItem('auth'));
         const account = localStorage.getItem('account');
         
+        // ts
         console.log(`=== DATA RETRIEVED FROM LOCALSTORAGE: ===`)
         console.log(auth);
         console.log(account);
@@ -119,12 +136,12 @@ class Auth {
     }
 
     listenForAccountChange() {
+        const acc = this.getAccount()
         window.ethereum.on('accountsChanged', function (accounts) {
-            console.log(`window.ethereum accountsChanged event triggered. account changed to ${accounts[0]}`);
             if (accounts.length == 0) {
-                Observer.$emit(`userLoggedOut`, { account: '' });
-            } else if (accounts.length === 1) {
-                Observer.$emit(`userSwitchedWallet`, { account: accounts[0] });
+                Observer.$emit(`logout`, { account: '' });
+            } else if (accounts.length === 1) {                
+                Observer.$emit(`userSwitchedWallet`, { account: accounts[0], prevAccount: acc });
             }
         })
     }
@@ -166,19 +183,21 @@ class Auth {
         // First, checks if there's an account already logged in. If yes, it ends the function instantly.
         // otherwise, if there's no account already logged in, we .connect()
         if (this.checkForAccount()) {
-            this.loaded = false;
+            this.loaded = true;
             return;
         } else {
             try {
-                console.log(`[LOGIN FUNCTION] enabling ethereum...`);
+                Observer.$emit("tryingToConnect");
                 return this.connect().then(account => {
-                    console.log(`fetching token for ${account}...`);
                     return this.fetchToken(account);
                 }).catch(err => {
-                    return Promise.reject()
+                    Observer.$emit("rejectedLogin");
+                    this.loaded = true;
+                    return Promise.reject(err)
                 });
             } catch (error) {
-                this.loaded = false;
+                Observer.$emit("rejectedLogin");
+                this.loaded = true;
                 return Promise.reject(error);
             }
         }

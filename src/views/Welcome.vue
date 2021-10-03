@@ -75,6 +75,7 @@ export default {
     qued () {  }    
   },
   mounted() {
+    console.log(`mounted Welcome page`)
   }
 }
 </script>

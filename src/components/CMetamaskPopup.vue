@@ -9,7 +9,7 @@
         </template>
         
         <div v-if="!loggedIn" class="wallet-content">
-            <button @click="connectWallet">Connect Wallet</button>
+            <button @click="connectWallet">Connect</button>
             <button @click="redirectToDownload">Download Metamask</button>
         </div>
         

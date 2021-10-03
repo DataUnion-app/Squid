@@ -33,6 +33,7 @@ const store = new Vuex.Store({
   },
   actions: {
     init({ commit }) {
+      console.log(`initing...`)
       API.tags(start_date, end_date).then(tags => {
         if (tags) {
           const defaultTag = 'dataunion';

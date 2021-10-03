@@ -96,6 +96,7 @@
 
           <vs-avatar class="mr-3 comment-avatar">
             <img v-if="blockies" :src="blockies" alt="" />
+            <img v-if="!blockies" src="@/assets/metamask.svg" alt="" />
           </vs-avatar>
           <div
             v-if="account"
@@ -107,6 +108,28 @@
             "
           >
             {{ account }}
+          </div>
+          <div
+            v-else-if="!account && connecting"
+            class="
+              text-white-600
+              font-bold
+              text-sm
+              overflow-ellipsis overflow-hidden
+            "
+          >
+            Connecting your wallet...
+          </div>
+          <div
+            v-else
+            class="
+              text-white-600
+              font-bold
+              text-sm
+              overflow-ellipsis overflow-hidden
+            "
+          >
+            Connect Wallet
           </div>
         </button>
       </template>
@@ -167,6 +190,10 @@ export default {
     //   console.log(`displayMetamaskPopup = ${newVal}`);
     // },
     active: function () {
+      // ts
+      console.log(`[SIDEBAR] running active...`);
+      console.log(`this.active = ${this.active}`);
+      
       if (this.$route.name != this.active) {
         for (var i = 0; i < this.datas.length; i++) {
           if (this.active == this.datas[i].name) break;
@@ -187,6 +214,7 @@ export default {
       active: "Home",
       blockies: null,
       account: null,
+      connecting: false,
       showdatas: false,
       dataName: "",
       openTooltip: [],
@@ -288,9 +316,21 @@ export default {
     for (let i = 0; i < 50; i++) this.openTooltip[i] = false;
     Observer.$on("login", ({ account }) => {
       console.log(`[SIDEBAR] Login triggered`);
+      this.connecting = false;
       this.updateBlockies();
       this.updateAccount(account);
     });
+
+    Observer.$on("rejectedLogin", () => {
+      this.connecting = false;
+    });
+
+    Observer.$on("tryingToConnect", () => {
+      this.connecting = true;
+    });
+
+    console.log(`this.account = ${this.account}`);
+    console.log(`!this.account && this.connecting = ${!this.account && this.connecting}`);
   },
 };
 </script>

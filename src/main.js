@@ -38,7 +38,6 @@ const app = new Vue({
 
 // every time the page (re)loads, this codeblock runs.
 window.addEventListener("load", () => {
-  console.log(`window loaded`);
   Auth.setWeb3();
   Auth.listenForAccountChange();
   Auth.login();
