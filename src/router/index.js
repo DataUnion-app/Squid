@@ -70,20 +70,11 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // ts
-  // console.log(`routing... Auth.isLoaded() = ${Auth.isLoaded()}`)
-  // console.log(`to = ${to.name}`)
-  // console.log(`from = ${from.name}`)
   if (!Auth.token() && to.name != 'Welcome') { 
-    // ts
-    console.log(`USER NOT LOGGED IN... ROUTING TO WELCOME...`)
-    next({ name: 'Welcome' }); 
+    next({ name: 'Welcome' });
+    return;
   }
-  else if (Auth.token() && to.name != 'Welcome') {
-    // ts 
-    console.log(`USER IS LOGGED IN, ROUTING TO NEXT...`) 
-    next(); 
-  }
+  next(); 
 })
 
 Observer.$on('login', ({ account }) => {
