@@ -89,14 +89,14 @@ export default {
     },
     watch: {
         // TS
-        loggedIn(n, o) {
-            console.log(`LOGGED IN CHANGED`)
-            console.log(n);
-        },
-        account(n, o) {
-            console.log(`ACCOUNT CHANGED`)
-            console.log(n)
-        }
+        // loggedIn(n, o) {
+        //     console.log(`LOGGED IN CHANGED`)
+        //     console.log(n);
+        // },
+        // account(n, o) {
+        //     console.log(`ACCOUNT CHANGED`)
+        //     console.log(n)
+        // }
     },
     methods: {
         setLoggedIn(newVal) {
@@ -121,8 +121,9 @@ export default {
             this.setLoggedIn(true);
         } 
         Observer.$on("login", ({ account }) => {
-            console.log(`[METAMASK POPUP] login triggered`);
-            console.log(`login account = ${account}`);
+            // ts
+            // console.log(`[METAMASK POPUP] login triggered`);
+            // console.log(`login account = ${account}`);
             this.setLoggedIn(true);
             this.setAccount(account);
         })

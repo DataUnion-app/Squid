@@ -59,10 +59,10 @@ export default {
   },
   mounted() {
     // Maps ALL the thumbnails to the icons on the map.
-    console.log(this.photos);
+    // console.log(this.photos);
     if (this.photos.length == 0) {
       this.getMyPhotos().then(photos => {
-        console.log(photos);
+        // console.log(photos);
         this.photos = photos;
         let i, length = photos.length;
         let tempImage = [];

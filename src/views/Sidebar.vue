@@ -179,20 +179,20 @@ export default {
     $route() {
       if (this.$route.name !== "datas") this.active = this.$route.name;
     },
-    blockies(newVal, oldVal) {
-      console.log(`BLOCKIES CHANGED = ${newVal}`);
-      console.log(typeof this.blockies);
-    },
-    account(newVal, oldVal) {
-      console.log(`ACCOUNT CHANGED = ${newVal}`);
-    },
+    // blockies(newVal, oldVal) {
+    //   console.log(`BLOCKIES CHANGED = ${newVal}`);
+    //   console.log(typeof this.blockies);
+    // },
+    // account(newVal, oldVal) {
+    //   console.log(`ACCOUNT CHANGED = ${newVal}`);
+    // },
     // displayMetamaskPopup(newVal, oldVal) {
     //   console.log(`displayMetamaskPopup = ${newVal}`);
     // },
     active: function () {
       // ts
-      console.log(`[SIDEBAR] running active...`);
-      console.log(`this.active = ${this.active}`);
+      // console.log(`[SIDEBAR] running active...`);
+      // console.log(`this.active = ${this.active}`);
       
       if (this.$route.name != this.active) {
         for (var i = 0; i < this.datas.length; i++) {
@@ -315,7 +315,7 @@ export default {
 
     for (let i = 0; i < 50; i++) this.openTooltip[i] = false;
     Observer.$on("login", ({ account }) => {
-      console.log(`[SIDEBAR] Login triggered`);
+      // console.log(`[SIDEBAR] Login triggered`);
       this.connecting = false;
       this.updateBlockies();
       this.updateAccount(account);
@@ -329,8 +329,9 @@ export default {
       this.connecting = true;
     });
 
-    console.log(`this.account = ${this.account}`);
-    console.log(`!this.account && this.connecting = ${!this.account && this.connecting}`);
+    // ts
+    // console.log(`this.account = ${this.account}`);
+    // console.log(`!this.account && this.connecting = ${!this.account && this.connecting}`);
   },
 };
 </script>

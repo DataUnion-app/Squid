@@ -27,9 +27,7 @@ export default {
   methods: {},
   mounted() {
     // console.log(`app mounted`);
-    Observer.$on("login", ({ account }) => {
-      
-    });
+    this.$store.dispatch("init");
     Observer.$on("logout", ({ account }) => {
       Auth.clear();
       location.reload(); 

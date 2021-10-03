@@ -40,7 +40,7 @@ class Auth {
 
     // API call
     fetchToken(account) {
-        console.log(`fetching token on account = ${account}`)
+        // console.log(`fetching token on account = ${account}`)
         return GetTokens(account).then(result => {
             console.log(result)
             const authObj = {
@@ -81,7 +81,7 @@ class Auth {
     // Sets items in localStorage after they're retrieved from API call
     authenticate(account, auth) {
         // set core data
-        console.log(auth);
+        // console.log(auth);
         this.auth = auth;
         this.account = account;
         this.loaded = true;
@@ -123,9 +123,9 @@ class Auth {
         const account = localStorage.getItem('account');
         
         // ts
-        console.log(`=== DATA RETRIEVED FROM LOCALSTORAGE: ===`)
-        console.log(auth);
-        console.log(account);
+        // console.log(`=== DATA RETRIEVED FROM LOCALSTORAGE: ===`)
+        // console.log(auth);
+        // console.log(account);
 
         if (auth && auth.accessToken && auth.refreshToken && account && account != 'null') {
             this.authenticate(account, auth);
@@ -162,8 +162,8 @@ class Auth {
                 });
             }).catch((error) => {
                 // User denied account access...
-                console.log(`connect denied`);
-                console.log(error);
+                // console.log(`connect denied`);
+                // console.log(error);
     
                 if (error["code"] === -32002) {
                     // TODO: Put something interactive here
@@ -215,7 +215,7 @@ class Auth {
         }
         // Non-dapp browsers...
         else {
-            console.log(`This is not a dApp Browser! Please use our app on a dapp browser.`);
+            // console.log(`This is not a dApp Browser! Please use our app on a dapp browser.`);
             return Promise.reject();
         }
     }

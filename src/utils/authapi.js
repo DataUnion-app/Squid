@@ -97,7 +97,7 @@ export const Register = async (accountId) => {
 /***** TWO FUNCTIONS TO RETRIEVE AUTHENTICATION TOKENS FROM THE BACK-END. *****/
 /******************************************************************************/
 export const GetTokens = async (accountId) => {
-    console.log(`[authapi.js] running GetTokens on ${accountId}`);
+    // console.log(`[authapi.js] running GetTokens on ${accountId}`);
     return new Promise((resolve, reject) => {
         GetNonce(accountId).then(nonceObject => {
             if (nonceObject["status"] != "not found") {
@@ -126,17 +126,17 @@ export const GetTokens = async (accountId) => {
 }
 
 export const RegisterTokens = async (accountId) => {
-    console.log(`[authapi.js] running RegisterTokens`);
+    // console.log(`[authapi.js] running RegisterTokens`);
     return new Promise((resolve, reject) => {
         Register(accountId).then(nonceNumber => {
             if (nonceNumber !== 0) {
                 const nonce = nonceNumber.toString()
                 Sign(nonce, accountId).then(signObject => {
-                    console.log(signObject)
+                    // console.log(signObject)
                     const signObjectString = JSON.stringify(signObject)
                     const signObjectJson = JSON.parse(signObjectString)
                     const signature = signObjectJson["signed"]
-                    console.log(`signature = ${signature}`);
+                    // console.log(`signature = ${signature}`);
 
                     Login(accountId, signature).then((tokens) => {
                         if (tokens.accessToken !== undefined && tokens.refreshToken !== undefined) {
