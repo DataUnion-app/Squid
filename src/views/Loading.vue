@@ -1,5 +1,8 @@
 <template>
-  <div class="smt-spinner"></div>
+  <div>
+    LOADING
+    <div class="smt-spinner"></div>
+  </div>
 </template>
 
 <script>
@@ -25,6 +28,7 @@ export default {
   methods: {
   },
   mounted() {
+    console.log(`RENDERING LOADING...`)
   }
 }
 </script>

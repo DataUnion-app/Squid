@@ -59,70 +59,75 @@ export default {
   },
   mounted() {
     // Maps ALL the thumbnails to the icons on the map.
-    API.myImages({ page: 1 }, 'map').then((photos) => {
-      this.photos = photos;
-      let i, length = photos.length;
-      let tempImage = [];
-      for (i = 0; i < length; i++) tempImage.push(photos[i].hash);
+    // console.log(this.photos);
+    if (this.photos.length == 0) {
+      this.getMyPhotos().then(photos => {
+        // console.log(photos);
+        this.photos = photos;
+        let i, length = photos.length;
+        let tempImage = [];
+        for (i = 0; i < length; i++) tempImage.push(photos[i].hash);
 
-      //
-      API.imageGeoloc(tempImage, "GeoLocation").then((images) => {
-        this.markers = images;
-        let marker;
+        API.imageGeoloc(tempImage, "GeoLocation").then(images => {
+          this.markers = images;
+          let marker;
 
-        for (let i = 0; i < this.markers.length; i++) {
-          if (this.markers[i].image_id == this.hash) {
-            // map.flyTo({
-            //   center: [
-            //     this.markers[i].value.longitude,
-            //     this.markers[i].value.latitude,
-            //   ],
-            // });
-          } else {
-            // map.flyTo({
-            //   center: [
-            //     this.markers[0].value.longitude,
-            //     this.markers[0].value.latitude,
-            //   ],
-            // });
-            this.$store.dispatch("setImageWorld", "");
+          for (let i = 0; i < this.markers.length; i++) {
+            if (this.markers[i].image_id == this.hash) {
+              // map.flyTo({
+              //   center: [
+              //     this.markers[i].value.longitude,
+              //     this.markers[i].value.latitude,
+              //   ],
+              // });
+            } else {
+              // map.flyTo({
+              //   center: [
+              //     this.markers[0].value.longitude,
+              //     this.markers[0].value.latitude,
+              //   ],
+              // });
+              this.$store.dispatch("setImageWorld", "");
+            }
+
+            // Create image on world map
+            const markerItem = this.markers[i];
+            
+            const markerIcon = document.createElement("img");
+            markerIcon.style.width = "50px";
+            markerIcon.style.height = "50px";
+            markerIcon.style.borderRadius = "50%";
+            markerIcon.style.backgroundSize = "cover";
+            markerIcon.src = this.imagebyId(markerItem.image_id);
+            markerIcon.style.cursor = "pointer";
+
+            // add event listener to the image
+            markerIcon.addEventListener("click", () => {
+              // ts 
+              // console.log(`=== [WELCOME index.vue] CLICKED! ===\nimage_id = ${markerItem.image_id}`);
+              
+              let newHash = markerItem.image_id;
+              this.updateHash(newHash);
+              this.updateShowDetails(true);
+              this.detailsMap();
+              
+              // map.flyTo({
+              //   center: [markerItem.value.longitude, markerItem.value.latitude],
+              // });
+            });
+
+            marker = new window.maplibregl.Marker(markerIcon)
+              .setLngLat([
+                this.markers[i].value.longitude,
+                this.markers[i].value.latitude,
+              ])
+              .addTo(map);
           }
-
-          // Create image on world map
-          const markerItem = this.markers[i];
-          
-          const markerIcon = document.createElement("img");
-          markerIcon.style.width = "50px";
-          markerIcon.style.height = "50px";
-          markerIcon.style.borderRadius = "50%";
-          markerIcon.style.backgroundSize = "cover";
-          markerIcon.src = this.imagebyId(markerItem.image_id);
-          markerIcon.style.cursor = "pointer";
-
-          // add event listener to the image
-          markerIcon.addEventListener("click", () => {
-            // ts 
-            // console.log(`=== [WELCOME index.vue] CLICKED! ===\nimage_id = ${markerItem.image_id}`);
-            
-            let newHash = markerItem.image_id;
-            this.updateHash(newHash);
-            this.updateShowDetails(true);
-            this.detailsMap();
-            
-            // map.flyTo({
-            //   center: [markerItem.value.longitude, markerItem.value.latitude],
-            // });
-          });
-
-          marker = new window.maplibregl.Marker(markerIcon)
-            .setLngLat([
-              this.markers[i].value.longitude,
-              this.markers[i].value.latitude,
-            ])
-            .addTo(map);
-        }
+        });
+      }).catch(err => {
+        console.log(err);
       });
-    });
+    }
 
     const map = new window.maplibregl.Map({
       container: "map", // container id
@@ -135,7 +140,7 @@ export default {
     ...mapGetters(["imagebyId", "getImageWorld"]),
   },
   methods: {
-    ...mapActions(["getImage", "getTags"]),
+    ...mapActions(["getImage", "getTags", "getMyPhotos"]),
     closedPopup() {
       // ts
       // console.log(`[WELCOME index.vue] closedPopup() called`);

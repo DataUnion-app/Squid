@@ -2,7 +2,7 @@
   <div class="">
     <vs-sidebar background="dark" textWhite v-model="active" open :key="force">
       <template #logo>
-        <img class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg" />
+        <img v-on:click.stop="" class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg" />
         <div class="text-5xl font-extrabold text-purple-600">Squid</div>
       </template>
       <vs-sidebar-item id="MyData">
@@ -48,39 +48,6 @@
                   v-on:click.stop="removeData(index)"
                   class="bx bx-trash sidebar-item"
                 ></i>
-              <!-- <vs-tooltip right shadow not-hover v-model="openTooltip[index]">
-                <i
-                  @click="openTooltip[index] = !openTooltip[index]"
-                  class="bx bx-trash sidebar-item"
-                >
-                </i>
-                <template #tooltip>
-                  <div class="content-tooltip">
-                    <h4 class="center">Confirm</h4>
-                    <p>
-                      Are you sure you want to delete this user, by doing so you cannot
-                      recover the data
-                    </p>
-                    <footer class="flex">
-                      <vs-button
-                        v-on:click.stop="removeData(index)"
-                        danger
-                        block
-                      >
-                        Delete
-                      </vs-button>
-                      <vs-button
-                        @click="openTooltip[index] = false"
-                        transparent
-                        dark
-                        block
-                      >
-                        Cancel
-                      </vs-button>
-                    </footer>
-                  </div>
-                </template>
-              </vs-tooltip> -->
             </div>
           </vs-sidebar-item>
         </vs-sidebar-group>
@@ -114,12 +81,25 @@
         </template>
         About
       </vs-sidebar-item>
-      <template #footer v-if="blockies">
-        <div class="w-full flex flex-nowrap items-center">
+
+      <!-- FOOTER -->
+      <template #footer>
+        <button
+          @click="showMetamaskPopup" 
+          class="w-full flex flex-nowrap items-center"
+        >
+          <CMetamaskPopup
+            class="metamask-relative"
+            :display="displayMetamaskPopup"
+            @closedMetamaskPopup="showMetamaskPopup"
+          />
+
           <vs-avatar class="mr-3 comment-avatar">
-            <img :src="blockies" alt="" />
+            <img v-if="blockies" :src="blockies" alt="" />
+            <img v-if="!blockies" src="@/assets/metamask.svg" alt="" />
           </vs-avatar>
           <div
+            v-if="account"
             class="
               text-white-600
               font-bold
@@ -129,8 +109,31 @@
           >
             {{ account }}
           </div>
-        </div>
+          <div
+            v-else-if="!account && connecting"
+            class="
+              text-white-600
+              font-bold
+              text-sm
+              overflow-ellipsis overflow-hidden
+            "
+          >
+            Connecting your wallet...
+          </div>
+          <div
+            v-else
+            class="
+              text-white-600
+              font-bold
+              text-sm
+              overflow-ellipsis overflow-hidden
+            "
+          >
+            Connect Wallet
+          </div>
+        </button>
       </template>
+
     </vs-sidebar>
     <vs-dialog v-model="showdatas">
       <template #header>
@@ -153,6 +156,12 @@
   </div>
 </template>
 
+<style>
+  .metamask-relative {
+    top: 75%;
+  }
+</style>
+
 <script>
 import { mapState, mapActions } from "vuex";
 
@@ -170,7 +179,21 @@ export default {
     $route() {
       if (this.$route.name !== "datas") this.active = this.$route.name;
     },
+    // blockies(newVal, oldVal) {
+    //   console.log(`BLOCKIES CHANGED = ${newVal}`);
+    //   console.log(typeof this.blockies);
+    // },
+    // account(newVal, oldVal) {
+    //   console.log(`ACCOUNT CHANGED = ${newVal}`);
+    // },
+    // displayMetamaskPopup(newVal, oldVal) {
+    //   console.log(`displayMetamaskPopup = ${newVal}`);
+    // },
     active: function () {
+      // ts
+      // console.log(`[SIDEBAR] running active...`);
+      // console.log(`this.active = ${this.active}`);
+      
       if (this.$route.name != this.active) {
         for (var i = 0; i < this.datas.length; i++) {
           if (this.active == this.datas[i].name) break;
@@ -191,10 +214,12 @@ export default {
       active: "Home",
       blockies: null,
       account: null,
+      connecting: false,
       showdatas: false,
       dataName: "",
       openTooltip: [],
       force: 0,
+      displayMetamaskPopup: false,
     };
   },
   computed: {
@@ -202,6 +227,23 @@ export default {
   },
   methods: {
     ...mapActions(["initClickImage"]),
+    // change to toggleMetamaskPopup
+    updateBlockies() {
+      this.blockies = Auth.blockies();
+    },
+    updateAccount(account) {
+      this.account = account;
+    },
+    showMetamaskPopup() {
+      if (this.displayMetamaskPopup) {
+        this.updateDisplayMetamaskPopup(false);
+      } else {
+        this.updateDisplayMetamaskPopup(true);
+      }
+    },
+    updateDisplayMetamaskPopup(newVal) {
+      this.displayMetamaskPopup = newVal;
+    },
     createData() {
       this.showdatas = true;
       if (this.dataName !== "") {
@@ -268,14 +310,28 @@ export default {
   mounted() {
     if (Auth.token()) {
       this.blockies = Auth.blockies();
-      this.account = Auth.account;
+      this.account = Auth.getAccount();
     }
 
     for (let i = 0; i < 50; i++) this.openTooltip[i] = false;
     Observer.$on("login", ({ account }) => {
-      this.blockies = Auth.blockies();
-      this.account = account;
+      // console.log(`[SIDEBAR] Login triggered`);
+      this.connecting = false;
+      this.updateBlockies();
+      this.updateAccount(account);
     });
+
+    Observer.$on("rejectedLogin", () => {
+      this.connecting = false;
+    });
+
+    Observer.$on("tryingToConnect", () => {
+      this.connecting = true;
+    });
+
+    // ts
+    // console.log(`this.account = ${this.account}`);
+    // console.log(`!this.account && this.connecting = ${!this.account && this.connecting}`);
   },
 };
 </script>

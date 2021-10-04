@@ -34,13 +34,15 @@ export default {
   },
   watch: {
     page(newVal, oldVal) {
-      API.myImages({ page: newVal }, 'about').then((photos) => {
+      if (!this.photos) this.getMyPhotos.then(photos => {
         this.photos = photos;
         if (this.photos.length === 0) {
           this.$store.commit("setTotalPage", this.page);
         } else {
           this.$store.commit("setTotalPage", this.page + 1);
         }
+      }).catch(err => {
+        console.log(`About/index ${err}`);
       });
     },
   },
@@ -54,6 +56,7 @@ export default {
     ...mapState(["page", "totalPage"]),
   },
   methods: {
+    ...mapActions["getMyPhotos"],
     ready () {  },
     ended () {  },
     playing () {  },

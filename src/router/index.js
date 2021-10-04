@@ -70,16 +70,11 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // ts
-  // console.log(`firing beforeEach`);
-  // console.log(`Auth.token() = `, Auth.token());
-  // console.log(`Auth.loaded() = `, Auth.loaded());
-  // console.log(Auth.loaded() === false);
-  // console.log(Auth.loaded() === false && Auth.loaded() !== undefined);
-
-  if (Auth.loaded() && !Auth.token() && to.name != 'Welcome') next({ name: 'Welcome' });
-  else if (Auth.loaded() && Auth.token() && to.name != 'Welcome') next();
-  else next({name: 'Loading'});
+  if (!Auth.token() && to.name != 'Welcome') { 
+    next({ name: 'Welcome' });
+    return;
+  }
+  next(); 
 })
 
 Observer.$on('login', ({ account }) => {

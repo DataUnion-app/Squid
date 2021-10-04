@@ -10,6 +10,7 @@
 <script>
 import Sidebar from "@/views/Sidebar.vue";
 import Observer from "@/utils/observer";
+import Auth from "@/utils/auth";
 import API from "@/utils/api";
 
 export default {
@@ -19,15 +20,26 @@ export default {
   },
   data() {
     return {
+      connecting: false
     };
   },
-  computed: {
-  },
-  methods: {
-  },
+  computed: {},
+  methods: {},
   mounted() {
-    Observer.$on("login", ({ account }) => {
-      this.$store.dispatch("init");
+    // console.log(`app mounted`);
+    this.$store.dispatch("init");
+    Observer.$on("logout", ({ account }) => {
+      Auth.clear();
+      location.reload(); 
+    });
+    Observer.$on("userSwitchedWallet", ({ account, prevAccount }) => {
+      if (prevAccount !== '' && prevAccount !== undefined) {
+        Auth.clear();
+        location.reload();
+      }
+    });
+    Observer.$on("tryingToConnect", () => {
+      this.connecting = true;
     });
   },
 };
@@ -84,12 +96,12 @@ body {
 
 .header {
   height: 80px;
-  width: 110%;
-  margin-left: -45px;
-  margin-top: -20px;
+  width: calc(100% - 230px);
   background-color: RGB(244, 247, 248);
-  display: flex;
-  position: relative;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  right: 0;
 }
 
 .header-title {
@@ -165,7 +177,7 @@ body {
 }
 
 .main-body {
-  margin-top: 25px;
+  margin-top: 80px;
   overflow-y: hidden;
 }
 
@@ -195,7 +207,7 @@ body {
   margin-left: 40px;
 }
 
-.select-tag{
+.select-tag {
   max-width: 500px !important;
   width: 270px !important;
 }
