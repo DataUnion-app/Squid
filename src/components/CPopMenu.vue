@@ -58,16 +58,12 @@
       <div class="flex">
         <div class="flex flex-col add-dialog">
           <div v-if="datas.length > 0" class="p-3 flex justify-center">
-            <vs-select
-              v-if="datas.length > 0"
-              placeholder="Select a Data Set"
-              v-model="data"
-            >
+            <vs-select placeholder="Select a Data Set" v-model="data">
               <vs-option
                 v-for="item in datas"
-                :key="item.name"
+                :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               >
                 {{ item.name }}
               </vs-option>
@@ -117,7 +113,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 import API from "@/utils/api";
 
 export default {
@@ -137,7 +133,6 @@ export default {
       transition: "slide-y-reverse-transition",
       showDataSet: false,
       addDataTooltip: false,
-      datas: [],
       data: "",
       plus_data: false,
       removeDataSet: false,
@@ -146,90 +141,116 @@ export default {
     };
   },
   computed: {
-    ...mapState(["click_images", "page", "selectTag"]),
+    ...mapState(["click_images", "page", "selectTag", "totalPhotos"]),
+    ...mapGetters({
+      datas: "getdatas",
+    }),
   },
   methods: {
     addDataSet_m() {
       let i = 0;
       if (!this.plus_data) {
-        for (i = 0; i < this.click_images.length; i++) {
-          API.saveData({ name: this.data, hash: this.click_images[i].hash });
-        }
-        this.openNotificationSucess("top-right", "success");
+        const images = this.click_images.map((img) => img.hash);
+        const oldImagesInDataSet = this.datas.find((d) => d.id === this.data);
+
+        API.saveData(this.data, [
+          ...new Set([...images, ...oldImagesInDataSet.entity_ids]),
+        ])
+          .then((res) => {
+            this.showNotification("Success", "Successfuly added", "success");
+          })
+          .catch((err) => {
+            console.error(err);
+            this.showNotification("Failure", "Failed to add images", "danger");
+          });
         this.showDataSet = false;
       } else {
         API.photos({ tag: this.selectTag, page: this.page }).then((photos) => {
-          for (i = 0; i < photos.length; i++) {
-            API.saveData({ name: this.data, hash: photos[i].hash });
-          }
-          this.openNotificationSucess("top-right", "success");
+          const images = photos.map((img) => img.hash);
+          API.saveData(this.data, images)
+            .then((res) => {
+              this.showNotification("Success", "Successfuly added", "success");
+            })
+            .catch((err) => {
+              console.error(err);
+              this.showNotification(
+                "Failure",
+                "Failed to add images",
+                "danger"
+              );
+            });
           this.showDataSet = false;
         });
       }
     },
+    async fetchPhotoHashs(cTags, page = 1) {
+      this.$store.dispatch("setApiLoading", true);
+      let result = [];
+      const photosResult = await Promise.all(
+        cTags.map((t) =>
+          API.photos({
+            tag: t,
+            page,
+          })
+        )
+      );
+      photosResult.map((r) => result.push(...r));
+      this.$store.dispatch("setApiLoading", false);
+      return result;
+    },
     removeClickedImage() {
-      API.removeSelectDatas({
-        name: this.$route.params.id,
-        images: this.click_images,
-      }).then((flag) => {
-        this.openNotificationSucessRemove("top-right", "success");
-        this.removeDataSet = false;
-        this.$root.$refs.Data.getDatas();
-      });
+      const images = this.click_images.map((img) => img.hash);
+      const currentDataset = this.datas.find(
+        (d) => d.id === this.$route.params.id
+      );
+      const remainImages = currentDataset.entity_ids.filter(
+        (img) => !images.includes(img)
+      );
+
+      API.saveData(this.$route.params.id, remainImages)
+        .then((res) => {
+          this.removeDataSet = false;
+          this.$root.$refs.Data.loadLatestData();
+          this.showNotification("Success", "Successfuly removed", "success");
+        })
+        .catch((err) => {
+          console.error(err);
+          this.removeDataSet = false;
+          this.showNotification(
+            "Failure",
+            "Failed to remove an image",
+            "danger"
+          );
+        });
     },
     showDataSetDialog() {
       if (this.click_images.length > 0) {
         this.showDataSet = true;
-        this.refreshDataSet();
       } else {
-        this.openNotificationNoSelect("top-right", "danger");
+        this.showNotification(
+          "Warning",
+          "No images selected. Please select images",
+          "warning"
+        );
       }
     },
     showRemoveDialog() {
       if (this.click_images.length > 0) {
         this.removeDataSet = true;
       } else {
-        this.openNotificationNoSelect("top-right", "danger");
+        this.showNotification(
+          "Warning",
+          "No images selected. Please select images",
+          "warning"
+        );
       }
     },
-    openNotificationSucess(position = null, color) {
-      const noti = this.$vs.notification({
+    showNotification(title, text, color, position = "top-right") {
+      this.$vs.notification({
         color,
         position,
-        title: "Success",
-        text: "Successfuly added",
-      });
-    },
-    openNotificationSucessRemove(position = null, color) {
-      const noti = this.$vs.notification({
-        color,
-        position,
-        title: "Success",
-        text: "Successfuly removed",
-      });
-    },
-    openNotificationNoSelect(position = null, color) {
-      const noti = this.$vs.notification({
-        color,
-        position,
-        title: "No images selected",
-        text: "Please select images",
-      });
-    },
-    openNotificationFailed(position = null, color) {
-      const noti = this.$vs.notification({
-        color,
-        position,
-        title: "Failed",
-        text: "Already images exists!",
-      });
-    },
-    openNotificationAlbumFailed(position = null, color) {
-      const noti = this.$vs.notification({
-        color,
-        position,
-        title: "Failed",
-        text: "Already images exists!",
+        title: title,
+        text: text,
       });
     },
     connectSidebar() {
@@ -238,63 +259,31 @@ export default {
       this.addDataDetailTooltip = false;
       this.$root.$refs.Sidebar.createData();
     },
-    refreshDataSet() {
-      API.datas().then((datas) => {
-        this.datas = datas;
-      });
-    },
     showDataSetDlg() {
       this.showdatas = true;
     },
     createData() {
       if (this.dataName !== "") {
-        API.createData({ name: this.dataName }).then((flag) => {
-          if (flag) {
-            this.refreshDataSet();
+        const photoIds = this.totalPhotos.map((p) => p.hash);
+
+        API.createData(this.dataName, photoIds)
+          .then((res) => {
+            this.showNotification("Success", "Successfuly created", "success");
             this.$root.$refs.Sidebar.updateData();
-            let i, timer;
-            if (typeof this.selectTag == "string") {
-              API.photos({ tag: this.selectTag, page: this.page }).then(
-              (photos) => {
-                for (i = 0; i < photos.length; i++) {
-                  API.saveData({ name: this.dataName, hash: photos[i].hash });
-                }
-                this.openNotificationSucess("top-right", "success");
-                this.showdatas = false;
-                this.dataName = "";
-              });
-            } 
-            else {
-              const name_temp = this.dataName;
-              i = 0;
-              timer = setInterval(() => {
-                if (i >= this.selectTag.length) {
-                  this.openNotificationSucess("top-right", "success");
-                  this.showdatas = false;
-                  this.dataName = "";
-                  clearInterval(timer);
-                }
-                  const temp_tag = this.selectTag[i];
-                  API.photos({ tag: temp_tag, page: this.page }).then(
-                    (photos) => {
-                      let j;
-                      for (j = 0; j < photos.length; j++) {
-                        API.saveData({ name: name_temp, hash: photos[j].hash });
-                      }
-                    });
-                i++;
-              }, 50);
-            }
-          } else {
-            this.showdatas = true;
-            this.openNotificationAlbumFailed("top-right", "danger");
-          }
-        });
+          })
+          .catch((err) => {
+            console.error(err);
+            this.showNotification(
+              "Failure",
+              "The dataset is already exists or failed to create a dataset with images",
+              "danger"
+            );
+          });
+        this.showdatas = false;
+        this.dataName = "";
       }
     },
   },
-  mounted() {
-    this.refreshDataSet();
-  },
+  mounted() {},
 };
 </script>

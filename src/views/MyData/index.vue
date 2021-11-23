@@ -3,8 +3,10 @@
     <CHeader title="My Data" />
     <CPopMenu :flag="1" />
     <div v-show="!pageLoading" class="main-body">
-      
-      <div v-if="!loading && photos.length > 0" class="flex flex-wrap justify-left ml-12">
+      <div
+        v-if="!loading && photos.length > 0"
+        class="flex flex-wrap justify-left ml-12"
+      >
         <div v-for="photo in photos" :key="photo.hash" class="image-relative">
           <div class="comment">
             <CImage
@@ -18,7 +20,7 @@
       <div v-else-if="!loading && photos.length === 0">
         <h1 class="text-3xl p-3 not-margin">There is no image you uploaded</h1>
       </div>
-      
+
       <CLoader v-else-if="loading" message="Checking for your images..." />
     </div>
   </div>
@@ -39,55 +41,62 @@ export default {
   name: "Home",
   components: {},
   computed: {
-    ...mapState(["page", "pageLoading", "totalPage"]),
+    ...mapState([
+      "page",
+      "pageLoading",
+      "totalPage",
+      "pageCount",
+      "totalPhotos",
+    ]),
+    photos() {
+      const photos = this.totalPhotos.slice(
+        (this.page - 1) * this.pageCount,
+        this.page * this.pageCount
+      );
+      return photos;
+    },
   },
   methods: {
     ...mapActions(["initClickImage", "getMyPhotos"]),
     updateLoading(newLoading) {
       this.loading = newLoading;
-    }
+    },
+    loadPhotos() {
+      this.updateLoading(true);
+      this.getMyPhotos()
+        .then((photos) => {
+          this.$store.dispatch("setTotalPhotos", photos);
+          this.$store.commit(
+            "setTotalPage",
+            Math.ceil(photos.length / this.pageCount) || 1
+          );
+          this.updateLoading(false);
+        })
+        .catch((err) => {
+          console.log(`MyData/index ${err}`);
+          this.$store.dispatch("setTotalPhotos", []);
+          this.updateLoading(false);
+        });
+    },
   },
   data() {
     return {
-      photos: [],
       loading: true,
     };
   },
   watch: {
-    tempPhotos(newVal, oldVal) {
-      this.updatePhotos(newVal);
-    },
-    // ts
-    // loading(newVal, oldVal) {
-    //   console.log(`loading newVal = ${newVal}`);
-    //   console.log(`photos.length = ${this.photos.length}`);
-    // },
-    photos(newVal, oldVal) { 
-      // ts
-      // console.log(`photos newVal = `);
-      // console.log(newVal);
+    page(newVal) {
+      // Implement later
       this.updateLoading(false);
-    },
-    page(newVal, oldVal) {
-      this.updateLoading(true);
-      this.getMyPhotos().then((photos) => {
-        this.photos = photos;
-        if (this.photos.length === 0) {
-          this.$store.commit("setTotalPage", this.page);
-        } else {
-          this.$store.commit("setTotalPage", this.page + 1);
-        }
-      }).catch(err => {
-        console.log(`MyData/index ${err}`);
-      });
     },
   },
   mounted() {
     this.$store.commit("setTotalPage", 1);
-    this.getMyPhotos().then(photos => {
-      this.photos = photos;
-      this.updateLoading(false);
-    }).catch(err => console.log(err));
+
+    if (this.page !== 1) {
+      this.$store.dispatch("setPage", 1);
+    }
+    this.loadPhotos();
     this.initClickImage();
   },
 };

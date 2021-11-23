@@ -2,7 +2,12 @@
   <div class="">
     <vs-sidebar background="dark" textWhite v-model="active" open :key="force">
       <template #logo>
-        <img v-on:click.stop="" class="mr-3" alt="Vue logo" src="@/assets/logo-avatar.svg" />
+        <img
+          v-on:click.stop=""
+          class="mr-3"
+          alt="Vue logo"
+          src="@/assets/logo-avatar.svg"
+        />
         <div class="text-5xl font-extrabold text-purple-600">Squid</div>
       </template>
       <vs-sidebar-item id="MyData">
@@ -35,19 +40,19 @@
             </vs-sidebar-item>
           </template>
           <vs-sidebar-item
-            v-for="(data, index) in datas"
+            v-for="data in datas"
             :key="data.name"
-            :id="data.name"
+            :id="`datas/${data.id}`"
           >
             <template #icon>
               <i class="bx bx-data"></i>
             </template>
             <div class="sidebar">
               {{ data.name }}
-               <i
-                  v-on:click.stop="removeData(index)"
-                  class="bx bx-trash sidebar-item"
-                ></i>
+              <i
+                v-on:click.stop="removeData(data.id)"
+                class="bx bx-trash sidebar-item"
+              ></i>
             </div>
           </vs-sidebar-item>
         </vs-sidebar-group>
@@ -71,13 +76,13 @@
       </vs-sidebar-item>
       <vs-sidebar-item id="Algorithm">
         <template #icon>
-          <img src="@/assets/algorithm.svg" style="width:20px;" />
+          <img src="@/assets/algorithm.svg" style="width: 20px" />
         </template>
         Algorithms
       </vs-sidebar-item>
       <vs-sidebar-item id="About">
         <template #icon>
-          <img src="@/assets/about.png" style="width:20px;" />
+          <img src="@/assets/about.png" style="width: 20px" />
         </template>
         About
       </vs-sidebar-item>
@@ -85,7 +90,7 @@
       <!-- FOOTER -->
       <template #footer>
         <button
-          @click="showMetamaskPopup" 
+          @click="showMetamaskPopup"
           class="w-full flex flex-nowrap items-center"
         >
           <CMetamaskPopup
@@ -133,7 +138,6 @@
           </div>
         </button>
       </template>
-
     </vs-sidebar>
     <vs-dialog v-model="showdatas">
       <template #header>
@@ -157,9 +161,9 @@
 </template>
 
 <style>
-  .metamask-relative {
-    top: 75%;
-  }
+.metamask-relative {
+  top: 75%;
+}
 </style>
 
 <script>
@@ -179,34 +183,23 @@ export default {
     $route() {
       if (this.$route.name !== "datas") this.active = this.$route.name;
     },
-    // blockies(newVal, oldVal) {
-    //   console.log(`BLOCKIES CHANGED = ${newVal}`);
-    //   console.log(typeof this.blockies);
-    // },
-    // account(newVal, oldVal) {
-    //   console.log(`ACCOUNT CHANGED = ${newVal}`);
-    // },
-    // displayMetamaskPopup(newVal, oldVal) {
-    //   console.log(`displayMetamaskPopup = ${newVal}`);
-    // },
     active: function () {
-      // ts
-      // console.log(`[SIDEBAR] running active...`);
-      // console.log(`this.active = ${this.active}`);
-      
       if (this.$route.name != this.active) {
-        for (var i = 0; i < this.datas.length; i++) {
-          if (this.active == this.datas[i].name) break;
-        }
-        if (i == this.datas.length) this.$router.push({ name: this.active }).catch(()=>{});
-        else {
-          const param = this.active;
+        if (this.active.includes("datas/")) {
           this.initClickImage();
           this.$router
-            .push({ name: "datas", params: { id: param } })
+            .push({
+              name: "Datas",
+              params: { id: this.active.split("datas/").at(-1) },
+            })
             .catch(() => {});
+        } else {
+          this.$router.push({ name: this.active }).catch(() => {});
         }
       }
+    },
+    account() {
+      this.loadDataSets();
     },
   },
   data() {
@@ -247,13 +240,13 @@ export default {
     createData() {
       this.showdatas = true;
       if (this.dataName !== "") {
-        API.createData({ name: this.dataName }).then((flag) => {
+        API.createData(this.dataName).then((flag) => {
           if (flag) {
-            this.refreshdatas();
+            this.loadDataSets();
             this.dataName = "";
             this.showdatas = false;
             this.openNotification("top-right", "success");
-            this.force ++;
+            this.force++;
             // vm.$forceUpdate();
           } else {
             this.showdatas = true;
@@ -263,20 +256,18 @@ export default {
       }
     },
     updateData() {
-      this.refreshdatas();
-      this.force ++;
+      this.loadDataSets();
+      this.force++;
     },
     removeData(index) {
-      API.removeDataSet({ index: index }).then((flag) => {
-        if (flag) {
-          this.refreshdatas();
-          this.dataName = "";
-          this.showdatas = false;
-          this.active = "Home";
-          this.openNotificationRemoved("top-right", "success");
-          this.openTooltip[index] = false;
-          this.force --;
-        }
+      API.removeDataSet({ index }).then(() => {
+        this.loadDataSets();
+        this.dataName = "";
+        this.showdatas = false;
+        this.active = "Home";
+        this.openNotificationRemoved("top-right", "success");
+        this.openTooltip[index] = false;
+        this.force--;
       });
     },
     openNotification(position = null, color) {
@@ -303,7 +294,7 @@ export default {
         text: "Data Set name already exists",
       });
     },
-    refreshdatas() {
+    loadDataSets() {
       this.$store.dispatch("setdatas");
     },
   },

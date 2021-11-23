@@ -45,10 +45,16 @@
 import { mapState, mapActions } from "vuex";
 import VueAutoVirtualScrollList from "vue-auto-virtual-scroll-list";
 import API from "@/utils/api";
+import { toArrayKeys } from "@/utils/utils";
 
 export default {
   name: "Gallery",
   // components: { VueAutoVirtualScrollList  },
+  data() {
+    return {
+      realPage: 1,
+    };
+  },
   computed: {
     ...mapState([
       "selectTag",
@@ -56,18 +62,26 @@ export default {
       "pageCount",
       "pageLoading",
       "page",
+      "totalPhotos",
     ]),
+    photos() {
+      const photos = this.totalPhotos.slice(
+        (this.page - 1) * this.pageCount,
+        this.page * this.pageCount
+      );
+      return photos;
+    },
   },
   methods: {
     ...mapActions(["initClickImage", "setPage"]),
-    async fetchPhotoHashs(cTags, page=1) {
+    async fetchPhotoHashs(cTags, page = 1) {
       this.$store.dispatch("setApiLoading", true);
       let result = [];
       const photosResult = await Promise.all(
         cTags.map((t) =>
           API.photos({
             tag: t,
-            page
+            page,
           })
         )
       );
@@ -75,85 +89,56 @@ export default {
       this.$store.dispatch("setApiLoading", false);
       return result;
     },
-    getSelectedTags() {
-      let selTags = [];
-
-      if (typeof this.$store.state.selectTag == "string") {
-        selTags.push(this.$store.state.selectTag);
-      } else {
-        selTags = this.$store.state.selectTag;
-      }
-
-      return selTags;
+    deDuplicateData(arrData) {
+      const newSet = [...new Set(arrData.map((item) => JSON.stringify(item)))];
+      const dedup = [...newSet].map((item) => JSON.parse(item));
+      return dedup;
     },
-  },
-  data() {
-    return {
-      photos: [],
-      realPage: 1,
-      totalPhotos: []
-    };
   },
   watch: {
-    async selectTag(newVal) {
-      if (newVal === undefined) return;
-      const selectedTags = this.getSelectedTags();
-      this.totalPhotos = await this.fetchPhotoHashs(selectedTags);
-
-      this.$store.commit(
-        "setTotalPage",
-        Math.ceil(this.totalPhotos.length / this.pageCount) || 1
-      );
-      this.photos = this.totalPhotos.slice(
-        (this.page - 1) * this.pageCount,
-        this.page * this.pageCount
-      );
-    },
-    async page(newVal) {
-      this.$store.dispatch("setPage", newVal || 1);
-
-      if (Math.ceil(this.totalPhotos.length / this.pageCount) <= newVal) {
-        this.realPage ++;
-        // console.log('Real Page', this.realPage);
-        const selectedTags = this.getSelectedTags();
-        const newPhotos = await this.fetchPhotoHashs(selectedTags, this.realPage);
-        this.totalPhotos.push(...newPhotos);
+    selectTag(newVal) {
+      const newKeys = toArrayKeys(newVal);
+      this.fetchPhotoHashs(newKeys).then((totalPhotos) => {
+        totalPhotos = this.deDuplicateData(totalPhotos);
+        this.$store.dispatch("setTotalPhotos", totalPhotos);
         this.$store.commit(
           "setTotalPage",
-          Math.ceil(this.totalPhotos.length / this.pageCount) || 1
+          Math.ceil(totalPhotos.length / this.pageCount) || 1
         );
+      });
+    },
+    async page(newVal) {
+      if (Math.ceil(this.totalPhotos.length / this.pageCount) <= newVal) {
+        this.realPage++;
+        const selectedTags = toArrayKeys(this.selectTag);
+        const newPhotos = await this.fetchPhotoHashs(
+          selectedTags,
+          this.realPage
+        );
+        let currentPhotos = this.totalPhotos;
+        currentPhotos.push(...newPhotos);
+        currentPhotos = this.deDuplicateData(currentPhotos);
+        this.$store.commit(
+          "setTotalPage",
+          Math.ceil(currentPhotos.length / this.pageCount) || 1
+        );
+        this.$store.dispatch("setTotalPhotos", currentPhotos);
       }
-
-      this.photos = this.totalPhotos.slice(
-        (this.page - 1) * this.pageCount,
-        this.page * this.pageCount
-      );
     },
   },
 
   async mounted() {
-    const defaultTag = "dataunion - 1";
-    this.$store.dispatch("setPage", 1);
-
-    if (
-      !this.$store.state.selectTag ||
-      this.$store.state.selectTag?.length === 0
-    ) {
-      this.$store.dispatch("setSelectTag", defaultTag);
-    } else {
-      const selectedTags = this.getSelectedTags();
-      this.totalPhotos = await this.fetchPhotoHashs(selectedTags);
-      // ts
-      // console.log("photosResult", this.totalPhotos);
-      this.$store.commit(
-        "setTotalPage",
-        Math.ceil(this.totalPhotos.length / this.pageCount) || 1
-      );
-      this.photos = this.totalPhotos.slice(
-        (this.page - 1) * this.pageCount,
-        this.page * this.pageCount
-      );
+    if (this.page !== 1) {
+      this.$store.dispatch("setPage", 1);
     }
+    const selectedTags = toArrayKeys(this.selectTag);
+    let newPhotos = await this.fetchPhotoHashs(selectedTags);
+    newPhotos = this.deDuplicateData(newPhotos);
+    this.$store.commit(
+      "setTotalPage",
+      Math.ceil(newPhotos.length / this.pageCount) || 1
+    );
+    this.$store.dispatch("setTotalPhotos", newPhotos);
     this.initClickImage();
   },
 };

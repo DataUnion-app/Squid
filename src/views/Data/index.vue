@@ -1,12 +1,15 @@
 <template>
   <div>
-    <CHeader :title="$route.params.id" :flag="'data'" @onClickEdit="onClickEdit" />
+    <CHeader :title="currentData.name" flag="data" />
     <CPopMenu :flag="2" />
     <div class="main-body">
       <div>
-        <div v-if="photos.length > 0" class="flex flex-wrap justify-left ml-12">
+        <div
+          v-if="currentData.entity_ids.length > 0"
+          class="flex flex-wrap justify-left ml-12"
+        >
           <div
-            v-for="(photo, index) in photos"
+            v-for="(photo, index) in currentData.entity_ids"
             :key="photo"
             class="image-relative"
           >
@@ -25,108 +28,74 @@
           <h1 class="text-3xl p-3 not-margin">This Data Set is empty.</h1>
         </div>
       </div>
-      <vs-dialog v-model="showModal">
-        <template #header>
-          <h1 class="text-3xl not-margin">Change Data Set Name</h1>
-        </template>
-
-        <div class="flex">
-          <div class="flex flex-col image-detail-right">
-            <div class="p-3 flex justify-center">
-              <vs-input v-model="dataName" placeholder="" />
-              <vs-button @click="changeName"> Change </vs-button>
-            </div>
-          </div>
-        </div>
-        <template #footer> </template>
-      </vs-dialog>
     </div>
   </div>
 </template>
 
 <script>
 import API from "@/utils/api";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  name: "datas",
-  created() {
-    this.$root.$refs.Data = this;
-  },
-  components: {},
-  computed: {},
+  name: "Datas",
   data() {
     return {
       photos: [],
-      name: "",
-      dataName: "",
       showModal: false,
     };
+  },
+  components: {},
+  computed: {
+    ...mapGetters(["getdatas"]),
+    currentData() {
+      const id = this.$route.params.id;
+      const datas = this.getdatas;
+      return datas.find((data) => data.id === id);
+    },
   },
   methods: {
     ...mapActions(["initClickImage"]),
     onClickChild(value) {
       this.removeData(value);
     },
-    onClickEdit() {
-      this.showChangeNameModal();
-    },
-    showChangeNameModal() {
-      this.showModal = true;
-    },
-    changeName() {
-      API.changeDataSetName({
-        oldname: this.name,
-        newname: this.dataName,
-      }).then(() => {
-        this.showModal = false;
-        const param = this.dataName;
-        this.$router
-          .push({ name: "datas", params: { id: param } })
-          .catch(() => {});
-        this.$store.dispatch("setdatas");
-      });
-    },
     removeData(index) {
-      API.removeData({ name: this.name, index: index }).then((photos) => {
-        this.photos = photos;
-        this.openNotification("top-right", "success");
-        this.initClickImage();
-      });
+      const currentPhotos = [...this.currentData.entity_ids];
+      currentPhotos.splice(index, 1);
+
+      API.saveData(this.currentData.id, currentPhotos)
+        .then((res) => {
+          this.loadLatestData();
+          this.showNotification("Success", "Successfuly removed", "success");
+        })
+        .catch((err) => {
+          console.error(err);
+          this.showNotification(
+            "Failure",
+            "Failed to remove an image",
+            "danger"
+          );
+        });
+      this.initClickImage();
     },
-    openNotification(position = null, color) {
-      const noti = this.$vs.notification({
+    showNotification(title, text, color, position = "top-right") {
+      this.$vs.notification({
         color,
         position,
-        title: "Success",
-        text: "Successfuly removed",
+        title: title,
+        text: text,
       });
     },
-    getDatas() {
-      API.getData({ name: this.name }).then((photos) => {
-        this.photos = photos;
-        this.initClickImage();
-      });
+    async loadLatestData() {
+      await this.$store.dispatch("setdatas");
     },
   },
 
-  watch: {
-    name(newVal, oldVal) {
-      if (newVal == "") {
-        return;
-      }
-      API.getData({ name: this.name }).then((photos) => {
-        this.photos = photos;
-      });
-    },
-  },
-  updated() {
-    this.name = this.$route.params.id;
+  watch: {},
+  created() {
+    this.$root.$refs.Data = this;
   },
   mounted() {
-    this.name = this.$route.params.id;
-    this.dataName = this.name;
-    this.getDatas();
+    this.loadLatestData();
     this.initClickImage();
   },
 };

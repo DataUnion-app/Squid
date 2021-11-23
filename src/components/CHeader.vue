@@ -125,6 +125,8 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import Multiselect from "vue-multiselect";
+import API from "@/utils/api";
+import { toArrayKeys } from "@/utils/utils";
 
 export default {
   name: "CHeader",
@@ -134,49 +136,28 @@ export default {
   props: {
     title: String,
     description: String,
-    flag: Number,
-  },
-  watch: {
-    tag(newVal) {
-      this.page = 1;
-      this.$store.dispatch("setPage", this.page);
-      this.$store.dispatch("setSelectTag", newVal);
-
-      const newKeys =
-        typeof newVal === "string"
-          ? [newVal]
-          : newVal === undefined
-          ? []
-          : newVal;
-      let tCountKeys = this.tagCountKeys;
-
-      tCountKeys =
-        tCountKeys === undefined
-          ? []
-          : tCountKeys.filter((el) => !newKeys.includes(el));
-      this.allOptions = [...newKeys, ...tCountKeys];
-      this.$store.dispatch("setTagCountKeys", this.allOptions);
-    },
-    page(newVal, oldVal) {
-      this.$store.dispatch("setPage", newVal);
-      this.$store.dispatch("selectAll", false);
-      this.select_all = false;
-    },
-    select_all(newVal, oldVal) {
-      this.$store.dispatch("selectAll", newVal);
-    },
+    flag: [Number, String],
   },
   data() {
     return {
       tag: [],
-      allOptions:[],
+      allOptions: [],
       tagIndex: 0,
       page: 1,
+      realPage: 1,
       select_all: false,
     };
   },
   computed: {
-    ...mapState(["tags", "tagCountKeys", "pageLoading", "totalPage"]),
+    ...mapState([
+      "tags",
+      "tagCountKeys",
+      "pageLoading",
+      "totalPage",
+      "totalPhotos",
+      "pageCount",
+      "selectTag",
+    ]),
   },
   methods: {
     ...mapActions(["setPage"]),
@@ -187,17 +168,40 @@ export default {
   async mounted() {
     await this.$store.dispatch("setTags");
 
-    if (!this.$store.state.selectTag) {
+    if (!this.selectTag) {
       this.tag = "dataunion - (1)";
       this.$store.dispatch("setSelectTag", this.tag);
     } else {
-      this.tag = this.$store.state.selectTag;
+      this.tag = this.selectTag;
     }
     this.$store.dispatch("selectAll", false);
     this.allOptions = this.tagCountKeys;
     setTimeout(() => {
       this.$store.dispatch("setPageLoading", false);
     }, 2000);
+  },
+  watch: {
+    async tag(newVal) {
+      this.page = 1;
+      this.$store.dispatch("setPage", this.page);
+      this.$store.dispatch("setSelectTag", newVal);
+
+      const newKeys = toArrayKeys(newVal);
+      const tCountKeys =
+        this.tagCountKeys === undefined
+          ? []
+          : this.tagCountKeys.filter((el) => !newKeys.includes(el));
+      this.allOptions = [...newKeys, ...tCountKeys];
+      this.$store.dispatch("setTagCountKeys", this.allOptions);
+    },
+    async page(newVal, oldVal) {
+      this.$store.dispatch("setPage", newVal);
+      this.$store.dispatch("selectAll", false);
+      this.select_all = false;
+    },
+    select_all(newVal, oldVal) {
+      this.$store.dispatch("selectAll", newVal);
+    },
   },
 };
 </script>
