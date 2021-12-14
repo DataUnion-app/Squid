@@ -34,7 +34,7 @@
 
 <script>
 import API from "@/utils/api";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   name: "Datas",
@@ -46,11 +46,38 @@ export default {
   },
   components: {},
   computed: {
-    ...mapGetters(["getdatas"]),
+    ...mapState(["datas", "publicDatas"]),
+
+    fullDatasets() {
+      const myPublicDatasetIds = this.datas
+        .filter((data) => data.entity_list_type === "public")
+        .map((d) => d.id);
+      const allPublicDatasets = this.publicDatas
+        .map((data) => {
+          return {
+            ...data,
+            isHandle: myPublicDatasetIds.includes(data.id),
+            entity_list_type: "public",
+          };
+        })
+        .sort((a, b) => {
+          return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+        });
+      const allPrivateDatasets = this.datas
+        .filter((data) => data.entity_list_type === "private")
+        .sort((a, b) => {
+          return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+        });
+
+      return [
+        ...allPublicDatasets.filter((i) => i.isHandle),
+        ...allPublicDatasets.filter((i) => !i.isHandle),
+        ...allPrivateDatasets,
+      ];
+    },
     currentData() {
       const id = this.$route.params.id;
-      const datas = this.getdatas;
-      return datas.find((data) => data.id === id);
+      return this.fullDatasets.find((data) => data.id === id);
     },
   },
   methods: {

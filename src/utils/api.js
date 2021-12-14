@@ -163,8 +163,8 @@ class API {
   createData = async (
     name,
     entityIds = [],
-    entityType = "image",
     visibility = "public",
+    entityType = "image",
     description = ""
   ) => {
     return this.call("api/v1/entity-lists/create", "POST", {
@@ -176,6 +176,19 @@ class API {
     })
       .then((eneityResult) => {
         return eneityResult;
+      })
+      .catch((err) => {
+        return Promise.reject(err);
+      });
+  };
+
+  getAllPublicData = async (entityType = "image", page = 1) => {
+    return this.call(
+      `api/v1/entity-lists/search?entity_type=${entityType}&page=${page}`,
+      "GET"
+    )
+      .then((response) => {
+        return response.result;
       })
       .catch((err) => {
         return Promise.reject(err);

@@ -20,6 +20,7 @@ const store = new Vuex.Store({
     imageCache: {},
     tagsCache: {},
     datas: [],
+    publicDatas: [],
     imageWorld: "",
     selectTag: "",
     click_images: [],
@@ -90,6 +91,11 @@ const store = new Vuex.Store({
     setdatas({ commit }) {
       API.fetchDatas().then((datas) => {
         commit("set", ["datas", datas]);
+      });
+    },
+    setPublicDatas({ commit }) {
+      API.getAllPublicData().then((pubDatas) => {
+        commit("set", ["publicDatas", pubDatas]);
       });
     },
     setTags({ commit }) {
