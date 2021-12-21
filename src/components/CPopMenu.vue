@@ -96,14 +96,30 @@
         <h1 class="text-3xl not-margin">Create Data Set</h1>
       </template>
 
-      <div class="flex">
-        <div class="flex flex-col add-dialog">
+      <div class="flex justify-center">
+        <div class="flex flex-col add-dialog" style="width: 100%">
           <div class="p-3 flex justify-center">
+            <template>
+              <div class="center">
+                <vs-select
+                  placeholder="Dataset Type"
+                  v-model="selectedEntityType"
+                >
+                  <vs-option label="Public" value="1"> Public </vs-option>
+                  <vs-option label="Private" value="2"> Private </vs-option>
+                </vs-select>
+              </div>
+            </template>
             <vs-input
               v-model="dataName"
               placeholder="Input your data set name"
             />
-            <vs-button @click="createData"> Create </vs-button>
+            <vs-button
+              @click="createData"
+              :disabled="!dataName || !selectedEntityType"
+            >
+              Create
+            </vs-button>
           </div>
         </div>
       </div>
@@ -138,6 +154,7 @@ export default {
       removeDataSet: false,
       dataName: "",
       showdatas: false,
+      selectedEntityType: 0,
     };
   },
   computed: {
@@ -263,25 +280,25 @@ export default {
       this.showdatas = true;
     },
     createData() {
-      if (this.dataName !== "") {
-        const photoIds = this.totalPhotos.map((p) => p.hash);
+      const photoIds = this.totalPhotos.map((p) => p.hash);
+      const datasetType =
+        this.selectedEntityType === "1" ? "public" : "private";
 
-        API.createData(this.dataName, photoIds)
-          .then((res) => {
-            this.showNotification("Success", "Successfuly created", "success");
-            this.$root.$refs.Sidebar.updateData();
-          })
-          .catch((err) => {
-            console.error(err);
-            this.showNotification(
-              "Failure",
-              "The dataset is already exists or failed to create a dataset with images",
-              "danger"
-            );
-          });
-        this.showdatas = false;
-        this.dataName = "";
-      }
+      API.createData(this.dataName, photoIds, datasetType)
+        .then((res) => {
+          this.showNotification("Success", "Successfuly created", "success");
+          this.$root.$refs.Sidebar.updateData();
+        })
+        .catch((err) => {
+          console.error(err);
+          this.showNotification(
+            "Failure",
+            "The dataset is already exists or failed to create a dataset with images",
+            "danger"
+          );
+        });
+      this.showdatas = false;
+      this.dataName = "";
     },
   },
   mounted() {},

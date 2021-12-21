@@ -22,8 +22,7 @@
         </template>
         Data
       </vs-sidebar-item>
-
-      <div v-if="datas.length > 0">
+      <div v-if="fullDatasets.length > 0">
         <vs-sidebar-group>
           <template #header>
             <vs-sidebar-item arrow>
@@ -40,7 +39,7 @@
             </vs-sidebar-item>
           </template>
           <vs-sidebar-item
-            v-for="data in datas"
+            v-for="data in fullDatasets"
             :key="data.name"
             :id="`datas/${data.id}`"
           >
@@ -49,10 +48,22 @@
             </template>
             <div class="sidebar">
               {{ data.name }}
-              <i
-                v-on:click.stop="removeData(data.id)"
-                class="bx bx-trash sidebar-item"
-              ></i>
+              <div
+                v-show="data.entity_list_type === 'private' || data.isHandle"
+                class="sidebar-item"
+              >
+                <i
+                  v-on:click.stop="removeData(data.id)"
+                  class="bx bx-trash sidebar-item"
+                ></i>
+                <i
+                  v-on:click.stop="switchEntityType(data)"
+                  :class="`bx bx-lock${
+                    data.entity_list_type === 'public' ? '-open-alt' : ''
+                  } sidebar-item`"
+                  style="margin-right: 3px"
+                ></i>
+              </div>
             </div>
           </vs-sidebar-item>
         </vs-sidebar-group>
@@ -144,14 +155,30 @@
         <h1 class="text-3xl not-margin">Create Data Set</h1>
       </template>
 
-      <div class="flex">
-        <div class="flex flex-col add-dialog">
+      <div class="flex justify-center">
+        <div class="flex flex-col add-dialog" style="width: 100%">
           <div class="p-3 flex justify-center">
+            <template>
+              <div class="center">
+                <vs-select
+                  placeholder="Dataset Type"
+                  v-model="selectedEntityType"
+                >
+                  <vs-option label="Public" value="1"> Public </vs-option>
+                  <vs-option label="Private" value="2"> Private </vs-option>
+                </vs-select>
+              </div>
+            </template>
             <vs-input
               v-model="dataName"
               placeholder="Input your data set name"
             />
-            <vs-button @click="createData"> Create </vs-button>
+            <vs-button
+              @click="createData"
+              :disabled="!dataName || !selectedEntityType"
+            >
+              Create
+            </vs-button>
           </div>
         </div>
       </div>
@@ -213,10 +240,38 @@ export default {
       openTooltip: [],
       force: 0,
       displayMetamaskPopup: false,
+      selectedEntityType: 0,
     };
   },
   computed: {
-    ...mapState(["datas"]),
+    ...mapState(["datas", "publicDatas"]),
+    fullDatasets() {
+      const myPublicDatasetIds = this.datas
+        .filter((data) => data.entity_list_type === "public")
+        .map((d) => d.id);
+      const allPublicDatasets = this.publicDatas
+        .map((data) => {
+          return {
+            ...data,
+            isHandle: myPublicDatasetIds.includes(data.id),
+            entity_list_type: "public",
+          };
+        })
+        .sort((a, b) => {
+          return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+        });
+      const allPrivateDatasets = this.datas
+        .filter((data) => data.entity_list_type === "private")
+        .sort((a, b) => {
+          return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+        });
+
+      return [
+        ...allPublicDatasets.filter((i) => i.isHandle),
+        ...allPublicDatasets.filter((i) => !i.isHandle),
+        ...allPrivateDatasets,
+      ];
+    },
   },
   methods: {
     ...mapActions(["initClickImage"]),
@@ -240,7 +295,10 @@ export default {
     createData() {
       this.showdatas = true;
       if (this.dataName !== "") {
-        API.createData(this.dataName).then((flag) => {
+        const datasetType =
+          this.selectedEntityType === "1" ? "public" : "private";
+
+        API.createData(this.dataName, [], datasetType).then((flag) => {
           if (flag) {
             this.loadDataSets();
             this.dataName = "";
@@ -270,12 +328,43 @@ export default {
         this.force--;
       });
     },
+    switchEntityType(data) {
+      const entityType =
+        data.entity_list_type === "public" ? "private" : "public";
+
+      API.saveData(data.id, data.entity_ids, entityType, data.description)
+        .then((res) => {
+          this.loadDataSets();
+          this.loadPublicDataSets();
+          this.openSwitchSuccessNotification("top-right", "success");
+        })
+        .catch((err) => {
+          console.log(err);
+          this.openSwitchFailedNotification("top-right", "danger");
+        });
+    },
     openNotification(position = null, color) {
       const noti = this.$vs.notification({
         color,
         position,
         title: "Success",
         text: "Data Set successfuly created",
+      });
+    },
+    openSwitchSuccessNotification(position = null, color) {
+      const noti = this.$vs.notification({
+        color,
+        position,
+        title: "Success",
+        text: "Data Set is successfuly switched over",
+      });
+    },
+    openSwitchFailedNotification(position = null, color) {
+      const noti = this.$vs.notification({
+        color,
+        position,
+        title: "Failed",
+        text: "Data Set switching is failed",
       });
     },
     openNotificationRemoved(position = null, color) {
@@ -297,12 +386,17 @@ export default {
     loadDataSets() {
       this.$store.dispatch("setdatas");
     },
+    loadPublicDataSets() {
+      this.$store.dispatch("setPublicDatas");
+    },
   },
   mounted() {
     if (Auth.token()) {
       this.blockies = Auth.blockies();
       this.account = Auth.getAccount();
     }
+
+    this.loadPublicDataSets();
 
     for (let i = 0; i < 50; i++) this.openTooltip[i] = false;
     Observer.$on("login", ({ account }) => {
@@ -319,10 +413,6 @@ export default {
     Observer.$on("tryingToConnect", () => {
       this.connecting = true;
     });
-
-    // ts
-    // console.log(`this.account = ${this.account}`);
-    // console.log(`!this.account && this.connecting = ${!this.account && this.connecting}`);
   },
 };
 </script>
